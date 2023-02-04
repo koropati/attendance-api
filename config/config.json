@@ -25,5 +25,20 @@
         "crypto": "4YaM60r3ng3n4KL0"
     },
     "access_token_expired": 2,
-    "refresh_token_expired": 420
+    "refresh_token_expired": 420,
+    "general": {
+        "company_name": "PT. Mekarsari",
+        "company_email": "wokdev@gmail.com",
+        "app_name": "Attendance",
+        "app_logo":"www.github.com",
+        "github": "www.github.com/my_github",
+        "facebook":"www.facebook.com/my_facebok",
+        "email": "www.gmail.com/my_email",
+        "twitter": "www.twitter.com",
+        "linkedin": "www.linkedin.com/my_username",
+        "youtube":"www.youtube.com/my_channel",
+        "instagram": "www.instagram.com/my_instagram",
+        "term_of_use": "www.github.com/term",
+        "privacy_policy": "www.github.com/privacy"
+    }
 }

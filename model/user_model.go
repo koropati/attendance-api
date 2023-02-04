@@ -30,6 +30,7 @@ type User struct {
 	IsAdmin      bool      `json:"is_admin"`
 	IsUser       bool      `json:"is_user"`
 	LastLogin    time.Time `json:"last_login"`
+	Activation   string    `json:"activation"`
 }
 
 // username string, email string, isSuperAdmin bool, isAdmin bool, isUser bool, expired int

@@ -65,7 +65,7 @@ func (h *authUserHandler) Register(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.FirstName, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("first_name: %v", err))
 		return
 	}
 
@@ -96,13 +96,16 @@ func (h *authUserHandler) Register(c *gin.Context) {
 			return
 		}
 
+		activationString := activation.New(*user).Generate(24)
+		log.Printf("activationString: %v\n", activationString)
+		activationToken := cryptos.New(h.infra.Cipher("encrypt")).Encrypt(activationString)
+		log.Printf("activationToken: %v\n", activationToken)
+
 		go func(user *model.User) {
-			activationString := activation.New(*user).Generate(24)
-			activationToken := cryptos.New(h.infra.Cipher("encrypt")).Encrypt(activationString)
 			config := h.infra.Config().Sub("server")
 			urlActivation := fmt.Sprintf("%s:%s/auth/activation?code=%s", config.GetString("url"), config.GetString("port"), activationToken)
 
-			if err := email.New(h.infra.GoMail()).SendActivation(user.FirstName, user.Email, urlActivation); err != nil {
+			if err := email.New(h.infra.GoMail(), h.infra.Config()).SendActivation(user.FirstName, user.Email, urlActivation); err != nil {
 				log.Printf("Error Send Email E: %v", err)
 			}
 		}(user)

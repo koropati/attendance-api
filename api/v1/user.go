@@ -47,7 +47,7 @@ func (h *userHandler) ListUser(c *gin.Context) {
 	// 	log.Printf("Error Send Email E: %v", err)
 	// }
 
-	if err := email.NewSendGrid(h.infra.SendGrid()).SendActivation("Dewok Satria", "windowsdewa@gmail.com", "ahikjdfahsjdha"); err != nil {
+	if err := email.NewSendGrid(h.infra.SendGrid(), h.infra.Config()).SendActivation("Dewok Satria", "windowsdewa@gmail.com", "ahikjdfahsjdha"); err != nil {
 		log.Printf("Error Send Email E: %v", err)
 	}
 

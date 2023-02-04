@@ -5,6 +5,7 @@ import (
 
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"github.com/spf13/viper"
 )
 
 type SendGrid interface {
@@ -13,10 +14,14 @@ type SendGrid interface {
 
 type sendGrid struct {
 	client *sendgrid.Client
+	config *viper.Viper
 }
 
-func NewSendGrid(c *sendgrid.Client) SendGrid {
-	return &sendGrid{client: c}
+func NewSendGrid(c *sendgrid.Client, config *viper.Viper) SendGrid {
+	return &sendGrid{
+		client: c,
+		config: config,
+	}
 }
 
 func (c *sendGrid) SendActivation(toName string, toEmail string, token string) error {
@@ -28,7 +33,7 @@ func (c *sendGrid) SendActivation(toName string, toEmail string, token string) e
 	plainText := "Hello " + toName + ", please activate your account! Token : " + token
 	htmlText := ""
 
-	from := mail.NewEmail(CONFIG_SENDER_NAME, CONFIG_SENDER_EMAIL)
+	from := mail.NewEmail(c.config.Sub("general").GetString("company_name"), c.config.Sub("general").GetString("company_email"))
 
 	to := mail.NewEmail(toName, toEmail)
 	message := mail.NewSingleEmail(from, subject, to, plainText, htmlText)
