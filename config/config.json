@@ -1,0 +1,29 @@
+{
+    "environment": {
+        "mode": "development"
+    },
+    "server" : {
+        "url":"http://localhost",
+        "port": 3000
+    },
+    "database": {
+        "host": "localhost",
+        "port": "3306",
+        "user": "root",
+        "pass": "admin",
+        "name": "wokdev_api"
+    },
+    "smtp": {
+        "host": "smtp-relay.sendinblue.com",
+        "port": 587,
+        "user": "dewa.ketut.satriawan@gmail.com",
+        "pass": "DhKWOBVjStUn492g",
+        "encryption": "tls"
+    },
+    "secret": {
+        "key": "v3ry53cr3tk3yk3yNieh!",
+        "crypto": "4YaM60r3ng3n4KL0"
+    },
+    "access_token_expired": 2,
+    "refresh_token_expired": 420
+}
