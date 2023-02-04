@@ -17,16 +17,29 @@ type GormCustom struct {
 
 type User struct {
 	GormCustom
-	Username  string    `json:"username" gorm:"unique"`
-	Password  string    `json:"password"`
-	Name      string    `json:"name"`
-	Handphone string    `json:"handphone" gorm:"unique"`
-	Email     string    `json:"email" gorm:"unique"`
-	Intro     string    `json:"intro" gorm:"type:varchar(255)"`
-	Profile   string    `json:"profile" gorm:"type:varchar(255)"`
-	LastLogin time.Time `json:"last_login"`
-	Role      string    `json:"role" gorm:"type:enum('super_admin','admin','editor','user');default:'user'"`
-	IsActive  bool      `json:"is_active"`
+	Username     string    `json:"username" gorm:"unique"`
+	Password     string    `json:"password"`
+	FirstName    string    `json:"first_name"`
+	LastName     string    `json:"last_name"`
+	Handphone    string    `json:"handphone" gorm:"unique"`
+	Email        string    `json:"email" gorm:"unique"`
+	Intro        string    `json:"intro" gorm:"type:varchar(255)"`
+	Profile      string    `json:"profile" gorm:"type:varchar(255)"`
+	IsActive     bool      `json:"is_active"`
+	IsSuperAdmin bool      `json:"is_super_admin"`
+	IsAdmin      bool      `json:"is_admin"`
+	IsUser       bool      `json:"is_user"`
+	LastLogin    time.Time `json:"last_login"`
+}
+
+// username string, email string, isSuperAdmin bool, isAdmin bool, isUser bool, expired int
+type UserTokenPayload struct {
+	Username     string `json:"username"`
+	Email        string `json:"email"`
+	IsSuperAdmin bool   `json:"is_super_admin"`
+	IsAdmin      bool   `json:"is_admin"`
+	IsUser       bool   `json:"is_user"`
+	Expired      int    `json:"expired"`
 }
 
 type Login struct {

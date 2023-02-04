@@ -21,9 +21,9 @@ func TestCreateUser(testCreate *testing.T) {
 	testCreate.Run("test normal case repo create user", func(testCreate *testing.T) {
 		gormDB, mockCreate := MockGormDB()
 
-		queryCreate := "INSERT INTO `users` (`created_at`,`updated_at`,`deleted_at`,`created_by`,`updated_by`,`deleted_by`,`username`,`password`,`name`,`handphone`,`email`,`intro`,`profile`,`last_login`,`role`,`is_active`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+		queryCreate := "INSERT INTO `users` (`created_at`,`updated_at`,`deleted_at`,`created_by`,`updated_by`,`deleted_by`,`username`,`password`,`first_name`,`first_name`,`handphone`,`email`,`intro`,`profile`,`last_login`,`is_super_admin`,`is_active`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 		mockCreate.ExpectExec(queryCreate).
-			WithArgs(AnyTime{}, AnyTime{}, u.DeletedAt, 1, u.UpdatedBy, u.DeletedBy, u.Username, u.Password, u.Name, u.Handphone, u.Email, u.Intro, u.Profile, sqlmock.AnyArg(), u.Role, false).
+			WithArgs(AnyTime{}, AnyTime{}, u.DeletedAt, 1, u.UpdatedBy, u.DeletedBy, u.Username, u.Password, u.FirstName, u.LastName, u.Handphone, u.Email, u.Intro, u.Profile, sqlmock.AnyArg(), u.IsSuperAdmin, false).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		userRepo := repo.NewUserRepo(gormDB)
@@ -38,9 +38,9 @@ func TestCreateUser(testCreate *testing.T) {
 func TestUpdateUser(testUpdate *testing.T) {
 	testUpdate.Run("test normal case repo update", func(testUpdate *testing.T) {
 		gormDB, mockUpdate := MockGormDB()
-		queryUpdate := "UPDATE `users` SET `created_at`=?,`updated_at`=?,`created_by`=?,`username`=?,`password`=?,`name`=?,`handphone`=?,`email`=?,`intro`=?,`profile`=?,`role`=? WHERE id = ?"
+		queryUpdate := "UPDATE `users` SET `created_at`=?,`updated_at`=?,`created_by`=?,`username`=?,`password`=?,`first_name`=?,`last_name`=?,`handphone`=?,`email`=?,`intro`=?,`profile`=?,`is_super_admin`=? WHERE id = ?"
 		mockUpdate.ExpectExec(queryUpdate).
-			WithArgs(AnyTime{}, AnyTime{}, 1, u.Username, u.Password, u.Name, u.Handphone, u.Email, u.Intro, u.Profile, u.Role, 1).
+			WithArgs(AnyTime{}, AnyTime{}, 1, u.Username, u.Password, u.FirstName, u.LastName, u.Handphone, u.Email, u.Intro, u.Profile, u.IsSuperAdmin, 1).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		userRepo := repo.NewUserRepo(gormDB)
@@ -56,9 +56,9 @@ func TestListUser(t *testing.T) {
 	t.Run("test normal case repo list user", func(t *testing.T) {
 		gormDB, mock := MockGormDB()
 
-		queryList := "SELECT * FROM `users` WHERE username LIKE ? AND name LIKE ? AND handphone LIKE ? AND email LIKE ? AND role LIKE ? ORDER BY created_at asc LIMIT 2"
+		queryList := "SELECT * FROM `users` WHERE username LIKE ? AND first_name LIKE ? AND last_name LIKE ? AND handphone LIKE ? AND email LIKE ? AND is_super_admin LIKE ? ORDER BY created_at asc LIMIT 2"
 		mock.ExpectQuery(queryList).
-			WithArgs("%"+u.Username+"%", "%"+u.Name+"%", "%"+u.Handphone+"%", "%"+u.Email+"%", "%"+u.Role+"%").
+			WithArgs("%"+u.Username+"%", "%"+u.FirstName+"%", "%"+u.LastName+"%", "%"+u.Handphone+"%", "%"+u.Email+"%", u.IsSuperAdmin).
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		userRepo := repo.NewUserRepo(gormDB)
@@ -74,9 +74,9 @@ func TestListUserMeta(t *testing.T) {
 	t.Run("test normal case repo list user meta", func(t *testing.T) {
 		gormDB, mock := MockGormDB()
 
-		queryListMeta := "SELECT count(*) FROM `users` WHERE username LIKE ? AND name LIKE ? AND handphone LIKE ? AND email LIKE ? AND role LIKE ?"
+		queryListMeta := "SELECT count(*) FROM `users` WHERE username LIKE ? AND first_name LIKE ? AND last_name LIKE ? AND handphone LIKE ? AND email LIKE ? AND is_super_admin LIKE ?"
 		mock.ExpectQuery(queryListMeta).
-			WithArgs("%"+u.Username+"%", "%"+u.Name+"%", "%"+u.Handphone+"%", "%"+u.Email+"%", "%"+u.Role+"%").
+			WithArgs("%"+u.Username+"%", "%"+u.FirstName+"%", "%"+u.LastName+"%", "%"+u.Handphone+"%", "%"+u.Email+"%", u.IsSuperAdmin).
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		userRepo := repo.NewUserRepo(gormDB)

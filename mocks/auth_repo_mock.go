@@ -43,12 +43,36 @@ func (m *AuthRepoMock) CheckIsActive(username string) bool {
 	return true
 }
 
-func (m *AuthRepoMock) GetRole(username string) (string, error) {
+func (m *AuthRepoMock) IsSuperAdmin(username string) (bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
-		return "", err
+		return false, err
 	}
 
-	return "user", nil
+	return true, nil
+}
+
+func (m *AuthRepoMock) IsAdmin(username string) (bool, error) {
+	if err := m.Called(username).Error(0); err != nil {
+		return false, err
+	}
+
+	return false, nil
+}
+
+func (m *AuthRepoMock) IsUser(username string) (bool, error) {
+	if err := m.Called(username).Error(0); err != nil {
+		return false, err
+	}
+
+	return false, nil
+}
+
+func (m *AuthRepoMock) GetRole(username string) (bool, bool, bool, error) {
+	if err := m.Called(username).Error(0); err != nil {
+		return false, false, false, err
+	}
+
+	return true, false, false, nil
 }
 
 func (m *AuthRepoMock) GetEmail(username string) (string, error) {
@@ -92,12 +116,15 @@ func (m *AuthRepoMock) GetByUsername(username string) (data *model.User, err err
 	data.Email = "dewok@gmail.com"
 	data.CreatedAt = time.Now()
 	data.UpdatedAt = time.Now()
-	data.Name = "Dewok Satria"
-	data.IsActive = true
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
 	data.Username = "dewoklucu"
 	data.Handphone = "098121342"
-	data.Role = "user"
 	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
 
 	return data, nil
 }
@@ -111,12 +138,15 @@ func (m *AuthRepoMock) GetByEmail(email string) (data *model.User, err error) {
 	data.Email = "dewok@gmail.com"
 	data.CreatedAt = time.Now()
 	data.UpdatedAt = time.Now()
-	data.Name = "Dewok Satria"
-	data.IsActive = true
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
 	data.Username = "dewoklucu"
 	data.Handphone = "098121342"
-	data.Role = "user"
 	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
 
 	return data, nil
 }

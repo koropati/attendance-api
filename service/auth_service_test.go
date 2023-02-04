@@ -12,10 +12,13 @@ import (
 )
 
 var u = model.User{
-	Username:  "erwindo",
-	Password:  "password",
-	Name:      "Erwindo Sianipar",
-	Handphone: "082340803646",
+	Username:     "dewokdewok",
+	Password:     "password",
+	FirstName:    "DewokDewok",
+	LastName:     "Satria",
+	Handphone:    "082340803646",
+	IsActive:     true,
+	IsSuperAdmin: true,
 }
 
 var p = model.Pagination{
@@ -52,18 +55,52 @@ func TestCheckHandphone(t *testing.T) {
 	})
 }
 
-func TestGetRole(t *testing.T) {
+func TestIsSuperAdmin(t *testing.T) {
 	role := "user"
 
-	t.Run("test normal case service get role", func(t *testing.T) {
+	t.Run("test normal case service is super admin", func(t *testing.T) {
 		authRepoMock := new(mocks.AuthRepoMock)
-		authRepoMock.On("GetRole", mock.AnythingOfType("string")).Return(nil)
+		authRepoMock.On("IsSuperAdmin", mock.AnythingOfType("string")).Return(nil)
 
 		authService := service.NewAuthService(authRepoMock)
-		dataRole, err := authService.GetRole(u.Username)
+		dataRole, err := authService.IsSuperAdmin(u.Username)
 		assert.NoError(t, err)
 
-		t.Run("test get stored role by username", func(t *testing.T) {
+		t.Run("test get stored is super admin by username", func(t *testing.T) {
+			assert.Equal(t, role, dataRole)
+		})
+	})
+}
+
+func TestIsAdmin(t *testing.T) {
+	role := "user"
+
+	t.Run("test normal case service is admin", func(t *testing.T) {
+		authRepoMock := new(mocks.AuthRepoMock)
+		authRepoMock.On("IsAdmin", mock.AnythingOfType("string")).Return(nil)
+
+		authService := service.NewAuthService(authRepoMock)
+		dataRole, err := authService.IsAdmin(u.Username)
+		assert.NoError(t, err)
+
+		t.Run("test get stored is admin by username", func(t *testing.T) {
+			assert.Equal(t, role, dataRole)
+		})
+	})
+}
+
+func TestIsUser(t *testing.T) {
+	role := "user"
+
+	t.Run("test normal case service is user", func(t *testing.T) {
+		authRepoMock := new(mocks.AuthRepoMock)
+		authRepoMock.On("IsUser", mock.AnythingOfType("string")).Return(nil)
+
+		authService := service.NewAuthService(authRepoMock)
+		dataRole, err := authService.IsUser(u.Username)
+		assert.NoError(t, err)
+
+		t.Run("test get stored is user by username", func(t *testing.T) {
 			assert.Equal(t, role, dataRole)
 		})
 	})

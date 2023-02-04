@@ -11,11 +11,8 @@ func main() {
 	i.SetMode()
 	i.Migrate(
 		&model.User{},
-		&model.Category{},
-		&model.Tag{},
-		&model.Post{},
-		&model.PostMeta{},
-		&model.Comment{},
+		&model.Subject{},
+		&model.Schedule{},
 	)
 
 	api.NewServer(i).Run()

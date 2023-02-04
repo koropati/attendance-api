@@ -11,7 +11,10 @@ type AuthRepo interface {
 	CheckEmail(email string) bool
 	CheckHandphone(handphone string) bool
 	CheckIsActive(username string) bool
-	GetRole(username string) (string, error)
+	IsSuperAdmin(username string) (bool, error)
+	IsAdmin(username string) (bool, error)
+	IsUser(username string) (bool, error)
+	GetRole(username string) (bool, bool, bool, error)
 	GetEmail(username string) (string, error)
 	Register(user *model.User) error
 	Login(username string) (string, error)
@@ -77,13 +80,40 @@ func (r *authRepo) CheckIsActive(username string) bool {
 	return user.IsActive
 }
 
-func (r *authRepo) GetRole(username string) (string, error) {
+func (r *authRepo) IsSuperAdmin(username string) (bool, error) {
 	var user model.User
 	if err := r.db.Table("users").Where("username = ?", username).First(&user).Error; err != nil {
-		return "", err
+		return false, err
 	}
 
-	return user.Role, nil
+	return user.IsSuperAdmin, nil
+}
+
+func (r *authRepo) IsAdmin(username string) (bool, error) {
+	var user model.User
+	if err := r.db.Table("users").Where("username = ?", username).First(&user).Error; err != nil {
+		return false, err
+	}
+
+	return user.IsAdmin, nil
+}
+
+func (r *authRepo) IsUser(username string) (bool, error) {
+	var user model.User
+	if err := r.db.Table("users").Where("username = ?", username).First(&user).Error; err != nil {
+		return false, err
+	}
+
+	return user.IsUser, nil
+}
+
+func (r *authRepo) GetRole(username string) (bool, bool, bool, error) {
+	var user model.User
+	if err := r.db.Table("users").Where("username = ?", username).First(&user).Error; err != nil {
+		return false, false, false, err
+	}
+
+	return user.IsSuperAdmin, user.IsAdmin, user.IsUser, nil
 }
 
 func (r *authRepo) GetEmail(username string) (string, error) {

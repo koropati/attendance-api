@@ -1,6 +1,7 @@
 package token
 
 import (
+	"attendance-api/model"
 	"fmt"
 	"strconv"
 	"time"
@@ -10,8 +11,8 @@ import (
 )
 
 type Token interface {
-	GenerateToken(username string, email string, role string, expired int) (expiredDate int64, tokenData string)
-	GenerateRefreshToken(username string, expired int) (expiredDate int64, tokenData string)
+	GenerateToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string)
+	GenerateRefreshToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string)
 	ValidateToken(token string) (*jwt.Token, error)
 	ValidateRefreshToken(token string) (*jwt.Token, error)
 }
@@ -25,10 +26,12 @@ func NewToken(secretKey string) Token {
 }
 
 type authClaims struct {
-	Username string `json:"username"`
-	Role     string `json:"role"`
-	Email    string `json:"email"`
-	Expired  string `json:"expired"`
+	Username     string `json:"username"`
+	IsSuperAdmin bool   `json:"is_Super_admin"`
+	IsAdmin      bool   `json:"is_admin"`
+	IsUser       bool   `json:"is_user"`
+	Email        string `json:"email"`
+	Expired      string `json:"expired"`
 	jwt.StandardClaims
 }
 
@@ -38,12 +41,14 @@ type refreshClaims struct {
 	jwt.StandardClaims
 }
 
-func (t *token) GenerateToken(username string, email string, role string, expired int) (expiredDate int64, tokenData string) {
-	expiredTime := time.Now().Add(time.Minute * time.Duration(expired)).Unix()
+func (t *token) GenerateToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string) {
+	expiredTime := time.Now().Add(time.Minute * time.Duration(data.Expired)).Unix()
 	claims := &authClaims{
-		username,
-		role,
-		email,
+		data.Username,
+		data.IsSuperAdmin,
+		data.IsAdmin,
+		data.IsUser,
+		data.Email,
 		strconv.FormatInt(expiredTime, 10),
 		jwt.StandardClaims{},
 	}
@@ -66,10 +71,10 @@ func (t *token) ValidateToken(encodedToken string) (*jwt.Token, error) {
 	})
 }
 
-func (t *token) GenerateRefreshToken(username string, expired int) (expiredDate int64, tokenData string) {
-	expiredTime := time.Now().Add(time.Minute * time.Duration(expired)).Unix()
+func (t *token) GenerateRefreshToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string) {
+	expiredTime := time.Now().Add(time.Minute * time.Duration(data.Expired)).Unix()
 	claims := &refreshClaims{
-		username,
+		data.Username,
 		strconv.FormatInt(expiredTime, 10),
 		jwt.StandardClaims{},
 	}

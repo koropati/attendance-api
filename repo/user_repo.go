@@ -107,8 +107,11 @@ func FilterUser(query *gorm.DB, user *model.User) *gorm.DB {
 	if user.Username != "" {
 		query = query.Where("username LIKE ?", "%"+user.Username+"%")
 	}
-	if user.Name != "" {
-		query = query.Where("name LIKE ?", "%"+user.Name+"%")
+	if user.FirstName != "" {
+		query = query.Where("first_name LIKE ?", "%"+user.FirstName+"%")
+	}
+	if user.LastName != "" {
+		query = query.Where("last_name LIKE ?", "%"+user.LastName+"%")
 	}
 	if user.Handphone != "" {
 		query = query.Where("handphone LIKE ?", "%"+user.Handphone+"%")
@@ -116,8 +119,6 @@ func FilterUser(query *gorm.DB, user *model.User) *gorm.DB {
 	if user.Email != "" {
 		query = query.Where("email LIKE ?", "%"+user.Email+"%")
 	}
-	if user.Role != "" {
-		query = query.Where("role LIKE ?", "%"+user.Role+"%")
-	}
+
 	return query
 }

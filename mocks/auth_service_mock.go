@@ -43,12 +43,36 @@ func (m *AuthServiceMock) CheckIsActive(username string) bool {
 	return true
 }
 
-func (m *AuthServiceMock) GetRole(username string) (string, error) {
+func (m *AuthServiceMock) IsSuperAdmin(username string) (bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
-		return "", err
+		return false, err
 	}
 
-	return "user", nil
+	return true, nil
+}
+
+func (m *AuthServiceMock) IsAdmin(username string) (bool, error) {
+	if err := m.Called(username).Error(0); err != nil {
+		return false, err
+	}
+
+	return false, nil
+}
+
+func (m *AuthServiceMock) IsUser(username string) (bool, error) {
+	if err := m.Called(username).Error(0); err != nil {
+		return false, err
+	}
+
+	return false, nil
+}
+
+func (m *AuthServiceMock) GetRole(username string) (bool, bool, bool, error) {
+	if err := m.Called(username).Error(0); err != nil {
+		return false, false, false, err
+	}
+
+	return true, false, false, nil
 }
 
 func (m *AuthServiceMock) GetEmail(username string) (string, error) {
@@ -92,12 +116,15 @@ func (m *AuthServiceMock) GetByUsername(username string) (data *model.User, err 
 	data.Email = "dewok@gmail.com"
 	data.CreatedAt = time.Now()
 	data.UpdatedAt = time.Now()
-	data.Name = "Dewok Satria"
-	data.IsActive = true
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
 	data.Username = "dewoklucu"
 	data.Handphone = "098121342"
-	data.Role = "user"
 	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
 
 	return data, nil
 }
@@ -111,12 +138,15 @@ func (m *AuthServiceMock) GetByEmail(email string) (data *model.User, err error)
 	data.Email = "dewok@gmail.com"
 	data.CreatedAt = time.Now()
 	data.UpdatedAt = time.Now()
-	data.Name = "Dewok Satria"
-	data.IsActive = true
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
 	data.Username = "dewoklucu"
 	data.Handphone = "098121342"
-	data.Role = "user"
 	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
 
 	return data, nil
 }

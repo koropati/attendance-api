@@ -64,7 +64,7 @@ func (h *authUserHandler) Register(c *gin.Context) {
 		return
 	}
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
+	if err := validation.Validate(data.FirstName, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
 		return
 	}
@@ -102,7 +102,7 @@ func (h *authUserHandler) Register(c *gin.Context) {
 			config := h.infra.Config().Sub("server")
 			urlActivation := fmt.Sprintf("%s:%s/auth/activation?code=%s", config.GetString("url"), config.GetString("port"), activationToken)
 
-			if err := email.New(h.infra.GoMail()).SendActivation(user.Name, user.Email, urlActivation); err != nil {
+			if err := email.New(h.infra.GoMail()).SendActivation(user.FirstName, user.Email, urlActivation); err != nil {
 				log.Printf("Error Send Email E: %v", err)
 			}
 		}(user)
@@ -144,9 +144,9 @@ func (h *authUserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	role, err := h.authService.GetRole(data.Username)
+	isSuper, isAdmin, isUser, err := h.authService.GetRole(data.Username)
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("role: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("err: %v", err))
 		return
 	}
 
@@ -156,8 +156,23 @@ func (h *authUserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(data.Username, email, role, h.infra.Config().GetInt("access_token_expired"))
-	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(data.Username, h.infra.Config().GetInt("refresh_token_expired"))
+	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(
+		&model.UserTokenPayload{
+			Username:     data.Username,
+			IsSuperAdmin: isSuper,
+			IsAdmin:      isAdmin,
+			IsUser:       isUser,
+			Email:        email,
+			Expired:      h.infra.Config().GetInt("access_token_expired"),
+		},
+	)
+
+	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(
+		&model.UserTokenPayload{
+			Username: data.Username,
+			Expired:  h.infra.Config().GetInt("refresh_token_expired"),
+		},
+	)
 	dataOutput := map[string]interface{}{
 		"access_token":          accessToken,
 		"expired_access_token":  expired,
@@ -186,8 +201,23 @@ func (h *authUserHandler) Refresh(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(user.Username, user.Email, user.Role, h.infra.Config().GetInt("access_token_expired"))
-	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(user.Username, h.infra.Config().GetInt("refresh_token_expired"))
+
+	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(
+		&model.UserTokenPayload{
+			Username:     user.Username,
+			IsSuperAdmin: user.IsSuperAdmin,
+			IsAdmin:      user.IsAdmin,
+			IsUser:       user.IsUser,
+			Email:        user.Email,
+			Expired:      h.infra.Config().GetInt("access_token_expired"),
+		},
+	)
+	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(
+		&model.UserTokenPayload{
+			Username: user.Username,
+			Expired:  h.infra.Config().GetInt("refresh_token_expired"),
+		},
+	)
 	dataOutput := map[string]interface{}{
 		"access_token":          accessToken,
 		"expired_access_token":  expired,
@@ -216,8 +246,8 @@ func (h *authUserHandler) Create(c *gin.Context) {
 		return
 	}
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+	if err := validation.Validate(data.FirstName, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("first_name: %v", err))
 		return
 	}
 

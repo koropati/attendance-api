@@ -26,17 +26,20 @@ func (m *UserRepoMock) ListUser(user *model.User, pagination *model.Pagination) 
 			UpdatedAt: dateTimeData,
 		}
 		userData := model.User{
-			GormCustom: gormData,
-			Username:   "windowsdewa" + strconv.Itoa(i),
-			Password:   "Password123",
-			Name:       "Dewok Satria " + strconv.Itoa(i),
-			Handphone:  "08122233344" + strconv.Itoa(i),
-			Email:      "windowsdewa" + strconv.Itoa(i) + ".com",
-			Intro:      "Hay guysss",
-			Profile:    "My Name is Dewok " + strconv.Itoa(i),
-			LastLogin:  dateTimeData,
-			Role:       "user",
-			IsActive:   true,
+			GormCustom:   gormData,
+			Username:     "windowsdewa" + strconv.Itoa(i),
+			Password:     "Password123",
+			FirstName:    "Dewok",
+			LastName:     "Satria " + strconv.Itoa(i),
+			Handphone:    "08122233344" + strconv.Itoa(i),
+			Email:        "windowsdewa" + strconv.Itoa(i) + ".com",
+			Intro:        "Hay guysss",
+			Profile:      "My Name is Dewok " + strconv.Itoa(i),
+			LastLogin:    dateTimeData,
+			IsActive:     true,
+			IsSuperAdmin: true,
+			IsAdmin:      false,
+			IsUser:       false,
 		}
 		users = append(users, userData)
 	}
@@ -71,17 +74,20 @@ func (m *UserRepoMock) CreateUser(user *model.User) (*model.User, error) {
 	}
 
 	userData := model.User{
-		GormCustom: gormData,
-		Username:   "windowsdewa",
-		Password:   "Password123",
-		Name:       "Dewok Satria",
-		Handphone:  "081222333440",
-		Email:      "windowsdewa.com",
-		Intro:      "Hay guysss",
-		Profile:    "My Name is Dewok ",
-		LastLogin:  dateTimeData,
-		Role:       "user",
-		IsActive:   true,
+		GormCustom:   gormData,
+		Username:     "windowsdewa",
+		Password:     "Password123",
+		FirstName:    "Dewok",
+		LastName:     "Satria",
+		Handphone:    "081222333440",
+		Email:        "windowsdewa.com",
+		Intro:        "Hay guysss",
+		Profile:      "My Name is Dewok ",
+		LastLogin:    dateTimeData,
+		IsActive:     true,
+		IsSuperAdmin: true,
+		IsAdmin:      false,
+		IsUser:       false,
 	}
 
 	return &userData, nil
@@ -101,17 +107,20 @@ func (m *UserRepoMock) UpdateUser(id int, user *model.User) (*model.User, error)
 	}
 
 	userData := model.User{
-		GormCustom: gormData,
-		Username:   "windowsdewau",
-		Password:   "Password123",
-		Name:       "Dewok Satria Update",
-		Handphone:  "081222333440",
-		Email:      "windowsdewa.com",
-		Intro:      "Hay guysss",
-		Profile:    "My Name is Dewok ",
-		LastLogin:  dateTimeData,
-		Role:       "user",
-		IsActive:   true,
+		GormCustom:   gormData,
+		Username:     "windowsdewa",
+		Password:     "Password123",
+		FirstName:    "Dewok",
+		LastName:     "Satria",
+		Handphone:    "081222333440",
+		Email:        "windowsdewa.com",
+		Intro:        "Hay guysss",
+		Profile:      "My Name is Dewok ",
+		LastLogin:    dateTimeData,
+		IsActive:     true,
+		IsSuperAdmin: true,
+		IsAdmin:      false,
+		IsUser:       false,
 	}
 
 	return &userData, nil
@@ -138,17 +147,20 @@ func (m *UserRepoMock) SetActiveUser(id int) (*model.User, error) {
 	}
 
 	userData := model.User{
-		GormCustom: gormData,
-		Username:   "windowsdewau",
-		Password:   "Password123",
-		Name:       "Dewok Satria Update",
-		Handphone:  "081222333440",
-		Email:      "windowsdewa.com",
-		Intro:      "Hay guysss",
-		Profile:    "My Name is Dewok ",
-		LastLogin:  dateTimeData,
-		Role:       "user",
-		IsActive:   true,
+		GormCustom:   gormData,
+		Username:     "windowsdewa",
+		Password:     "Password123",
+		FirstName:    "Dewok",
+		LastName:     "Satria",
+		Handphone:    "081222333440",
+		Email:        "windowsdewa.com",
+		Intro:        "Hay guysss",
+		Profile:      "My Name is Dewok ",
+		LastLogin:    dateTimeData,
+		IsActive:     true,
+		IsSuperAdmin: true,
+		IsAdmin:      false,
+		IsUser:       false,
 	}
 
 	return &userData, nil
@@ -168,17 +180,20 @@ func (m *UserRepoMock) SetDeactiveUser(id int) (*model.User, error) {
 	}
 
 	userData := model.User{
-		GormCustom: gormData,
-		Username:   "windowsdewau",
-		Password:   "Password123",
-		Name:       "Dewok Satria Update",
-		Handphone:  "081222333440",
-		Email:      "windowsdewa.com",
-		Intro:      "Hay guysss",
-		Profile:    "My Name is Dewok ",
-		LastLogin:  dateTimeData,
-		Role:       "user",
-		IsActive:   false,
+		GormCustom:   gormData,
+		Username:     "windowsdewa",
+		Password:     "Password123",
+		FirstName:    "Dewok",
+		LastName:     "Satria",
+		Handphone:    "081222333440",
+		Email:        "windowsdewa.com",
+		Intro:        "Hay guysss",
+		Profile:      "My Name is Dewok ",
+		LastLogin:    dateTimeData,
+		IsActive:     true,
+		IsSuperAdmin: true,
+		IsAdmin:      false,
+		IsUser:       false,
 	}
 
 	return &userData, nil

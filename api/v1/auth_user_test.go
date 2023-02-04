@@ -22,7 +22,8 @@ var mockUser = model.User{
 	Email:     "dewok@gmail.com",
 	Username:  "dewok",
 	Password:  "password",
-	Name:      "Erwindo Sianipar",
+	FirstName: "Dewok",
+	LastName:  "Satria",
 	Handphone: "082340803646",
 }
 

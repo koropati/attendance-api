@@ -10,7 +10,10 @@ type AuthService interface {
 	CheckEmail(email string) bool
 	CheckHandphone(handphone string) bool
 	CheckIsActive(username string) bool
-	GetRole(username string) (string, error)
+	IsSuperAdmin(username string) (bool, error)
+	IsAdmin(username string) (bool, error)
+	IsUser(username string) (bool, error)
+	GetRole(username string) (bool, bool, bool, error)
 	GetEmail(username string) (string, error)
 	Register(user *model.User) error
 	Login(username string) (string, error)
@@ -45,12 +48,36 @@ func (s *authService) CheckIsActive(username string) bool {
 	return s.authRepo.CheckIsActive(username)
 }
 
-func (s *authService) GetRole(username string) (string, error) {
-	role, err := s.authRepo.GetRole(username)
+func (s *authService) IsSuperAdmin(username string) (bool, error) {
+	isSuperAdmin, err := s.authRepo.IsSuperAdmin(username)
 	if err != nil {
-		return "", err
+		return false, err
 	}
-	return role, nil
+	return isSuperAdmin, nil
+}
+
+func (s *authService) IsAdmin(username string) (bool, error) {
+	isAdmin, err := s.authRepo.IsAdmin(username)
+	if err != nil {
+		return false, err
+	}
+	return isAdmin, nil
+}
+
+func (s *authService) IsUser(username string) (bool, error) {
+	isUser, err := s.authRepo.IsUser(username)
+	if err != nil {
+		return false, err
+	}
+	return isUser, nil
+}
+
+func (s *authService) GetRole(username string) (bool, bool, bool, error) {
+	isSuper, isAdmin, isUser, err := s.authRepo.GetRole(username)
+	if err != nil {
+		return false, false, false, err
+	}
+	return isSuper, isAdmin, isUser, nil
 }
 
 func (s *authService) GetEmail(username string) (string, error) {

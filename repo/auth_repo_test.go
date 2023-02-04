@@ -14,16 +14,19 @@ import (
 )
 
 var u = model.User{
-	GormCustom: gormCustom,
-	Username:   "dewok2121",
-	Password:   "password",
-	Name:       "Dewok Satria",
-	Email:      "dewoksatria@gmail.com",
-	Handphone:  "088823232",
-	Role:       "user",
-	IsActive:   false,
-	Intro:      "hey ini intro",
-	Profile:    "hey ini profile",
+	GormCustom:   gormCustom,
+	Username:     "windowsdewa",
+	Password:     "Password123",
+	FirstName:    "Dewok",
+	LastName:     "Satria",
+	Handphone:    "081222333440",
+	Email:        "windowsdewa.com",
+	Intro:        "Hay guysss",
+	Profile:      "My Name is Dewok ",
+	IsActive:     true,
+	IsSuperAdmin: true,
+	IsAdmin:      false,
+	IsUser:       false,
 }
 
 var pagination = model.Pagination{
@@ -73,9 +76,9 @@ func TestRegister(t *testing.T) {
 	t.Run("test normal case repo register", func(t *testing.T) {
 		gormDB, mock := MockGormDB()
 
-		q := "INSERT INTO `users` (`created_at`,`updated_at`,`deleted_at`,`username`,`password`,`name`,`email`,`habdphone`) VALUES (?,?,?,?,?,?,?,?)"
+		q := "INSERT INTO `users` (`created_at`,`updated_at`,`deleted_at`,`username`,`password`,`first_name`,`last_name`,`email`,`habdphone`) VALUES (?,?,?,?,?,?,?,?,?)"
 		mock.ExpectExec(q).
-			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), u.DeletedAt, u.Username, u.Password, u.Name, u.Email, u.Handphone).
+			WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), u.DeletedAt, u.Username, u.Password, u.FirstName, u.LastName, u.Email, u.Handphone).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		authRepo := repo.NewAuthRepo(gormDB)
