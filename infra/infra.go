@@ -22,7 +22,7 @@ type Infra interface {
 	Config() *viper.Viper
 	SetMode() string
 	GormDB() *gorm.DB
-	Cipher(typeCrypto string) cipher.Stream
+	Cipher(typeCrypto string) (cipher.Stream, cipher.AEAD)
 	GoMail() *gomail.Dialer
 	SendGrid() *sendgrid.Client
 	Migrate(values ...interface{})
@@ -122,18 +122,34 @@ func (i *infra) GormDB() *gorm.DB {
 var (
 	myCryptoOnce sync.Once
 	myCrypto     cipher.Stream
+	myCryptoAES  cipher.AEAD
 )
 
-func (i *infra) Cipher(typeCrypto string) cipher.Stream {
+func (i *infra) Cipher(typeCrypto string) (cipher.Stream, cipher.AEAD) {
 	myCryptoOnce.Do(func() {
 		bytes := []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
 		secretKey := i.Config().Sub("secret")
 		keyCrypto := secretKey.GetString("crypto")
+		keyCrypto32 := secretKey.GetString("crypto32")
 
 		block, err := aes.NewCipher([]byte(keyCrypto))
 		if err != nil {
 			log.Printf("[Error][Initial Cipher] E: %v", err)
 		}
+
+		// AES256
+		block32, err := aes.NewCipher([]byte(keyCrypto32))
+		if err != nil {
+			log.Printf("[Error][Initial Cipher AES] E: %v", err)
+		}
+
+		aesGCM, err := cipher.NewGCM(block32)
+		if err != nil {
+			log.Printf("[Error][Initial Cipher] E: %v", err)
+		}
+		myCryptoAES = aesGCM
+		// End AES256
+
 		if typeCrypto == "encrypt" {
 			cfb := cipher.NewCFBEncrypter(block, bytes)
 			myCrypto = cfb
@@ -142,7 +158,7 @@ func (i *infra) Cipher(typeCrypto string) cipher.Stream {
 			myCrypto = cfb
 		}
 	})
-	return myCrypto
+	return myCrypto, myCryptoAES
 }
 
 var (

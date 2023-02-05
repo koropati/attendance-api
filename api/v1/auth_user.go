@@ -97,9 +97,9 @@ func (h *authUserHandler) Register(c *gin.Context) {
 		}
 
 		activationString := activation.New(*user).Generate(24)
-		log.Printf("activationString: %v\n", activationString)
-		activationToken := cryptos.New(h.infra.Cipher("encrypt")).Encrypt(activationString)
-		log.Printf("activationToken: %v\n", activationToken)
+		// log.Printf("activationString: %v\n", activationString)
+		activationToken := cryptos.New(h.infra.Cipher("encrypt")).EncryptAES256(activationString)
+		// log.Printf("activationToken: %v\n", activationToken)
 
 		go func(user *model.User) {
 			config := h.infra.Config().Sub("server")
