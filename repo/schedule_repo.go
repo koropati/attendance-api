@@ -117,5 +117,8 @@ func FilterSchedule(query *gorm.DB, schedule *model.Schedule) *gorm.DB {
 	if schedule.EndDate.String() != "" {
 		query = query.Where("end_date LIKE ?", "%"+schedule.EndDate.String()+"%")
 	}
+	if schedule.OwnerID > 0 {
+		query = query.Where("owner_id = ?", schedule.OwnerID)
+	}
 	return query
 }

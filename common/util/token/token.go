@@ -26,8 +26,9 @@ func NewToken(secretKey string) Token {
 }
 
 type authClaims struct {
+	UserID       uint   `json:"user_id"`
 	Username     string `json:"username"`
-	IsSuperAdmin bool   `json:"is_Super_admin"`
+	IsSuperAdmin bool   `json:"is_super_admin"`
 	IsAdmin      bool   `json:"is_admin"`
 	IsUser       bool   `json:"is_user"`
 	Email        string `json:"email"`
@@ -36,6 +37,7 @@ type authClaims struct {
 }
 
 type refreshClaims struct {
+	UserID   uint   `json:"user_id"`
 	Username string `json:"username"`
 	Expired  string `json:"expired"`
 	jwt.StandardClaims
@@ -44,6 +46,7 @@ type refreshClaims struct {
 func (t *token) GenerateToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string) {
 	expiredTime := time.Now().Add(time.Minute * time.Duration(data.Expired)).Unix()
 	claims := &authClaims{
+		data.UserID,
 		data.Username,
 		data.IsSuperAdmin,
 		data.IsAdmin,
@@ -74,6 +77,7 @@ func (t *token) ValidateToken(encodedToken string) (*jwt.Token, error) {
 func (t *token) GenerateRefreshToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string) {
 	expiredTime := time.Now().Add(time.Minute * time.Duration(data.Expired)).Unix()
 	claims := &refreshClaims{
+		data.UserID,
 		data.Username,
 		strconv.FormatInt(expiredTime, 10),
 		jwt.StandardClaims{},

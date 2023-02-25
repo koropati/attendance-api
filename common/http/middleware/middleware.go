@@ -19,6 +19,11 @@ type Middleware interface {
 	CORS() gin.HandlerFunc
 	AUTH() gin.HandlerFunc
 	SUPERADMIN() gin.HandlerFunc
+	ADMIN() gin.HandlerFunc
+	USER() gin.HandlerFunc
+	GetUserID(c *gin.Context) int
+	HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc
+	IsSuperAdmin(c *gin.Context) bool
 }
 
 type middleware struct {
@@ -70,9 +75,15 @@ func ValidateToken(m *middleware, c *gin.Context) (tokenData *jwt.Token, valid b
 	}
 }
 
-func ValidateRole(token *jwt.Token, role string) (valid bool, err error) {
+func ValidateRole(token *jwt.Token, roles ...string) (valid bool, err error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if claims["role"] == role {
+		for role := range roles {
+			if claims["role"] == role {
+				valid = true
+				break
+			}
+		}
+		if valid {
 			return true, nil
 		} else {
 			return false, errors.New("you can't access this")
@@ -119,7 +130,7 @@ func (m *middleware) ADMIN() gin.HandlerFunc {
 			response.New(c).Error(http.StatusUnauthorized, err)
 			c.Abort()
 		} else {
-			validRole, err := ValidateRole(token, "admin")
+			validRole, err := ValidateRole(token, "admin", "super_admin")
 			if !validRole && err != nil {
 				response.New(c).Error(http.StatusForbidden, err)
 				c.Abort()
@@ -155,12 +166,64 @@ func (m *middleware) USER() gin.HandlerFunc {
 			response.New(c).Error(http.StatusUnauthorized, err)
 			c.Abort()
 		} else {
-			validRole, err := ValidateRole(token, "user")
+			validRole, err := ValidateRole(token, "user", "admin", "super_admin")
 			if !validRole && err != nil {
 				response.New(c).Error(http.StatusForbidden, err)
 				c.Abort()
 			} else {
 				c.Next()
+			}
+		}
+	}
+}
+
+func (m *middleware) GetUserID(c *gin.Context) int {
+	token, validToken, err := ValidateToken(m, c)
+	if !validToken && err != nil {
+		return 0
+	} else {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			return claims["user_id"].(int)
+		} else {
+			return 0
+		}
+	}
+}
+
+func (m *middleware) IsSuperAdmin(c *gin.Context) bool {
+	token, validToken, err := ValidateToken(m, c)
+	if !validToken && err != nil {
+		return false
+	} else {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			return claims["is_super_admin"].(bool)
+		} else {
+			return false
+		}
+	}
+}
+
+func (m *middleware) HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token, validToken, err := ValidateToken(m, c)
+		if !validToken && err != nil {
+			response.New(c).Error(http.StatusUnauthorized, err)
+			c.Abort()
+		} else {
+			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+				if claims["is_super_admin"].(bool) {
+					c.Next()
+				} else {
+					if claims["user_id"].(int) == ownerID {
+						c.Next()
+					} else {
+						response.New(c).Error(http.StatusUnauthorized, err)
+						c.Abort()
+					}
+				}
+			} else {
+				response.New(c).Error(http.StatusUnauthorized, err)
+				c.Abort()
 			}
 		}
 	}

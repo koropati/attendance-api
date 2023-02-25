@@ -35,6 +35,7 @@ type User struct {
 
 // username string, email string, isSuperAdmin bool, isAdmin bool, isUser bool, expired int
 type UserTokenPayload struct {
+	UserID       uint   `json:"user_id"`
 	Username     string `json:"username"`
 	Email        string `json:"email"`
 	IsSuperAdmin bool   `json:"is_super_admin"`
