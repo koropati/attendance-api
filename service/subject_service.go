@@ -8,8 +8,11 @@ import (
 type SubjectService interface {
 	CreateSubject(subject *model.Subject) (*model.Subject, error)
 	RetrieveSubject(id int) (*model.Subject, error)
+	RetrieveSubjectByOwner(id int, ownerID int) (*model.Subject, error)
 	UpdateSubject(id int, subject *model.Subject) (*model.Subject, error)
+	UpdateSubjectByOwner(id int, ownerID int, subject *model.Subject) (*model.Subject, error)
 	DeleteSubject(id int) error
+	DeleteSubjectByOwner(id int, ownerID int) error
 	ListSubject(subject *model.Subject, pagination *model.Pagination) (*[]model.Subject, error)
 	ListSubjectMeta(subject *model.Subject, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSubject(subject *model.Subject) (*[]model.Subject, error)
@@ -39,6 +42,14 @@ func (s *subjectService) RetrieveSubject(id int) (*model.Subject, error) {
 	return data, nil
 }
 
+func (s *subjectService) RetrieveSubjectByOwner(id int, ownerID int) (*model.Subject, error) {
+	data, err := s.subjectRepo.RetrieveSubjectByOwner(id, ownerID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *subjectService) UpdateSubject(id int, subject *model.Subject) (*model.Subject, error) {
 	data, err := s.subjectRepo.UpdateSubject(id, subject)
 	if err != nil {
@@ -47,8 +58,24 @@ func (s *subjectService) UpdateSubject(id int, subject *model.Subject) (*model.S
 	return data, nil
 }
 
+func (s *subjectService) UpdateSubjectByOwner(id int, ownerID int, subject *model.Subject) (*model.Subject, error) {
+	data, err := s.subjectRepo.UpdateSubjectByOwner(id, ownerID, subject)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *subjectService) DeleteSubject(id int) error {
 	if err := s.subjectRepo.DeleteSubject(id); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func (s *subjectService) DeleteSubjectByOwner(id int, ownerID int) error {
+	if err := s.subjectRepo.DeleteSubjectByOwner(id, ownerID); err != nil {
 		return err
 	} else {
 		return nil

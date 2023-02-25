@@ -68,11 +68,19 @@ func (h *subjectHandler) Retrieve(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
 		return
 	}
-
-	result, err := h.subjectService.RetrieveSubject(id)
-	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, err)
-		return
+	var result *model.Subject
+	if h.middleware.IsSuperAdmin(c) {
+		result, err = h.subjectService.RetrieveSubject(id)
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+	} else {
+		result, err = h.subjectService.RetrieveSubjectByOwner(id, h.middleware.GetUserID(c))
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
 	}
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
