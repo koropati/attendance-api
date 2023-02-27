@@ -9,8 +9,11 @@ import (
 type ScheduleRepo interface {
 	CreateSchedule(schedule *model.Schedule) (*model.Schedule, error)
 	RetrieveSchedule(id int) (*model.Schedule, error)
+	RetrieveScheduleByOwner(id int, ownerID int) (*model.Schedule, error)
 	UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error)
+	UpdateScheduleByOwner(id int, ownerID int, schedule *model.Schedule) (*model.Schedule, error)
 	DeleteSchedule(id int) error
+	DeleteScheduleByOwner(id int, ownerID int) error
 	ListSchedule(schedule *model.Schedule, pagination *model.Pagination) (*[]model.Schedule, error)
 	ListScheduleMeta(schedule *model.Schedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error)
@@ -39,6 +42,14 @@ func (r *scheduleRepo) RetrieveSchedule(id int) (*model.Schedule, error) {
 	return &schedule, nil
 }
 
+func (r *scheduleRepo) RetrieveScheduleByOwner(id int, ownerID int) (*model.Schedule, error) {
+	var schedule model.Schedule
+	if err := r.db.Model(&model.Schedule{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&schedule).Error; err != nil {
+		return nil, err
+	}
+	return &schedule, nil
+}
+
 func (r *scheduleRepo) UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error) {
 	if err := r.db.Model(&model.Schedule{}).Where("id = ?", id).Updates(&schedule).Error; err != nil {
 		return nil, err
@@ -46,8 +57,22 @@ func (r *scheduleRepo) UpdateSchedule(id int, schedule *model.Schedule) (*model.
 	return schedule, nil
 }
 
+func (r *scheduleRepo) UpdateScheduleByOwner(id int, ownerID int, schedule *model.Schedule) (*model.Schedule, error) {
+	if err := r.db.Model(&model.Schedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&schedule).Error; err != nil {
+		return nil, err
+	}
+	return schedule, nil
+}
+
 func (r *scheduleRepo) DeleteSchedule(id int) error {
 	if err := r.db.Delete(&model.Schedule{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *scheduleRepo) DeleteScheduleByOwner(id int, ownerID int) error {
+	if err := r.db.Where("id = ? AND owner_id = ?", id, ownerID).Delete(&model.Schedule{}).Error; err != nil {
 		return err
 	}
 	return nil

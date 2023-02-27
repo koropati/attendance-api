@@ -8,8 +8,11 @@ import (
 type ScheduleService interface {
 	CreateSchedule(schedule *model.Schedule) (*model.Schedule, error)
 	RetrieveSchedule(id int) (*model.Schedule, error)
+	RetrieveScheduleByOwner(id int, ownerID int) (*model.Schedule, error)
 	UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error)
+	UpdateScheduleByOwner(id int, ownerID int, schedule *model.Schedule) (*model.Schedule, error)
 	DeleteSchedule(id int) error
+	DeleteScheduleByOwner(id int, ownerID int) error
 	ListSchedule(schedule *model.Schedule, pagination *model.Pagination) (*[]model.Schedule, error)
 	ListScheduleMeta(schedule *model.Schedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error)
@@ -39,6 +42,14 @@ func (s *scheduleService) RetrieveSchedule(id int) (*model.Schedule, error) {
 	return data, nil
 }
 
+func (s *scheduleService) RetrieveScheduleByOwner(id int, ownerID int) (*model.Schedule, error) {
+	data, err := s.scheduleRepo.RetrieveScheduleByOwner(id, ownerID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *scheduleService) UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error) {
 	data, err := s.scheduleRepo.UpdateSchedule(id, schedule)
 	if err != nil {
@@ -47,8 +58,24 @@ func (s *scheduleService) UpdateSchedule(id int, schedule *model.Schedule) (*mod
 	return data, nil
 }
 
+func (s *scheduleService) UpdateScheduleByOwner(id int, ownerID int, schedule *model.Schedule) (*model.Schedule, error) {
+	data, err := s.scheduleRepo.UpdateScheduleByOwner(id, ownerID, schedule)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *scheduleService) DeleteSchedule(id int) error {
 	if err := s.scheduleRepo.DeleteSchedule(id); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func (s *scheduleService) DeleteScheduleByOwner(id int, ownerID int) error {
+	if err := s.scheduleRepo.DeleteScheduleByOwner(id, ownerID); err != nil {
 		return err
 	} else {
 		return nil

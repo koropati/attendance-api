@@ -45,7 +45,7 @@ func (r *subjectRepo) RetrieveSubject(id int) (*model.Subject, error) {
 
 func (r *subjectRepo) RetrieveSubjectByOwner(id int, ownerID int) (*model.Subject, error) {
 	var subject model.Subject
-	if err := r.db.Model(&model.Subject{}).Where("id = ? AND owner_id = ?", id, ownerID).Error; err != nil {
+	if err := r.db.Model(&model.Subject{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&subject).Error; err != nil {
 		return nil, err
 	}
 	return &subject, nil

@@ -8,8 +8,11 @@ import (
 type UserScheduleService interface {
 	CreateUserSchedule(userschedule *model.UserSchedule) (*model.UserSchedule, error)
 	RetrieveUserSchedule(id int) (*model.UserSchedule, error)
+	RetrieveUserScheduleByOwner(id int, ownerID int) (*model.UserSchedule, error)
 	UpdateUserSchedule(id int, userschedule *model.UserSchedule) (*model.UserSchedule, error)
+	UpdateUserScheduleByOwner(id int, ownerID int, userschedule *model.UserSchedule) (*model.UserSchedule, error)
 	DeleteUserSchedule(id int) error
+	DeleteUserScheduleByOwner(id int, ownerID int) error
 	ListUserSchedule(userschedule *model.UserSchedule, pagination *model.Pagination) (*[]model.UserSchedule, error)
 	ListUserScheduleMeta(userschedule *model.UserSchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownUserSchedule(userschedule *model.UserSchedule) (*[]model.UserSchedule, error)
@@ -39,6 +42,14 @@ func (s *userScheduleService) RetrieveUserSchedule(id int) (*model.UserSchedule,
 	return data, nil
 }
 
+func (s *userScheduleService) RetrieveUserScheduleByOwner(id int, ownerID int) (*model.UserSchedule, error) {
+	data, err := s.userScheduleRepo.RetrieveUserScheduleByOwner(id, ownerID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *userScheduleService) UpdateUserSchedule(id int, userschedule *model.UserSchedule) (*model.UserSchedule, error) {
 	data, err := s.userScheduleRepo.UpdateUserSchedule(id, userschedule)
 	if err != nil {
@@ -47,8 +58,24 @@ func (s *userScheduleService) UpdateUserSchedule(id int, userschedule *model.Use
 	return data, nil
 }
 
+func (s *userScheduleService) UpdateUserScheduleByOwner(id int, ownerID int, userschedule *model.UserSchedule) (*model.UserSchedule, error) {
+	data, err := s.userScheduleRepo.UpdateUserScheduleByOwner(id, ownerID, userschedule)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *userScheduleService) DeleteUserSchedule(id int) error {
 	if err := s.userScheduleRepo.DeleteUserSchedule(id); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func (s *userScheduleService) DeleteUserScheduleByOwner(id int, ownerID int) error {
+	if err := s.userScheduleRepo.DeleteUserScheduleByOwner(id, ownerID); err != nil {
 		return err
 	} else {
 		return nil

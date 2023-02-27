@@ -9,8 +9,11 @@ import (
 type DailyScheduleRepo interface {
 	CreateDailySchedule(dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
 	RetrieveDailySchedule(id int) (*model.DailySchedule, error)
+	RetrieveDailyScheduleByOwner(id int, ownerID int) (*model.DailySchedule, error)
 	UpdateDailySchedule(id int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
+	UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
 	DeleteDailySchedule(id int) error
+	DeleteDailyScheduleByOwner(id int, ownerID int) error
 	ListDailySchedule(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*[]model.DailySchedule, error)
 	ListDailyScheduleMeta(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownDailySchedule(dailyschedule *model.DailySchedule) (*[]model.DailySchedule, error)
@@ -39,6 +42,14 @@ func (r *dailyScheduleRepo) RetrieveDailySchedule(id int) (*model.DailySchedule,
 	return &dailyschedule, nil
 }
 
+func (r *dailyScheduleRepo) RetrieveDailyScheduleByOwner(id int, ownerID int) (*model.DailySchedule, error) {
+	var dailyschedule model.DailySchedule
+	if err := r.db.Model(&model.DailySchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&dailyschedule).Error; err != nil {
+		return nil, err
+	}
+	return &dailyschedule, nil
+}
+
 func (r *dailyScheduleRepo) UpdateDailySchedule(id int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error) {
 	if err := r.db.Model(&model.DailySchedule{}).Where("id = ?", id).Updates(&dailyschedule).Error; err != nil {
 		return nil, err
@@ -46,8 +57,22 @@ func (r *dailyScheduleRepo) UpdateDailySchedule(id int, dailyschedule *model.Dai
 	return dailyschedule, nil
 }
 
+func (r *dailyScheduleRepo) UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error) {
+	if err := r.db.Model(&model.DailySchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&dailyschedule).Error; err != nil {
+		return nil, err
+	}
+	return dailyschedule, nil
+}
+
 func (r *dailyScheduleRepo) DeleteDailySchedule(id int) error {
 	if err := r.db.Delete(&model.DailySchedule{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *dailyScheduleRepo) DeleteDailyScheduleByOwner(id int, ownerID int) error {
+	if err := r.db.Where("id = ? AND owner_id = ?", id, ownerID).Delete(&model.DailySchedule{}).Error; err != nil {
 		return err
 	}
 	return nil

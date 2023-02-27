@@ -9,8 +9,11 @@ import (
 type UserScheduleRepo interface {
 	CreateUserSchedule(userschedule *model.UserSchedule) (*model.UserSchedule, error)
 	RetrieveUserSchedule(id int) (*model.UserSchedule, error)
+	RetrieveUserScheduleByOwner(id int, ownerID int) (*model.UserSchedule, error)
 	UpdateUserSchedule(id int, userschedule *model.UserSchedule) (*model.UserSchedule, error)
+	UpdateUserScheduleByOwner(id int, ownerID int, userschedule *model.UserSchedule) (*model.UserSchedule, error)
 	DeleteUserSchedule(id int) error
+	DeleteUserScheduleByOwner(id int, ownerID int) error
 	ListUserSchedule(userschedule *model.UserSchedule, pagination *model.Pagination) (*[]model.UserSchedule, error)
 	ListUserScheduleMeta(userschedule *model.UserSchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownUserSchedule(userschedule *model.UserSchedule) (*[]model.UserSchedule, error)
@@ -39,6 +42,14 @@ func (r *userScheduleRepo) RetrieveUserSchedule(id int) (*model.UserSchedule, er
 	return &userschedule, nil
 }
 
+func (r *userScheduleRepo) RetrieveUserScheduleByOwner(id int, ownerID int) (*model.UserSchedule, error) {
+	var userschedule model.UserSchedule
+	if err := r.db.Model(&model.UserSchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&userschedule).Error; err != nil {
+		return nil, err
+	}
+	return &userschedule, nil
+}
+
 func (r *userScheduleRepo) UpdateUserSchedule(id int, userschedule *model.UserSchedule) (*model.UserSchedule, error) {
 	if err := r.db.Model(&model.UserSchedule{}).Where("id = ?", id).Updates(&userschedule).Error; err != nil {
 		return nil, err
@@ -46,8 +57,22 @@ func (r *userScheduleRepo) UpdateUserSchedule(id int, userschedule *model.UserSc
 	return userschedule, nil
 }
 
+func (r *userScheduleRepo) UpdateUserScheduleByOwner(id int, ownerID int, userschedule *model.UserSchedule) (*model.UserSchedule, error) {
+	if err := r.db.Model(&model.UserSchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&userschedule).Error; err != nil {
+		return nil, err
+	}
+	return userschedule, nil
+}
+
 func (r *userScheduleRepo) DeleteUserSchedule(id int) error {
 	if err := r.db.Delete(&model.UserSchedule{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *userScheduleRepo) DeleteUserScheduleByOwner(id int, ownerID int) error {
+	if err := r.db.Where("id = ? AND owner_id = ?", id, ownerID).Delete(&model.UserSchedule{}).Error; err != nil {
 		return err
 	}
 	return nil
