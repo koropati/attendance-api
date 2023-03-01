@@ -48,6 +48,7 @@ func (c *server) handlers() {
 func (c *server) v1() {
 	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.infra)
+	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
 
 	v1 := c.gin.Group("v1")
 	{
@@ -64,6 +65,16 @@ func (c *server) v1() {
 			user.GET("/list", userHandler.ListUser)
 			user.POST("/create", authHandler.Create)
 			user.DELETE("/delete", authHandler.Delete)
+		}
+		subject := v1.Group("/subject")
+		subject.Use(c.middleware.ADMIN())
+		{
+			subject.POST("/create", subjectHandler.Create)
+			subject.GET("/retrieve", subjectHandler.Retrieve)
+			subject.PUT("/update", subjectHandler.Update)
+			subject.DELETE("/delete", subjectHandler.Delete)
+			subject.GET("/list", subjectHandler.List)
+			subject.GET("/drop-down", subjectHandler.DropDown)
 		}
 	}
 }

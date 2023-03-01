@@ -153,6 +153,12 @@ func (h *authUserHandler) Login(c *gin.Context) {
 		return
 	}
 
+	userData, err := h.authService.GetByUsername(data.Username)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("err: %v", err))
+		return
+	}
+
 	email, err := h.authService.GetEmail(data.Username)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("email: %v", err))
@@ -161,6 +167,7 @@ func (h *authUserHandler) Login(c *gin.Context) {
 
 	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(
 		&model.UserTokenPayload{
+			UserID:       userData.ID,
 			Username:     data.Username,
 			IsSuperAdmin: isSuper,
 			IsAdmin:      isAdmin,
@@ -207,6 +214,7 @@ func (h *authUserHandler) Refresh(c *gin.Context) {
 
 	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(
 		&model.UserTokenPayload{
+			UserID:       user.ID,
 			Username:     user.Username,
 			IsSuperAdmin: user.IsSuperAdmin,
 			IsAdmin:      user.IsAdmin,
@@ -217,6 +225,7 @@ func (h *authUserHandler) Refresh(c *gin.Context) {
 	)
 	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(
 		&model.UserTokenPayload{
+			UserID:   user.ID,
 			Username: user.Username,
 			Expired:  h.infra.Config().GetInt("refresh_token_expired"),
 		},

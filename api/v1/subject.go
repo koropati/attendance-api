@@ -44,10 +44,14 @@ func (h *subjectHandler) Create(c *gin.Context) {
 	var data model.Subject
 	c.BindJSON(&data)
 
-	currentUser := h.middleware.GetUserID(c)
-	data.GormCustom.CreatedBy = currentUser
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	data.GormCustom.CreatedBy = currentUserID
 	if !h.middleware.IsSuperAdmin(c) {
-		data.OwnerID = currentUser
+		data.OwnerID = currentUserID
 	}
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
@@ -68,6 +72,13 @@ func (h *subjectHandler) Retrieve(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
 		return
 	}
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
 	var result *model.Subject
 	if h.middleware.IsSuperAdmin(c) {
 		result, err = h.subjectService.RetrieveSubject(id)
@@ -76,7 +87,7 @@ func (h *subjectHandler) Retrieve(c *gin.Context) {
 			return
 		}
 	} else {
-		result, err = h.subjectService.RetrieveSubjectByOwner(id, h.middleware.GetUserID(c))
+		result, err = h.subjectService.RetrieveSubjectByOwner(id, currentUserID)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
@@ -92,6 +103,12 @@ func (h *subjectHandler) Update(c *gin.Context) {
 		return
 	}
 
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
 	var data model.Subject
 	c.BindJSON(&data)
 
@@ -100,7 +117,13 @@ func (h *subjectHandler) Update(c *gin.Context) {
 		return
 	}
 
-	result, err := h.subjectService.UpdateSubject(id, &data)
+	var result *model.Subject
+	if h.middleware.IsSuperAdmin(c) {
+		result, err = h.subjectService.UpdateSubject(id, &data)
+	} else {
+		result, err = h.subjectService.UpdateSubjectByOwner(id, currentUserID, &data)
+	}
+
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -115,10 +138,24 @@ func (h *subjectHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	if err := h.subjectService.DeleteSubject(id); err != nil {
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
+
+	if h.middleware.IsSuperAdmin(c) {
+		if err := h.subjectService.DeleteSubject(id); err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+	} else {
+		if err := h.subjectService.DeleteSubjectByOwner(id, currentUserID); err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+	}
+
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
@@ -126,6 +163,16 @@ func (h *subjectHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.Subject
 	c.BindQuery(&data)
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !h.middleware.IsSuperAdmin(c) {
+		data.OwnerID = currentUserID
+	}
 
 	dataList, err := h.subjectService.ListSubject(&data, &pagination)
 	if err != nil {
@@ -143,6 +190,16 @@ func (h *subjectHandler) List(c *gin.Context) {
 func (h *subjectHandler) DropDown(c *gin.Context) {
 	var data model.Subject
 	c.BindQuery(&data)
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !h.middleware.IsSuperAdmin(c) {
+		data.OwnerID = currentUserID
+	}
 
 	dataList, err := h.subjectService.DropDownSubject(&data)
 	if err != nil {

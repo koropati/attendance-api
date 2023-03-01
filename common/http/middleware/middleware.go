@@ -21,7 +21,7 @@ type Middleware interface {
 	SUPERADMIN() gin.HandlerFunc
 	ADMIN() gin.HandlerFunc
 	USER() gin.HandlerFunc
-	GetUserID(c *gin.Context) int
+	GetUserID(c *gin.Context) (userID int, err error)
 	HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc
 	IsSuperAdmin(c *gin.Context) bool
 }
@@ -77,8 +77,16 @@ func ValidateToken(m *middleware, c *gin.Context) (tokenData *jwt.Token, valid b
 
 func ValidateRole(token *jwt.Token, roles ...string) (valid bool, err error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		for role := range roles {
-			if claims["role"] == role {
+		for _, role := range roles {
+			if role == "user" && claims["is_user"].(bool) {
+				valid = true
+				break
+			}
+			if role == "admin" && claims["is_admin"].(bool) {
+				valid = true
+				break
+			}
+			if role == "super_admin" && claims["is_super_admin"].(bool) {
 				valid = true
 				break
 			}
@@ -177,15 +185,15 @@ func (m *middleware) USER() gin.HandlerFunc {
 	}
 }
 
-func (m *middleware) GetUserID(c *gin.Context) int {
+func (m *middleware) GetUserID(c *gin.Context) (userId int, err error) {
 	token, validToken, err := ValidateToken(m, c)
 	if !validToken && err != nil {
-		return 0
+		return 0, err
 	} else {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			return claims["user_id"].(int)
+			return int(claims["user_id"].(float64)), nil
 		} else {
-			return 0
+			return 0, fmt.Errorf("token is invalid")
 		}
 	}
 }
