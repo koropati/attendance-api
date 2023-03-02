@@ -4,10 +4,13 @@ import (
 	v1 "attendance-api/api/v1"
 	"attendance-api/common/http/middleware"
 	"attendance-api/common/http/request"
+	docs "attendance-api/docs"
 	"attendance-api/infra"
 	"attendance-api/manager"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Server interface {
@@ -31,9 +34,11 @@ func NewServer(infra infra.Infra) Server {
 }
 
 func (c *server) Run() {
+	docs.SwaggerInfo.BasePath = "/v1"
 	c.gin.Use(c.middleware.CORS())
 	c.handlers()
 	c.v1()
+	c.gin.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	c.gin.Run(c.infra.Port())
 }
@@ -77,4 +82,5 @@ func (c *server) v1() {
 			subject.GET("/drop-down", subjectHandler.DropDown)
 		}
 	}
+
 }

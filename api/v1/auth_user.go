@@ -45,6 +45,15 @@ func NewAuthHandler(authService service.AuthService, infra infra.Infra) AuthUser
 	}
 }
 
+// Register ... Register User
+// @Summary Create new user based on paramters
+// @Description Create new user
+// @Tags Auth
+// @Accept json
+// @Param user body model.UserForm true "User Data"
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /auth/register [post]
 func (h *authUserHandler) Register(c *gin.Context) {
 	var data model.User
 	c.BindJSON(&data)
@@ -117,6 +126,15 @@ func (h *authUserHandler) Register(c *gin.Context) {
 	response.New(c).Error(http.StatusBadRequest, errors.New("username: already taken"))
 }
 
+// Login ... Login User
+// @Summary Login user with username and password
+// @Description Login User
+// @Tags Auth
+// @Accept json
+// @Param data body model.Login true "Login Data"
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /auth/login [post]
 func (h *authUserHandler) Login(c *gin.Context) {
 	var data model.Login
 	c.BindJSON(&data)
@@ -192,6 +210,15 @@ func (h *authUserHandler) Login(c *gin.Context) {
 	response.New(c).Data(200, "success login", dataOutput)
 }
 
+// Refresh ... Refresh Token
+// @Summary Get New Access Token using refresh token
+// @Description Get New Access Token
+// @Tags Auth
+// @Accept json
+// @Param data body model.Refresh true "Refresh Data"
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /auth/refresh [post]
 func (h *authUserHandler) Refresh(c *gin.Context) {
 	var data model.Refresh
 	c.BindJSON(&data)

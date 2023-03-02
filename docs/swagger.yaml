@@ -1,0 +1,139 @@
+basePath: /v1
+definitions:
+  model.Login:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  model.Refresh:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  model.Response:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  model.UserForm:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      handphone:
+        type: string
+      intro:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      profile:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: dewa.ketut.satriawan@gmail.com
+    name: Dewok satria
+    url: https://twitter.com/dewok_satria
+  description: A Attendance management service API in Go using Gin framework.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://wokdev.com
+  title: Attendance API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login User
+      parameters:
+      - description: Login Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Login'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: Login user with username and password
+      tags:
+      - Auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Get New Access Token
+      parameters:
+      - description: Refresh Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.Refresh'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: Get New Access Token using refresh token
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create new user
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserForm'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: Create new user based on paramters
+      tags:
+      - Auth
+swagger: "2.0"

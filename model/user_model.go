@@ -33,6 +33,17 @@ type User struct {
 	Activation   string    `json:"activation"`
 }
 
+type UserForm struct {
+	Username  string `json:"username" gorm:"unique"`
+	Password  string `json:"password"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Handphone string `json:"handphone" gorm:"unique"`
+	Email     string `json:"email" gorm:"unique"`
+	Intro     string `json:"intro" gorm:"type:varchar(255)"`
+	Profile   string `json:"profile" gorm:"type:varchar(255)"`
+}
+
 // username string, email string, isSuperAdmin bool, isAdmin bool, isUser bool, expired int
 type UserTokenPayload struct {
 	UserID       uint   `json:"user_id"`
