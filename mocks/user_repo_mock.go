@@ -126,12 +126,19 @@ func (m *UserRepoMock) UpdateUser(id int, user *model.User) (*model.User, error)
 	return &userData, nil
 }
 
-func (m *UserRepoMock) HardDeleteUser(id int) error {
+func (m *UserRepoMock) DeleteUser(id int) error {
 	if err := m.Called(id).Error(0); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (m *UserRepoMock) RetrieveUser(id int) (result *model.User, err error) {
+	if err := m.Called(id).Error(0); err != nil {
+		return nil, err
+	}
+	return
 }
 
 func (m *UserRepoMock) SetActiveUser(id int) (*model.User, error) {

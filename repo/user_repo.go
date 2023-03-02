@@ -10,8 +10,9 @@ type UserRepo interface {
 	ListUser(user *model.User, pagination *model.Pagination) (*[]model.User, error)
 	ListUserMeta(user *model.User, pagination *model.Pagination) (*model.Meta, error)
 	CreateUser(user *model.User) (*model.User, error)
+	RetrieveUser(id int) (*model.User, error)
 	UpdateUser(id int, user *model.User) (*model.User, error)
-	HardDeleteUser(id int) error
+	DeleteUser(id int) error
 	SetActiveUser(id int) (*model.User, error)
 	SetDeactiveUser(id int) (*model.User, error)
 }
@@ -73,6 +74,14 @@ func (r *userRepo) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
+func (r *userRepo) RetrieveUser(id int) (user *model.User, err error) {
+	if err := r.db.Table("users").Where("id = ?").First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (r *userRepo) UpdateUser(id int, user *model.User) (*model.User, error) {
 	if err := r.db.Model(&model.User{}).Where("id = ?", id).Updates(&user).Error; err != nil {
 		return nil, err
@@ -80,7 +89,7 @@ func (r *userRepo) UpdateUser(id int, user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func (r *userRepo) HardDeleteUser(id int) error {
+func (r *userRepo) DeleteUser(id int) error {
 	if err := r.db.Delete(&model.User{}, id).Error; err != nil {
 		return err
 	}

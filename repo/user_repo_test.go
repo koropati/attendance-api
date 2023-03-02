@@ -126,7 +126,7 @@ func TestSetDeactiveUser(t *testing.T) {
 	})
 }
 
-func TestHardDeleteUser(t *testing.T) {
+func TestDeleteUser(t *testing.T) {
 	t.Run("test normal case repo delete", func(t *testing.T) {
 		gormDB, mock := MockGormDB()
 
@@ -137,7 +137,7 @@ func TestHardDeleteUser(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		userRepo := repo.NewUserRepo(gormDB)
-		err := userRepo.HardDeleteUser(1)
+		err := userRepo.DeleteUser(1)
 
 		t.Run("test data deleted with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)

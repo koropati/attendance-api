@@ -9,8 +9,9 @@ type UserService interface {
 	ListUser(user *model.User, pagination *model.Pagination) (*[]model.User, error)
 	ListUserMeta(user *model.User, pagination *model.Pagination) (*model.Meta, error)
 	CreateUser(user *model.User) (*model.User, error)
+	RetrieveUser(id int) (*model.User, error)
 	UpdateUser(id int, user *model.User) (*model.User, error)
-	HardDeleteUser(id int) error
+	DeleteUser(id int) error
 	SetActiveUser(id int) (*model.User, error)
 	SetDeactiveUser(id int) (*model.User, error)
 }
@@ -47,6 +48,14 @@ func (s *userService) CreateUser(user *model.User) (*model.User, error) {
 	return newUser, nil
 }
 
+func (s *userService) RetrieveUser(id int) (*model.User, error) {
+	data, err := s.userRepo.RetrieveUser(id)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *userService) UpdateUser(id int, user *model.User) (*model.User, error) {
 	userUpdate, err := s.userRepo.UpdateUser(id, user)
 	if err != nil {
@@ -55,8 +64,8 @@ func (s *userService) UpdateUser(id int, user *model.User) (*model.User, error) 
 	return userUpdate, nil
 }
 
-func (s *userService) HardDeleteUser(id int) error {
-	err := s.userRepo.HardDeleteUser(id)
+func (s *userService) DeleteUser(id int) error {
+	err := s.userRepo.DeleteUser(id)
 	if err != nil {
 		return err
 	}

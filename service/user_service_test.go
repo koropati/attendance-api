@@ -52,6 +52,20 @@ func TestCreateUser(t *testing.T) {
 	})
 }
 
+func TestRetrieveUser(t *testing.T) {
+	t.Run("test normal case service retrieve user", func(t *testing.T) {
+		UserRepoMock := new(mocks.UserRepoMock)
+		UserRepoMock.On("RetrieveUser", mock.AnythingOfType("int")).Return(nil)
+
+		userService := service.NewUserService(UserRepoMock)
+		_, err := userService.RetrieveUser(1)
+
+		t.Run("test retrieve user", func(t *testing.T) {
+			assert.Equal(t, true, err == nil)
+		})
+	})
+}
+
 func TestUpdateUser(t *testing.T) {
 	t.Run("test normal case service update user", func(t *testing.T) {
 		UserRepoMock := new(mocks.UserRepoMock)
@@ -66,13 +80,13 @@ func TestUpdateUser(t *testing.T) {
 	})
 }
 
-func TestHardDeleteUser(t *testing.T) {
+func TestDeleteUser(t *testing.T) {
 	t.Run("test normal case service hard Delete user", func(t *testing.T) {
 		UserRepoMock := new(mocks.UserRepoMock)
 		UserRepoMock.On("HardDeleteUser", mock.AnythingOfType("int")).Return(nil)
 
 		userService := service.NewUserService(UserRepoMock)
-		err := userService.HardDeleteUser(1)
+		err := userService.DeleteUser(1)
 
 		t.Run("test hard delete user", func(t *testing.T) {
 			assert.Equal(t, true, err == nil)

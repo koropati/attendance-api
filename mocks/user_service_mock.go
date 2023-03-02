@@ -93,6 +93,37 @@ func (m *UserServiceMock) CreateUser(user *model.User) (*model.User, error) {
 	return &userData, nil
 }
 
+func (m *UserServiceMock) RetrieveUser(id int) (*model.User, error) {
+	if err := m.Called(id).Error(0); err != nil {
+		return nil, err
+	}
+	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
+	gormData := model.GormCustom{
+		ID:        1,
+		CreatedAt: dateTimeData,
+		UpdatedAt: dateTimeData,
+	}
+
+	userData := model.User{
+		GormCustom:   gormData,
+		Username:     "windowsdewa",
+		Password:     "Password123",
+		FirstName:    "Dewok",
+		LastName:     "Satria",
+		Handphone:    "081222333440",
+		Email:        "windowsdewa.com",
+		Intro:        "Hay guysss",
+		Profile:      "My Name is Dewok ",
+		LastLogin:    dateTimeData,
+		IsActive:     true,
+		IsSuperAdmin: true,
+		IsAdmin:      false,
+		IsUser:       false,
+	}
+
+	return &userData, nil
+}
+
 func (m *UserServiceMock) UpdateUser(id int, user *model.User) (*model.User, error) {
 	if err := m.Called(id, user).Error(0); err != nil {
 		return nil, err
@@ -125,7 +156,7 @@ func (m *UserServiceMock) UpdateUser(id int, user *model.User) (*model.User, err
 	return &userData, nil
 }
 
-func (m *UserServiceMock) HardDeleteUser(id int) error {
+func (m *UserServiceMock) DeleteUser(id int) error {
 	if err := m.Called(id).Error(0); err != nil {
 		return err
 	}
