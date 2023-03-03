@@ -6,6 +6,7 @@ import (
 )
 
 type AuthService interface {
+	CheckID(id int) bool
 	CheckUsername(username string) bool
 	CheckEmail(email string) bool
 	CheckHandphone(handphone string) bool
@@ -17,7 +18,6 @@ type AuthService interface {
 	GetEmail(username string) (string, error)
 	Register(user *model.User) error
 	Login(username string) (string, error)
-	CheckID(id int) bool
 	GetByUsername(username string) (user *model.User, err error)
 	GetByEmail(email string) (user *model.User, err error)
 	Create(user *model.User) error
@@ -30,6 +30,10 @@ type authService struct {
 
 func NewAuthService(authRepo repo.AuthRepo) AuthService {
 	return &authService{authRepo: authRepo}
+}
+
+func (s *authService) CheckID(id int) bool {
+	return s.authRepo.CheckID(id)
 }
 
 func (s *authService) CheckUsername(username string) bool {
@@ -103,10 +107,6 @@ func (s *authService) Login(username string) (string, error) {
 	}
 
 	return password, nil
-}
-
-func (s *authService) CheckID(id int) bool {
-	return s.authRepo.CheckID(id)
 }
 
 func (s *authService) GetByUsername(username string) (user *model.User, err error) {

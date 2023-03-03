@@ -12,6 +12,70 @@ type UserServiceMock struct {
 	mock.Mock
 }
 
+func (m *UserServiceMock) CheckID(id int) bool {
+	if err := m.Called(id).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserServiceMock) CheckUsername(username string) bool {
+	if err := m.Called(username).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserServiceMock) CheckEmail(email string) bool {
+	if err := m.Called(email).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserServiceMock) CheckHandphone(handphone string) bool {
+	if err := m.Called(handphone).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserServiceMock) CheckIsActive(username string) bool {
+	if err := m.Called(username).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserServiceMock) CheckUpdateUsername(id int, username string) bool {
+	if err := m.Called(id, username).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserServiceMock) CheckUpdateEmail(id int, email string) bool {
+	if err := m.Called(id, email).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserServiceMock) CheckUpdateHandphone(id int, handphone string) bool {
+	if err := m.Called(id, handphone).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
 func (m *UserServiceMock) ListUser(user *model.User, pagination *model.Pagination) (*[]model.User, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
 		return nil, err
@@ -124,6 +188,50 @@ func (m *UserServiceMock) RetrieveUser(id int) (*model.User, error) {
 	return &userData, nil
 }
 
+func (m *UserServiceMock) RetrieveUserByUsername(username string) (data *model.User, err error) {
+	if err := m.Called(username).Error(0); err != nil {
+		return nil, err
+	}
+
+	data.ID = 1
+	data.Email = "dewok@gmail.com"
+	data.CreatedAt = time.Now()
+	data.UpdatedAt = time.Now()
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
+	data.Username = "dewoklucu"
+	data.Handphone = "098121342"
+	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
+
+	return data, nil
+}
+
+func (m *UserServiceMock) RetrieveUserByEmail(email string) (data *model.User, err error) {
+	if err := m.Called(email).Error(0); err != nil {
+		return nil, err
+	}
+
+	data.ID = 1
+	data.Email = "dewok@gmail.com"
+	data.CreatedAt = time.Now()
+	data.UpdatedAt = time.Now()
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
+	data.Username = "dewoklucu"
+	data.Handphone = "098121342"
+	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
+
+	return data, nil
+}
+
 func (m *UserServiceMock) UpdateUser(id int, user *model.User) (*model.User, error) {
 	if err := m.Called(id, user).Error(0); err != nil {
 		return nil, err
@@ -228,4 +336,25 @@ func (m *UserServiceMock) SetDeactiveUser(id int) (*model.User, error) {
 	}
 
 	return &userData, nil
+}
+
+func (m *UserServiceMock) DropDownUser(user *model.User) (*[]model.UserDropDown, error) {
+	if err := m.Called(user).Error(0); err != nil {
+		return nil, err
+	}
+
+	var users []model.UserDropDown
+	for i := 1; i <= 3; i++ {
+		userData := model.UserDropDown{
+			ID:        uint(i),
+			Username:  "windowsdewa" + strconv.Itoa(i),
+			FirstName: "Dewok",
+			LastName:  "Satria " + strconv.Itoa(i),
+			Handphone: "08122233344" + strconv.Itoa(i),
+			Email:     "windowsdewa" + strconv.Itoa(i) + ".com",
+		}
+		users = append(users, userData)
+	}
+
+	return &users, nil
 }

@@ -7,6 +7,7 @@ import (
 )
 
 type AuthRepo interface {
+	CheckID(id int) bool
 	CheckUsername(username string) bool
 	CheckEmail(email string) bool
 	CheckHandphone(handphone string) bool
@@ -18,7 +19,6 @@ type AuthRepo interface {
 	GetEmail(username string) (string, error)
 	Register(user *model.User) error
 	Login(username string) (string, error)
-	CheckID(id int) bool
 	GetByUsername(username string) (user *model.User, err error)
 	GetByEmail(email string) (user *model.User, err error)
 	Create(user *model.User) error
@@ -31,6 +31,19 @@ type authRepo struct {
 
 func NewAuthRepo(db *gorm.DB) AuthRepo {
 	return &authRepo{db: db}
+}
+
+func (r *authRepo) CheckID(id int) bool {
+	var count int64
+	if err := r.db.Table("users").Where("id = ?", id).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count < 1 {
+		return false
+	}
+
+	return true
 }
 
 func (r *authRepo) CheckUsername(username string) bool {
@@ -140,19 +153,6 @@ func (r *authRepo) Login(username string) (string, error) {
 	}
 
 	return user.Password, nil
-}
-
-func (r *authRepo) CheckID(id int) bool {
-	var count int64
-	if err := r.db.Table("users").Where("id = ?", id).Count(&count).Error; err != nil {
-		return false
-	}
-
-	if count < 1 {
-		return false
-	}
-
-	return true
 }
 
 func (r *authRepo) GetByUsername(username string) (user *model.User, err error) {

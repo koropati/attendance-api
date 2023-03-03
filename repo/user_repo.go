@@ -7,14 +7,25 @@ import (
 )
 
 type UserRepo interface {
+	CheckID(id int) bool
+	CheckUsername(username string) bool
+	CheckEmail(email string) bool
+	CheckHandphone(handphone string) bool
+	CheckIsActive(username string) bool
+	CheckUpdateUsername(id int, username string) bool
+	CheckUpdateEmail(id int, email string) bool
+	CheckUpdateHandphone(id int, handphone string) bool
 	ListUser(user *model.User, pagination *model.Pagination) (*[]model.User, error)
 	ListUserMeta(user *model.User, pagination *model.Pagination) (*model.Meta, error)
 	CreateUser(user *model.User) (*model.User, error)
 	RetrieveUser(id int) (*model.User, error)
+	RetrieveUserByUsername(username string) (user *model.User, err error)
+	RetrieveUserByEmail(email string) (user *model.User, err error)
 	UpdateUser(id int, user *model.User) (*model.User, error)
 	DeleteUser(id int) error
 	SetActiveUser(id int) (*model.User, error)
 	SetDeactiveUser(id int) (*model.User, error)
+	DropDownUser(user *model.User) (*[]model.UserDropDown, error)
 }
 
 type userRepo struct {
@@ -23,6 +34,105 @@ type userRepo struct {
 
 func NewUserRepo(db *gorm.DB) UserRepo {
 	return &userRepo{db: db}
+}
+
+func (r *userRepo) CheckID(id int) bool {
+	var count int64
+	if err := r.db.Table("users").Where("id = ?", id).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count < 1 {
+		return false
+	}
+
+	return true
+}
+
+func (r *userRepo) CheckUsername(username string) bool {
+	var count int64
+	if err := r.db.Table("users").Where("username = ?", username).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count > 0 {
+		return false
+	}
+
+	return true
+}
+
+func (r *userRepo) CheckEmail(email string) bool {
+	var count int64
+	if err := r.db.Table("users").Where("email = ?", email).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count > 0 {
+		return false
+	}
+
+	return true
+}
+
+func (r *userRepo) CheckHandphone(handphone string) bool {
+	var count int64
+	if err := r.db.Table("users").Where("handphone = ?", handphone).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count > 0 {
+		return false
+	}
+
+	return true
+}
+
+func (r *userRepo) CheckIsActive(username string) bool {
+	var user model.User
+	if err := r.db.Table("users").Select("is_active").Where("username = ?", username).First(&user).Error; err != nil {
+		return false
+	}
+	return user.IsActive
+}
+
+func (r *userRepo) CheckUpdateUsername(id int, username string) bool {
+	var count int64
+	if err := r.db.Table("users").Where("username = ? AND id != ?", username, id).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count > 0 {
+		return false
+	}
+
+	return true
+}
+
+func (r *userRepo) CheckUpdateEmail(id int, email string) bool {
+	var count int64
+	if err := r.db.Table("users").Where("email = ? AND id != ?", email, id).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count > 0 {
+		return false
+	}
+
+	return true
+}
+
+func (r *userRepo) CheckUpdateHandphone(id int, handphone string) bool {
+	var count int64
+	if err := r.db.Table("users").Where("handphone = ? AND id != ?", handphone, id).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count > 0 {
+		return false
+	}
+
+	return true
 }
 
 func (r *userRepo) ListUser(user *model.User, pagination *model.Pagination) (*[]model.User, error) {
@@ -82,6 +192,24 @@ func (r *userRepo) RetrieveUser(id int) (user *model.User, err error) {
 	return user, nil
 }
 
+func (r *userRepo) RetrieveUserByUsername(username string) (user *model.User, err error) {
+	var userData model.User
+	if err := r.db.Table("users").Where("username = ?", username).First(&userData).Error; err != nil {
+		return nil, err
+	}
+
+	return &userData, nil
+}
+
+func (r *userRepo) RetrieveUserByEmail(email string) (user *model.User, err error) {
+	var userData model.User
+	if err := r.db.Table("users").Where("email = ?", email).First(&userData).Error; err != nil {
+		return nil, err
+	}
+
+	return &userData, nil
+}
+
 func (r *userRepo) UpdateUser(id int, user *model.User) (*model.User, error) {
 	if err := r.db.Model(&model.User{}).Where("id = ?", id).Updates(&user).Error; err != nil {
 		return nil, err
@@ -110,6 +238,16 @@ func (r *userRepo) SetDeactiveUser(id int) (*model.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (r *userRepo) DropDownUser(user *model.User) (results *[]model.UserDropDown, err error) {
+	query := r.db.Table("users")
+	query = FilterUser(query, user)
+	query = query.Find(&results)
+	if err := query.Error; err != nil {
+		return nil, err
+	}
+	return
 }
 
 func FilterUser(query *gorm.DB, user *model.User) *gorm.DB {

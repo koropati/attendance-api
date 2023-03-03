@@ -12,6 +12,70 @@ type UserRepoMock struct {
 	mock.Mock
 }
 
+func (m *UserRepoMock) CheckID(id int) bool {
+	if err := m.Called(id).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserRepoMock) CheckUsername(username string) bool {
+	if err := m.Called(username).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserRepoMock) CheckEmail(email string) bool {
+	if err := m.Called(email).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserRepoMock) CheckHandphone(handphone string) bool {
+	if err := m.Called(handphone).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserRepoMock) CheckIsActive(username string) bool {
+	if err := m.Called(username).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserRepoMock) CheckUpdateUsername(id int, username string) bool {
+	if err := m.Called(id, username).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserRepoMock) CheckUpdateEmail(id int, email string) bool {
+	if err := m.Called(id, email).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (m *UserRepoMock) CheckUpdateHandphone(id int, handphone string) bool {
+	if err := m.Called(id, handphone).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
 func (m *UserRepoMock) ListUser(user *model.User, pagination *model.Pagination) (*[]model.User, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
 		return nil, err
@@ -141,6 +205,50 @@ func (m *UserRepoMock) RetrieveUser(id int) (result *model.User, err error) {
 	return
 }
 
+func (m *UserRepoMock) RetrieveUserByUsername(username string) (data *model.User, err error) {
+	if err := m.Called(username).Error(0); err != nil {
+		return nil, err
+	}
+
+	data.ID = 1
+	data.Email = "dewok@gmail.com"
+	data.CreatedAt = time.Now()
+	data.UpdatedAt = time.Now()
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
+	data.Username = "dewoklucu"
+	data.Handphone = "098121342"
+	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
+
+	return data, nil
+}
+
+func (m *UserRepoMock) RetrieveUserByEmail(email string) (data *model.User, err error) {
+	if err := m.Called(email).Error(0); err != nil {
+		return nil, err
+	}
+
+	data.ID = 1
+	data.Email = "dewok@gmail.com"
+	data.CreatedAt = time.Now()
+	data.UpdatedAt = time.Now()
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
+	data.Username = "dewoklucu"
+	data.Handphone = "098121342"
+	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
+
+	return data, nil
+}
+
 func (m *UserRepoMock) SetActiveUser(id int) (*model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
 		return nil, err
@@ -204,4 +312,26 @@ func (m *UserRepoMock) SetDeactiveUser(id int) (*model.User, error) {
 	}
 
 	return &userData, nil
+}
+
+func (m *UserRepoMock) DropDownUser(user *model.User) (*[]model.UserDropDown, error) {
+	if err := m.Called(user).Error(0); err != nil {
+		return nil, err
+	}
+
+	var users []model.UserDropDown
+	for i := 1; i <= 3; i++ {
+
+		userData := model.UserDropDown{
+			ID:        uint(i),
+			Username:  "windowsdewa" + strconv.Itoa(i),
+			FirstName: "Dewok",
+			LastName:  "Satria " + strconv.Itoa(i),
+			Handphone: "08122233344" + strconv.Itoa(i),
+			Email:     "windowsdewa" + strconv.Itoa(i) + ".com",
+		}
+		users = append(users, userData)
+	}
+
+	return &users, nil
 }

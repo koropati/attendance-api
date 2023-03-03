@@ -11,6 +11,14 @@ type AuthServiceMock struct {
 	mock.Mock
 }
 
+func (m *AuthServiceMock) CheckID(id int) bool {
+	if err := m.Called(id).Error(0); err != nil {
+		return false
+	}
+
+	return true
+}
+
 func (m *AuthServiceMock) CheckUsername(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
@@ -97,14 +105,6 @@ func (m *AuthServiceMock) Login(username string) (string, error) {
 	}
 
 	return "$2a$10$fk9IPSmo/VYhu5VJm.vPy.5.XVowBHU3otSDAzTBpMR3YpX2cqYwW", nil
-}
-
-func (m *AuthServiceMock) CheckID(id int) bool {
-	if err := m.Called(id).Error(0); err != nil {
-		return false
-	}
-
-	return true
 }
 
 func (m *AuthServiceMock) GetByUsername(username string) (data *model.User, err error) {

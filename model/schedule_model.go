@@ -13,5 +13,8 @@ type Schedule struct {
 	Subject       Subject         `json:"subject" gorm:"foreignKey:SubjectID"`
 	DailySchedule []DailySchedule `json:"daily_schedule" gorm:"foreignKey:ScheduleID"`
 	LateDuration  int             `json:"late_duration"`
+	Latitude      float64         `json:"latitude"`
+	Longitude     float64         `json:"longitude"`
+	Radius        int             `json:"radius"`
 	OwnerID       int             `json:"owner_id" gorm:"not null"`
 }

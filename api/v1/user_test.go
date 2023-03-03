@@ -1,14 +1,15 @@
 package v1_test
 
 import (
+	v1 "attendance-api/api/v1"
+	"attendance-api/common/http/middleware"
+	"attendance-api/infra"
+	"attendance-api/mocks"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-	v1 "attendance-api/api/v1"
-	"attendance-api/infra"
-	"attendance-api/mocks"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -23,9 +24,9 @@ func TestListUser(t *testing.T) {
 
 		gin := gin.New()
 		rec := httptest.NewRecorder()
-
-		UserHandler := v1.NewUserHandler(userServiceMock, infra.New("../../config/config.json"))
-		gin.GET("/user/list", UserHandler.ListUser)
+		infra := infra.New("../../config/config.json")
+		UserHandler := v1.NewUserHandler(userServiceMock, infra, middleware.NewMiddleware(infra.Config().GetString("secret.key")))
+		gin.GET("/user/list", UserHandler.List)
 
 		req := httptest.NewRequest(http.MethodGet, "/user/list", strings.NewReader(""))
 		gin.ServeHTTP(rec, req)

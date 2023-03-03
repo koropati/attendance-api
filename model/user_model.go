@@ -34,14 +34,23 @@ type User struct {
 }
 
 type UserForm struct {
-	Username  string `json:"username" gorm:"unique"`
+	Username  string `json:"username"`
 	Password  string `json:"password"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
-	Handphone string `json:"handphone" gorm:"unique"`
-	Email     string `json:"email" gorm:"unique"`
-	Intro     string `json:"intro" gorm:"type:varchar(255)"`
-	Profile   string `json:"profile" gorm:"type:varchar(255)"`
+	Handphone string `json:"handphone"`
+	Email     string `json:"email"`
+	Intro     string `json:"intro"`
+	Profile   string `json:"profile"`
+}
+
+type UserDropDown struct {
+	ID        uint   `json:"id"`
+	Username  string `json:"username"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Handphone string `json:"handphone"`
+	Email     string `json:"email"`
 }
 
 // username string, email string, isSuperAdmin bool, isAdmin bool, isUser bool, expired int
