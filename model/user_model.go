@@ -30,7 +30,6 @@ type User struct {
 	IsAdmin      bool      `json:"is_admin"`
 	IsUser       bool      `json:"is_user"`
 	LastLogin    time.Time `json:"last_login"`
-	Activation   string    `json:"activation"`
 }
 
 type UserForm struct {
@@ -42,6 +41,13 @@ type UserForm struct {
 	Email     string `json:"email"`
 	Intro     string `json:"intro"`
 	Profile   string `json:"profile"`
+}
+
+type UserForgotPasswordForm struct {
+	Email           string `json:"email"`
+	Activation      string `json:"activation"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
 }
 
 type UserDropDown struct {

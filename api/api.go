@@ -54,6 +54,9 @@ func (c *server) v1() {
 	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.infra, c.middleware)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
+	scheduleHandler := v1.NewScheduleHandler(c.service.ScheduleService(), c.infra, c.middleware)
+	dailyScheduleHandler := v1.NewDailyScheduleHandler(c.service.DailyScheduleService(), c.infra, c.middleware)
+	userScheduleHandler := v1.NewUserScheduleHandler(c.service.UserScheduleService(), c.infra, c.middleware)
 
 	v1 := c.gin.Group("v1")
 	{
@@ -86,6 +89,39 @@ func (c *server) v1() {
 			subject.DELETE("/delete", subjectHandler.Delete)
 			subject.GET("/list", subjectHandler.List)
 			subject.GET("/drop-down", subjectHandler.DropDown)
+		}
+
+		schedule := v1.Group("/schedule")
+		schedule.Use(c.middleware.ADMIN())
+		{
+			schedule.POST("/create", scheduleHandler.Create)
+			schedule.GET("/retrieve", scheduleHandler.Retrieve)
+			schedule.PUT("/update", scheduleHandler.Update)
+			schedule.DELETE("/delete", scheduleHandler.Delete)
+			schedule.GET("/list", scheduleHandler.List)
+			schedule.GET("/drop-down", scheduleHandler.DropDown)
+		}
+
+		dailySchedule := v1.Group("/daily-schedule")
+		dailySchedule.Use(c.middleware.ADMIN())
+		{
+			dailySchedule.POST("/create", dailyScheduleHandler.Create)
+			dailySchedule.GET("/retrieve", dailyScheduleHandler.Retrieve)
+			dailySchedule.PUT("/update", dailyScheduleHandler.Update)
+			dailySchedule.DELETE("/delete", dailyScheduleHandler.Delete)
+			dailySchedule.GET("/list", dailyScheduleHandler.List)
+			dailySchedule.GET("/drop-down", dailyScheduleHandler.DropDown)
+		}
+
+		userSchedule := v1.Group("/user-schedule")
+		userSchedule.Use(c.middleware.ADMIN())
+		{
+			userSchedule.POST("/create", userScheduleHandler.Create)
+			userSchedule.GET("/retrieve", userScheduleHandler.Retrieve)
+			userSchedule.PUT("/update", userScheduleHandler.Update)
+			userSchedule.DELETE("/delete", userScheduleHandler.Delete)
+			userSchedule.GET("/list", userScheduleHandler.List)
+			userSchedule.GET("/drop-down", userScheduleHandler.DropDown)
 		}
 	}
 

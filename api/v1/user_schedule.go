@@ -8,17 +8,14 @@ import (
 	"attendance-api/model"
 	"attendance-api/service"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 )
 
-type SubjectHandler interface {
+type UserScheduleHandler interface {
 	Create(c *gin.Context)
 	Retrieve(c *gin.Context)
 	Update(c *gin.Context)
@@ -27,22 +24,22 @@ type SubjectHandler interface {
 	DropDown(c *gin.Context)
 }
 
-type subjectHandler struct {
-	subjectService service.SubjectService
-	infra          infra.Infra
-	middleware     middleware.Middleware
+type userScheduleHandler struct {
+	userScheduleService service.UserScheduleService
+	infra               infra.Infra
+	middleware          middleware.Middleware
 }
 
-func NewSubjectHandler(subjectService service.SubjectService, infra infra.Infra, middleware middleware.Middleware) SubjectHandler {
-	return &subjectHandler{
-		subjectService: subjectService,
-		infra:          infra,
-		middleware:     middleware,
+func NewUserScheduleHandler(userScheduleService service.UserScheduleService, infra infra.Infra, middleware middleware.Middleware) UserScheduleHandler {
+	return &userScheduleHandler{
+		userScheduleService: userScheduleService,
+		infra:               infra,
+		middleware:          middleware,
 	}
 }
 
-func (h *subjectHandler) Create(c *gin.Context) {
-	var data model.Subject
+func (h *userScheduleHandler) Create(c *gin.Context) {
+	var data model.UserSchedule
 	c.BindJSON(&data)
 
 	currentUserID, err := h.middleware.GetUserID(c)
@@ -50,16 +47,13 @@ func (h *subjectHandler) Create(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
+
 	data.GormCustom.CreatedBy = currentUserID
 	if !h.middleware.IsSuperAdmin(c) {
 		data.OwnerID = currentUserID
 	}
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
-		return
-	}
-	result, err := h.subjectService.CreateSubject(&data)
+	result, err := h.userScheduleService.CreateUserSchedule(&data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -67,7 +61,7 @@ func (h *subjectHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
-func (h *subjectHandler) Retrieve(c *gin.Context) {
+func (h *userScheduleHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -80,15 +74,15 @@ func (h *subjectHandler) Retrieve(c *gin.Context) {
 		return
 	}
 
-	var result *model.Subject
+	var result *model.UserSchedule
 	if h.middleware.IsSuperAdmin(c) {
-		result, err = h.subjectService.RetrieveSubject(id)
+		result, err = h.userScheduleService.RetrieveUserSchedule(id)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
 		}
 	} else {
-		result, err = h.subjectService.RetrieveSubjectByOwner(id, currentUserID)
+		result, err = h.userScheduleService.RetrieveUserScheduleByOwner(id, currentUserID)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
@@ -97,7 +91,7 @@ func (h *subjectHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *subjectHandler) Update(c *gin.Context) {
+func (h *userScheduleHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -110,22 +104,17 @@ func (h *subjectHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var data model.Subject
+	var data model.UserSchedule
 	c.BindJSON(&data)
 
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
-		return
-	}
-
-	var result *model.Subject
+	var result *model.UserSchedule
 	if h.middleware.IsSuperAdmin(c) {
-		result, err = h.subjectService.UpdateSubject(id, &data)
+		result, err = h.userScheduleService.UpdateUserSchedule(id, &data)
 	} else {
-		result, err = h.subjectService.UpdateSubjectByOwner(id, currentUserID, &data)
+		result, err = h.userScheduleService.UpdateUserScheduleByOwner(id, currentUserID, &data)
 	}
 
 	if err != nil {
@@ -135,7 +124,7 @@ func (h *subjectHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *subjectHandler) Delete(c *gin.Context) {
+func (h *userScheduleHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -149,12 +138,12 @@ func (h *subjectHandler) Delete(c *gin.Context) {
 	}
 
 	if h.middleware.IsSuperAdmin(c) {
-		if err := h.subjectService.DeleteSubject(id); err != nil {
+		if err := h.userScheduleService.DeleteUserSchedule(id); err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
 		}
 	} else {
-		if err := h.subjectService.DeleteSubjectByOwner(id, currentUserID); err != nil {
+		if err := h.userScheduleService.DeleteUserScheduleByOwner(id, currentUserID); err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
 		}
@@ -163,9 +152,9 @@ func (h *subjectHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
-func (h *subjectHandler) List(c *gin.Context) {
+func (h *userScheduleHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
-	var data model.Subject
+	var data model.UserSchedule
 	c.BindQuery(&data)
 
 	currentUserID, err := h.middleware.GetUserID(c)
@@ -178,12 +167,12 @@ func (h *subjectHandler) List(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	dataList, err := h.subjectService.ListSubject(&data, &pagination)
+	dataList, err := h.userScheduleService.ListUserSchedule(&data, &pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.subjectService.ListSubjectMeta(&data, &pagination)
+	metaList, err := h.userScheduleService.ListUserScheduleMeta(&data, &pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -191,8 +180,8 @@ func (h *subjectHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
-func (h *subjectHandler) DropDown(c *gin.Context) {
-	var data model.Subject
+func (h *userScheduleHandler) DropDown(c *gin.Context) {
+	var data model.UserSchedule
 	c.BindQuery(&data)
 
 	currentUserID, err := h.middleware.GetUserID(c)
@@ -205,7 +194,7 @@ func (h *subjectHandler) DropDown(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	dataList, err := h.subjectService.DropDownSubject(&data)
+	dataList, err := h.userScheduleService.DropDownUserSchedule(&data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
