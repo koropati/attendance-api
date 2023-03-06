@@ -11,7 +11,6 @@ import (
 	"attendance-api/common/http/email"
 	"attendance-api/common/http/response"
 	"attendance-api/common/util/activation"
-	"attendance-api/common/util/cryptos"
 	"attendance-api/common/util/regex"
 	"attendance-api/common/util/token"
 	"attendance-api/infra"
@@ -34,14 +33,16 @@ type AuthUserHandler interface {
 }
 
 type authUserHandler struct {
-	authService service.AuthService
-	infra       infra.Infra
+	authService            service.AuthService
+	activationTokenService service.ActivationTokenService
+	infra                  infra.Infra
 }
 
-func NewAuthHandler(authService service.AuthService, infra infra.Infra) AuthUserHandler {
+func NewAuthHandler(authService service.AuthService, activationTokenService service.ActivationTokenService, infra infra.Infra) AuthUserHandler {
 	return &authUserHandler{
-		authService: authService,
-		infra:       infra,
+		authService:            authService,
+		activationTokenService: activationTokenService,
+		infra:                  infra,
 	}
 }
 
@@ -105,14 +106,23 @@ func (h *authUserHandler) Register(c *gin.Context) {
 			return
 		}
 
-		activationString := activation.New(*user).Generate(24)
-		// log.Printf("activationString: %v\n", activationString)
-		activationToken := cryptos.New(h.infra.Cipher("encrypt")).EncryptAES256(activationString)
-		// log.Printf("activationToken: %v\n", activationToken)
+		expiredToken, activationToken := activation.New(*user).GenerateSHA1(24)
+
+		// Save Activation token to data base
+		activationData, err := h.activationTokenService.CreateActivationToken(&model.ActivationToken{
+			UserID: user.ID,
+			Token:  activationToken,
+			Valid:  expiredToken,
+		})
+
+		if err != nil {
+			response.New(c).Error(http.StatusInternalServerError, err)
+			return
+		}
 
 		go func(user *model.User) {
 			config := h.infra.Config().Sub("server")
-			urlActivation := fmt.Sprintf("%s:%s/auth/activation?code=%s", config.GetString("url"), config.GetString("port"), activationToken)
+			urlActivation := fmt.Sprintf("%s:%s/auth/activation?token=%s", config.GetString("url"), config.GetString("port"), activationData.Token)
 
 			if err := email.New(h.infra.GoMail(), h.infra.Config()).SendActivation(user.FirstName, user.Email, urlActivation); err != nil {
 				log.Printf("Error Send Email E: %v", err)

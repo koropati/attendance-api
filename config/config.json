@@ -23,7 +23,9 @@
     "secret": {
         "key": "v3ry53cr3tk3yk3yNieh!",
         "crypto": "4YaM60r3ng3n4KL0",
-        "crypto32": "passphrasewhichneedstobe32bytes!"
+        "crypto32": "passphrasewhichneedstobe32bytes!",
+        "activation_token_expired": 240,
+        "reset_token_expired": 240
     },
     "access_token_expired": 2,
     "refresh_token_expired": 420,

@@ -51,7 +51,7 @@ func (c *server) handlers() {
 }
 
 func (c *server) v1() {
-	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.infra)
+	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.infra, c.middleware)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
 	scheduleHandler := v1.NewScheduleHandler(c.service.ScheduleService(), c.infra, c.middleware)

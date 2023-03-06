@@ -35,10 +35,12 @@ func TestRegister(t *testing.T) {
 		authServiceMock.On("CheckEmail", mock.AnythingOfType("string")).Return(nil)
 		authServiceMock.On("Register", mock.AnythingOfType("*model.User")).Return(nil)
 
+		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
+
 		gin := gin.New()
 		rec := httptest.NewRecorder()
 
-		authHandler := v1.NewAuthHandler(authServiceMock, infra.New("../../config/config.json"))
+		authHandler := v1.NewAuthHandler(authServiceMock, activationTokenServiceMoc, infra.New("../../config/config.json"))
 		gin.POST("/register", authHandler.Register)
 
 		body, err := json.Marshal(mockUser)
@@ -61,10 +63,12 @@ func TestLogin(t *testing.T) {
 		authServiceMock := new(mocks.AuthServiceMock)
 		authServiceMock.On("Login", mock.AnythingOfType("string")).Return(nil)
 
+		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
+
 		gin := gin.New()
 		rec := httptest.NewRecorder()
 
-		authHandler := v1.NewAuthHandler(authServiceMock, infra.New("../../config/config.json"))
+		authHandler := v1.NewAuthHandler(authServiceMock, activationTokenServiceMoc, infra.New("../../config/config.json"))
 		gin.POST("/login", authHandler.Login)
 
 		body, err := json.Marshal(mockUser)
@@ -92,10 +96,12 @@ func TestDelete(t *testing.T) {
 		authServiceMock.On("CheckID", mock.AnythingOfType("int")).Return(nil)
 		authServiceMock.On("Delete", mock.AnythingOfType("int")).Return(nil)
 
+		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
+
 		gin := gin.New()
 		rec := httptest.NewRecorder()
 
-		authHandler := v1.NewAuthHandler(authServiceMock, infra.New("../../config/config.json"))
+		authHandler := v1.NewAuthHandler(authServiceMock, activationTokenServiceMoc, infra.New("../../config/config.json"))
 		gin.DELETE("/delete", authHandler.Delete)
 
 		req := httptest.NewRequest(http.MethodDelete, "/delete?id=1", nil)
