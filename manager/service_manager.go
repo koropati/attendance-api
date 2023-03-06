@@ -11,6 +11,7 @@ type ServiceManager interface {
 	AuthService() service.AuthService
 	UserService() service.UserService
 	PasswordResetTokenService() service.PasswordResetTokenService
+	ActivationTokenService() service.ActivationTokenService
 	SubjectService() service.SubjectService
 	DailyScheduleService() service.DailyScheduleService
 	ScheduleService() service.ScheduleService
@@ -35,6 +36,7 @@ var (
 	authServiceOnce               sync.Once
 	userServiceOnce               sync.Once
 	passwordResetTokenServiceOnce sync.Once
+	activationTokenServiceOnce    sync.Once
 	subjectServiceOnce            sync.Once
 	dailyScheduleServiceOnce      sync.Once
 	scheduleServiceOnce           sync.Once
@@ -44,6 +46,7 @@ var (
 	authService                   service.AuthService
 	userService                   service.UserService
 	passwordResetTokenService     service.PasswordResetTokenService
+	activationTokenService        service.ActivationTokenService
 	subjectService                service.SubjectService
 	dailyScheduleService          service.DailyScheduleService
 	scheduleService               service.ScheduleService
@@ -74,6 +77,14 @@ func (sm *serviceManager) PasswordResetTokenService() service.PasswordResetToken
 	})
 
 	return passwordResetTokenService
+}
+
+func (sm *serviceManager) ActivationTokenService() service.ActivationTokenService {
+	activationTokenServiceOnce.Do(func() {
+		activationTokenService = sm.repo.ActivationTokenRepo()
+	})
+
+	return activationTokenService
 }
 
 func (sm *serviceManager) SubjectService() service.SubjectService {

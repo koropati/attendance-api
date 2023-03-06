@@ -28,6 +28,7 @@ func main() {
 	i.Migrate(
 		&model.User{},
 		&model.PasswordResetToken{},
+		&model.ActivationToken{},
 		&model.Subject{},
 		&model.Schedule{},
 		&model.DailySchedule{},

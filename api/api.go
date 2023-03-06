@@ -58,6 +58,7 @@ func (c *server) v1() {
 	dailyScheduleHandler := v1.NewDailyScheduleHandler(c.service.DailyScheduleService(), c.infra, c.middleware)
 	userScheduleHandler := v1.NewUserScheduleHandler(c.service.UserScheduleService(), c.infra, c.middleware)
 	passwordResetTokenHandler := v1.NewPasswordResetTokenHandler(c.service.PasswordResetTokenService(), c.infra, c.middleware)
+	activationTokenHandler := v1.NewActivationTokenHandler(c.service.ActivationTokenService(), c.infra, c.middleware)
 
 	v1 := c.gin.Group("v1")
 	{
@@ -79,6 +80,17 @@ func (c *server) v1() {
 			user.GET("/drop-down", userHandler.DropDown)
 			user.PATCH("/active", userHandler.SetActive)
 			user.PATCH("/deactive", userHandler.SetDeactive)
+		}
+
+		activationToken := v1.Group("/activation-token")
+		activationToken.Use(c.middleware.SUPERADMIN())
+		{
+			activationToken.POST("/create", activationTokenHandler.Create)
+			activationToken.GET("/retrieve", activationTokenHandler.Retrieve)
+			activationToken.PUT("/update", activationTokenHandler.Update)
+			activationToken.DELETE("/delete", activationTokenHandler.Delete)
+			activationToken.GET("/list", activationTokenHandler.List)
+			activationToken.GET("/drop-down", activationTokenHandler.DropDown)
 		}
 
 		passwordResetToken := v1.Group("/password-reset-token")

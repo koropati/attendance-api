@@ -11,6 +11,7 @@ type RepoManager interface {
 	AuthRepo() repo.AuthRepo
 	UserRepo() repo.UserRepo
 	PasswordResetTokenRepo() repo.PasswordResetTokenRepo
+	ActivationTokenRepo() repo.ActivationTokenRepo
 	SubjectRepo() repo.SubjectRepo
 	DailyScheduleRepo() repo.DailyScheduleRepo
 	ScheduleRepo() repo.ScheduleRepo
@@ -31,6 +32,7 @@ var (
 	authRepoOnce               sync.Once
 	userRepoOnce               sync.Once
 	passwordResetTokenRepoOnce sync.Once
+	activationTokenRepoOnce    sync.Once
 	subjectRepoOnce            sync.Once
 	dailyScheduleRepoOnce      sync.Once
 	scheduleRepoOnce           sync.Once
@@ -40,6 +42,7 @@ var (
 	authRepo                   repo.AuthRepo
 	userRepo                   repo.UserRepo
 	passwordResetTokenRepo     repo.PasswordResetTokenRepo
+	activationTokenRepo        repo.ActivationTokenRepo
 	subjectRepo                repo.SubjectRepo
 	dailyScheduleRepo          repo.DailyScheduleRepo
 	scheduleRepo               repo.ScheduleRepo
@@ -67,6 +70,13 @@ func (rm *repoManager) PasswordResetTokenRepo() repo.PasswordResetTokenRepo {
 		passwordResetTokenRepo = repo.NewPasswordResetTokenRepo(rm.infra.GormDB())
 	})
 	return passwordResetTokenRepo
+}
+
+func (rm *repoManager) ActivationTokenRepo() repo.ActivationTokenRepo {
+	activationTokenRepoOnce.Do(func() {
+		activationTokenRepo = repo.NewActivationTokenRepo(rm.infra.GormDB())
+	})
+	return activationTokenRepo
 }
 
 func (rm *repoManager) SubjectRepo() repo.SubjectRepo {
