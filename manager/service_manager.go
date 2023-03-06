@@ -10,6 +10,7 @@ import (
 type ServiceManager interface {
 	AuthService() service.AuthService
 	UserService() service.UserService
+	PasswordResetTokenService() service.PasswordResetTokenService
 	SubjectService() service.SubjectService
 	DailyScheduleService() service.DailyScheduleService
 	ScheduleService() service.ScheduleService
@@ -31,22 +32,24 @@ func NewServiceManager(infra infra.Infra) ServiceManager {
 }
 
 var (
-	authServiceOnce          sync.Once
-	userServiceOnce          sync.Once
-	subjectServiceOnce       sync.Once
-	dailyScheduleServiceOnce sync.Once
-	scheduleServiceOnce      sync.Once
-	userScheduleServiceOnce  sync.Once
-	attendanceLogServiceOnce sync.Once
-	attendanceServiceOnce    sync.Once
-	authService              service.AuthService
-	userService              service.UserService
-	subjectService           service.SubjectService
-	dailyScheduleService     service.DailyScheduleService
-	scheduleService          service.ScheduleService
-	userScheduleService      service.UserScheduleService
-	attendanceLogService     service.AttendanceLogService
-	attendanceService        service.AttendanceService
+	authServiceOnce               sync.Once
+	userServiceOnce               sync.Once
+	passwordResetTokenServiceOnce sync.Once
+	subjectServiceOnce            sync.Once
+	dailyScheduleServiceOnce      sync.Once
+	scheduleServiceOnce           sync.Once
+	userScheduleServiceOnce       sync.Once
+	attendanceLogServiceOnce      sync.Once
+	attendanceServiceOnce         sync.Once
+	authService                   service.AuthService
+	userService                   service.UserService
+	passwordResetTokenService     service.PasswordResetTokenService
+	subjectService                service.SubjectService
+	dailyScheduleService          service.DailyScheduleService
+	scheduleService               service.ScheduleService
+	userScheduleService           service.UserScheduleService
+	attendanceLogService          service.AttendanceLogService
+	attendanceService             service.AttendanceService
 )
 
 func (sm *serviceManager) AuthService() service.AuthService {
@@ -63,6 +66,14 @@ func (sm *serviceManager) UserService() service.UserService {
 	})
 
 	return userService
+}
+
+func (sm *serviceManager) PasswordResetTokenService() service.PasswordResetTokenService {
+	passwordResetTokenServiceOnce.Do(func() {
+		passwordResetTokenService = sm.repo.PasswordResetTokenRepo()
+	})
+
+	return passwordResetTokenService
 }
 
 func (sm *serviceManager) SubjectService() service.SubjectService {

@@ -10,6 +10,7 @@ import (
 type RepoManager interface {
 	AuthRepo() repo.AuthRepo
 	UserRepo() repo.UserRepo
+	PasswordResetTokenRepo() repo.PasswordResetTokenRepo
 	SubjectRepo() repo.SubjectRepo
 	DailyScheduleRepo() repo.DailyScheduleRepo
 	ScheduleRepo() repo.ScheduleRepo
@@ -27,22 +28,24 @@ func NewRepoManager(infra infra.Infra) RepoManager {
 }
 
 var (
-	authRepoOnce          sync.Once
-	userRepoOnce          sync.Once
-	subjectRepoOnce       sync.Once
-	dailyScheduleRepoOnce sync.Once
-	scheduleRepoOnce      sync.Once
-	userScheduleRepoOnce  sync.Once
-	attendanceLogRepoOnce sync.Once
-	attendanceRepoOnce    sync.Once
-	authRepo              repo.AuthRepo
-	userRepo              repo.UserRepo
-	subjectRepo           repo.SubjectRepo
-	dailyScheduleRepo     repo.DailyScheduleRepo
-	scheduleRepo          repo.ScheduleRepo
-	userScheduleRepo      repo.UserScheduleRepo
-	attendanceLogRepo     repo.AttendanceLogRepo
-	attendanceRepo        repo.AttendanceRepo
+	authRepoOnce               sync.Once
+	userRepoOnce               sync.Once
+	passwordResetTokenRepoOnce sync.Once
+	subjectRepoOnce            sync.Once
+	dailyScheduleRepoOnce      sync.Once
+	scheduleRepoOnce           sync.Once
+	userScheduleRepoOnce       sync.Once
+	attendanceLogRepoOnce      sync.Once
+	attendanceRepoOnce         sync.Once
+	authRepo                   repo.AuthRepo
+	userRepo                   repo.UserRepo
+	passwordResetTokenRepo     repo.PasswordResetTokenRepo
+	subjectRepo                repo.SubjectRepo
+	dailyScheduleRepo          repo.DailyScheduleRepo
+	scheduleRepo               repo.ScheduleRepo
+	userScheduleRepo           repo.UserScheduleRepo
+	attendanceLogRepo          repo.AttendanceLogRepo
+	attendanceRepo             repo.AttendanceRepo
 )
 
 func (rm *repoManager) AuthRepo() repo.AuthRepo {
@@ -57,6 +60,13 @@ func (rm *repoManager) UserRepo() repo.UserRepo {
 		userRepo = repo.NewUserRepo(rm.infra.GormDB())
 	})
 	return userRepo
+}
+
+func (rm *repoManager) PasswordResetTokenRepo() repo.PasswordResetTokenRepo {
+	passwordResetTokenRepoOnce.Do(func() {
+		passwordResetTokenRepo = repo.NewPasswordResetTokenRepo(rm.infra.GormDB())
+	})
+	return passwordResetTokenRepo
 }
 
 func (rm *repoManager) SubjectRepo() repo.SubjectRepo {

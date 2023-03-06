@@ -27,8 +27,11 @@ func main() {
 	i.SetMode()
 	i.Migrate(
 		&model.User{},
+		&model.PasswordResetToken{},
 		&model.Subject{},
 		&model.Schedule{},
+		&model.DailySchedule{},
+		&model.UserSchedule{},
 	)
 
 	api.NewServer(i).Run()
