@@ -166,3 +166,68 @@ func (m *AuthRepoMock) Delete(id int) error {
 
 	return nil
 }
+
+func (m *AuthRepoMock) SetActiveUser(id int) (*model.User, error) {
+	if err := m.Called(id).Error(0); err != nil {
+		return nil, err
+	}
+	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
+
+	gormData := model.GormCustom{
+		ID:        1,
+		CreatedAt: dateTimeData,
+		UpdatedAt: dateTimeData,
+	}
+
+	userData := model.User{
+		GormCustom:   gormData,
+		Username:     "windowsdewa",
+		Password:     "Password123",
+		FirstName:    "Dewok",
+		LastName:     "Satria",
+		Handphone:    "081222333440",
+		Email:        "windowsdewa.com",
+		Intro:        "Hay guysss",
+		Profile:      "My Name is Dewok ",
+		LastLogin:    dateTimeData,
+		IsActive:     true,
+		IsSuperAdmin: true,
+		IsAdmin:      false,
+		IsUser:       false,
+	}
+
+	return &userData, nil
+}
+
+func (m *AuthRepoMock) SetDeactiveUser(id int) (*model.User, error) {
+	if err := m.Called(id).Error(0); err != nil {
+		return nil, err
+	}
+
+	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
+
+	gormData := model.GormCustom{
+		ID:        1,
+		CreatedAt: dateTimeData,
+		UpdatedAt: dateTimeData,
+	}
+
+	userData := model.User{
+		GormCustom:   gormData,
+		Username:     "windowsdewa",
+		Password:     "Password123",
+		FirstName:    "Dewok",
+		LastName:     "Satria",
+		Handphone:    "081222333440",
+		Email:        "windowsdewa.com",
+		Intro:        "Hay guysss",
+		Profile:      "My Name is Dewok ",
+		LastLogin:    dateTimeData,
+		IsActive:     true,
+		IsSuperAdmin: true,
+		IsAdmin:      false,
+		IsUser:       false,
+	}
+
+	return &userData, nil
+}

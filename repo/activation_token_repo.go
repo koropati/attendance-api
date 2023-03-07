@@ -2,6 +2,8 @@ package repo
 
 import (
 	"attendance-api/model"
+	"log"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +16,7 @@ type ActivationTokenRepo interface {
 	ListActivationToken(activationToken *model.ActivationToken, pagination *model.Pagination) (*[]model.ActivationToken, error)
 	ListActivationTokenMeta(activationToken *model.ActivationToken, pagination *model.Pagination) (*model.Meta, error)
 	DropDownActivationToken(activationToken *model.ActivationToken) (*[]model.ActivationToken, error)
+	IsValid(token string) (isValid bool, userID uint)
 }
 
 type activationTokenRepo struct {
@@ -103,6 +106,24 @@ func (r *activationTokenRepo) DropDownActivationToken(subject *model.ActivationT
 		return nil, err
 	}
 	return &activationTokens, nil
+}
+
+func (r *activationTokenRepo) IsValid(token string) (isValid bool, userID uint) {
+	var data model.ActivationToken
+	if err := r.db.Table("activation_tokens").Where("token = ?", token).First(&data).Error; err != nil {
+		log.Printf("[Error] [IsValid] E: %v\n", err)
+		isValid = false
+		userID = 0
+	} else {
+		if data.Valid.After(time.Now()) {
+			isValid = false
+			userID = 0
+		} else {
+			isValid = true
+			userID = data.UserID
+		}
+	}
+	return
 }
 
 func FilterActivationToken(query *gorm.DB, subject *model.ActivationToken) *gorm.DB {

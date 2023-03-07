@@ -22,6 +22,8 @@ type AuthService interface {
 	GetByEmail(email string) (user *model.User, err error)
 	Create(user *model.User) error
 	Delete(id int) error
+	SetActiveUser(id int) (*model.User, error)
+	SetDeactiveUser(id int) (*model.User, error)
 }
 
 type authService struct {
@@ -139,4 +141,20 @@ func (s *authService) Delete(id int) error {
 	}
 
 	return nil
+}
+
+func (s *authService) SetActiveUser(id int) (*model.User, error) {
+	userUpdate, err := s.authRepo.SetActiveUser(id)
+	if err != nil {
+		return nil, err
+	}
+	return userUpdate, nil
+}
+
+func (s *authService) SetDeactiveUser(id int) (*model.User, error) {
+	userUpdate, err := s.authRepo.SetDeactiveUser(id)
+	if err != nil {
+		return nil, err
+	}
+	return userUpdate, nil
 }

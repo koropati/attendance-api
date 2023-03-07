@@ -22,10 +22,12 @@ func TestListUser(t *testing.T) {
 		userServiceMock.On("ListUser", mock.AnythingOfType("*model.User"), mock.AnythingOfType("*model.Pagination")).Return(nil)
 		userServiceMock.On("ListUserMeta", mock.AnythingOfType("*model.User"), mock.AnythingOfType("*model.Pagination")).Return(nil)
 
+		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
+
 		gin := gin.New()
 		rec := httptest.NewRecorder()
 		infra := infra.New("../../config/config.json")
-		UserHandler := v1.NewUserHandler(userServiceMock, infra, middleware.NewMiddleware(infra.Config().GetString("secret.key")))
+		UserHandler := v1.NewUserHandler(userServiceMock, activationTokenServiceMoc, infra, middleware.NewMiddleware(infra.Config().GetString("secret.key")))
 		gin.GET("/user/list", UserHandler.List)
 
 		req := httptest.NewRequest(http.MethodGet, "/user/list", strings.NewReader(""))

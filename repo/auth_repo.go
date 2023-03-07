@@ -23,6 +23,8 @@ type AuthRepo interface {
 	GetByEmail(email string) (user *model.User, err error)
 	Create(user *model.User) error
 	Delete(id int) error
+	SetActiveUser(id int) (*model.User, error)
+	SetDeactiveUser(id int) (*model.User, error)
 }
 
 type authRepo struct {
@@ -187,4 +189,20 @@ func (r *authRepo) Delete(id int) error {
 	}
 
 	return nil
+}
+
+func (r *authRepo) SetActiveUser(id int) (*model.User, error) {
+	var user model.User
+	if err := r.db.Model(&user).Where("id = ?", id).Update("is_active", true).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *authRepo) SetDeactiveUser(id int) (*model.User, error) {
+	var user model.User
+	if err := r.db.Model(&user).Where("id = ?", id).Update("is_active", false).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

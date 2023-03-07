@@ -52,7 +52,7 @@ func (c *server) handlers() {
 
 func (c *server) v1() {
 	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.infra)
-	userHandler := v1.NewUserHandler(c.service.UserService(), c.infra, c.middleware)
+	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
 	scheduleHandler := v1.NewScheduleHandler(c.service.ScheduleService(), c.infra, c.middleware)
 	dailyScheduleHandler := v1.NewDailyScheduleHandler(c.service.DailyScheduleService(), c.infra, c.middleware)
@@ -67,6 +67,7 @@ func (c *server) v1() {
 			auth.POST("/register", authHandler.Register)
 			auth.POST("/login", authHandler.Login)
 			auth.POST("/refresh", authHandler.Refresh)
+			auth.GET("/activation", authHandler.Activation)
 		}
 
 		user := v1.Group("/user")

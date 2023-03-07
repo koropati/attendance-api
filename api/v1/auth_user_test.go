@@ -89,29 +89,3 @@ func TestLogin(t *testing.T) {
 		})
 	})
 }
-
-func TestDelete(t *testing.T) {
-	t.Run("test normal case delete", func(t *testing.T) {
-		authServiceMock := new(mocks.AuthServiceMock)
-		authServiceMock.On("CheckID", mock.AnythingOfType("int")).Return(nil)
-		authServiceMock.On("Delete", mock.AnythingOfType("int")).Return(nil)
-
-		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
-
-		gin := gin.New()
-		rec := httptest.NewRecorder()
-
-		authHandler := v1.NewAuthHandler(authServiceMock, activationTokenServiceMoc, infra.New("../../config/config.json"))
-		gin.DELETE("/delete", authHandler.Delete)
-
-		req := httptest.NewRequest(http.MethodDelete, "/delete?id=1", nil)
-		gin.ServeHTTP(rec, req)
-
-		exp := `{"code":200,"message":"success: user deleted"}`
-
-		t.Run("test status code and response body", func(t *testing.T) {
-			assert.Equal(t, http.StatusOK, rec.Code)
-			assert.Equal(t, exp, rec.Body.String())
-		})
-	})
-}

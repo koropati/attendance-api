@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-	"strconv"
 
 	"attendance-api/common/http/email"
 	"attendance-api/common/http/response"
@@ -28,8 +27,7 @@ type AuthUserHandler interface {
 	Register(c *gin.Context)
 	Refresh(c *gin.Context)
 	Login(c *gin.Context)
-	Create(c *gin.Context)
-	Delete(c *gin.Context)
+	Activation(c *gin.Context)
 }
 
 type authUserHandler struct {
@@ -276,74 +274,25 @@ func (h *authUserHandler) Refresh(c *gin.Context) {
 	response.New(c).Data(200, "success refresh", dataOutput)
 }
 
-func (h *authUserHandler) Create(c *gin.Context) {
-	var data model.User
-	c.BindJSON(&data)
-
-	if err := validation.Validate(data.Username, validation.Required, validation.Length(4, 30), is.Alphanumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("username: %v", err))
+func (h *authUserHandler) Activation(c *gin.Context) {
+	token := c.Query("token")
+	if token == "" {
+		err := fmt.Errorf("invalid activation token")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	isValid, userID := h.activationTokenService.IsValid(token)
+	if userID == 0 && !isValid {
+		err := fmt.Errorf("activation token is expired")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	user, err := h.authService.SetActiveUser(int(userID))
+	if err != nil {
+		err := fmt.Errorf("activation token is expired")
+		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
 
-	if err := validation.Validate(data.Password, validation.Required, validation.Length(6, 40)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("password: %v", err))
-		return
-	}
-
-	if err := validation.Validate(data.Email, validation.Required, validation.Length(6, 50)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("email: %v", err))
-		return
-	}
-
-	if err := validation.Validate(data.FirstName, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("first_name: %v", err))
-		return
-	}
-
-	if !h.authService.CheckHandphone(data.Handphone) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("handphone: already taken"))
-	}
-
-	if !h.authService.CheckEmail(data.Email) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("email: already taken"))
-	}
-
-	if h.authService.CheckUsername(data.Username) {
-		password, err := bcrypt.GenerateFromPassword([]byte(data.Password), 10)
-		if err != nil {
-			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("password: %v", err))
-			return
-		}
-
-		data.Password = string(password)
-		if err := h.authService.Create(&data); err != nil {
-			response.New(c).Error(http.StatusInternalServerError, err)
-			return
-		}
-
-		response.New(c).Write(http.StatusCreated, "success: user created")
-		return
-	}
-
-	response.New(c).Error(http.StatusBadRequest, errors.New("username: already taken"))
-}
-
-func (h *authUserHandler) Delete(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
-	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
-		return
-	}
-
-	if h.authService.CheckID(id) {
-		if err := h.authService.Delete(id); err != nil {
-			response.New(c).Error(http.StatusInternalServerError, err)
-			return
-		}
-
-		response.New(c).Write(http.StatusOK, "success: user deleted")
-		return
-	}
-
-	response.New(c).Error(http.StatusBadRequest, errors.New("id: not found"))
+	response.New(c).Data(200, "success activate user", user)
 }

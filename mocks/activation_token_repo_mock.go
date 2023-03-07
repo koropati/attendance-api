@@ -135,3 +135,11 @@ func (m *ActivationTokenRepoMock) DropDownActivationToken(user *model.Activation
 
 	return &datas, nil
 }
+
+func (m *ActivationTokenRepoMock) IsValid(token string) (isValid bool, userID uint) {
+	if err := m.Called(token).Error(0); err != nil {
+		return false, 0
+	}
+
+	return true, 1
+}

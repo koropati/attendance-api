@@ -13,6 +13,7 @@ type ActivationTokenService interface {
 	ListActivationToken(subject *model.ActivationToken, pagination *model.Pagination) (*[]model.ActivationToken, error)
 	ListActivationTokenMeta(subject *model.ActivationToken, pagination *model.Pagination) (*model.Meta, error)
 	DropDownActivationToken(subject *model.ActivationToken) (*[]model.ActivationToken, error)
+	IsValid(token string) (isValid bool, userID uint)
 }
 
 type activationTokenService struct {
@@ -77,4 +78,9 @@ func (s *activationTokenService) DropDownActivationToken(subject *model.Activati
 		return nil, err
 	}
 	return datas, nil
+}
+
+func (s *activationTokenService) IsValid(token string) (isValid bool, userID uint) {
+	isValid, userID = s.activationTokenRepo.IsValid(token)
+	return
 }

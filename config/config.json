@@ -43,5 +43,10 @@
         "instagram": "www.instagram.com/my_instagram",
         "term_of_use": "www.github.com/term",
         "privacy_policy": "www.github.com/privacy"
+    },
+    "front_end": {
+        "base_url": "",
+        "activation_path": "",
+        "reset_password_path": ""
     }
 }
