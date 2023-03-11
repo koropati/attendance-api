@@ -45,8 +45,8 @@
         "privacy_policy": "www.github.com/privacy"
     },
     "front_end": {
-        "base_url": "",
-        "activation_path": "",
-        "reset_password_path": ""
+        "base_url": "https://google.com/",
+        "activation_path": "active/",
+        "reset_password_path": "reset/"
     }
 }

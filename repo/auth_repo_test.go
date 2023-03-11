@@ -29,6 +29,13 @@ var u = model.User{
 	IsUser:       false,
 }
 
+var uPassword = model.UserUpdatePasswordForm{
+	ID:              1,
+	CurrentPassword: "currentPassword",
+	NewPassword:     "newPassword",
+	ConfirmPassword: "newPassword",
+}
+
 var pagination = model.Pagination{
 	Limit: 2,
 	Page:  1,

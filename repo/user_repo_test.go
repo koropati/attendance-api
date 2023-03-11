@@ -144,3 +144,41 @@ func TestDeleteUser(t *testing.T) {
 		})
 	})
 }
+
+func TestUpdatePassword(t *testing.T) {
+	t.Run("test normal case repo update password", func(t *testing.T) {
+		gormDB, mock := MockGormDB()
+
+		queryDelete := "UPDATE `users` SET `users`.`password` = ?, `users`.`updated_at` = ? WHERE `users`.`id` = ?"
+
+		mock.ExpectExec(queryDelete).
+			WithArgs("passwordBaruHash", AnyTime{}, 1).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		userRepo := repo.NewUserRepo(gormDB)
+		err := userRepo.UpdatePassword(&uPassword)
+
+		t.Run("test data update password with no error", func(t *testing.T) {
+			assert.Equal(t, nil, err)
+		})
+	})
+}
+
+func TestGetPassword(t *testing.T) {
+	t.Run("test normal case repo get password", func(t *testing.T) {
+		gormDB, mock := MockGormDB()
+
+		query := "SELECT password FROM `users` WHERE `user`.`id` = ? ORDER BY created_at asc LIMIT 1"
+
+		mock.ExpectExec(query).
+			WithArgs(1).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		userRepo := repo.NewUserRepo(gormDB)
+		_, err := userRepo.GetPassword(1)
+
+		t.Run("test data get password with no error", func(t *testing.T) {
+			assert.Equal(t, nil, err)
+		})
+	})
+}

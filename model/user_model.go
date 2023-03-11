@@ -50,6 +50,13 @@ type UserForgotPasswordForm struct {
 	ConfirmPassword string `json:"confirm_password"`
 }
 
+type UserUpdatePasswordForm struct {
+	ID              uint   `json:"id" query:"id"`
+	CurrentPassword string `json:"current_password" query:"current_password"`
+	NewPassword     string `json:"new_password" query:"new_password"`
+	ConfirmPassword string `json:"confirm_password" query:"confirm_password"`
+}
+
 type UserDropDown struct {
 	ID        uint   `json:"id"`
 	Username  string `json:"username"`

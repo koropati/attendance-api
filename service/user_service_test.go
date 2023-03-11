@@ -121,3 +121,31 @@ func TestSetDeactiveUser(t *testing.T) {
 		})
 	})
 }
+
+func TestUpdatePassword(t *testing.T) {
+	t.Run("test normal case service update password", func(t *testing.T) {
+		UserRepoMock := new(mocks.UserRepoMock)
+		UserRepoMock.On("UpdatePassword", mock.AnythingOfType("*model.UserUpdatePasswordForm")).Return(nil)
+
+		userService := service.NewUserService(UserRepoMock)
+		err := userService.UpdatePassword(&uPassword)
+
+		t.Run("test update password", func(t *testing.T) {
+			assert.Equal(t, true, err == nil)
+		})
+	})
+}
+
+func TestGetPassword(t *testing.T) {
+	t.Run("test normal case service get password", func(t *testing.T) {
+		UserRepoMock := new(mocks.UserRepoMock)
+		UserRepoMock.On("GetPassword", mock.AnythingOfType("int")).Return(nil)
+
+		userService := service.NewUserService(UserRepoMock)
+		_, err := userService.GetPassword(1)
+
+		t.Run("test get password", func(t *testing.T) {
+			assert.Equal(t, true, err == nil)
+		})
+	})
+}

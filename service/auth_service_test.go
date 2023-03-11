@@ -21,6 +21,13 @@ var u = model.User{
 	IsSuperAdmin: true,
 }
 
+var uPassword = model.UserUpdatePasswordForm{
+	ID:              1,
+	CurrentPassword: "currentPassword",
+	NewPassword:     "newPassword",
+	ConfirmPassword: "newPassword",
+}
+
 var p = model.Pagination{
 	Limit: 3,
 	Page:  1,

@@ -25,6 +25,8 @@ type UserService interface {
 	SetActiveUser(id int) (*model.User, error)
 	SetDeactiveUser(id int) (*model.User, error)
 	DropDownUser(user *model.User) (*[]model.UserDropDown, error)
+	GetPassword(id int) (hashPassword string, err error)
+	UpdatePassword(userPasswordData *model.UserUpdatePasswordForm) error
 }
 
 type userService struct {
@@ -153,4 +155,20 @@ func (s *userService) DropDownUser(user *model.User) (*[]model.UserDropDown, err
 		return nil, err
 	}
 	return datas, nil
+}
+
+func (s *userService) GetPassword(id int) (hashPassword string, err error) {
+	hashPassword, err = s.userRepo.GetPassword(id)
+	if err != nil {
+		return "", err
+	}
+	return
+}
+
+func (s *userService) UpdatePassword(userPasswordData *model.UserUpdatePasswordForm) error {
+	err := s.userRepo.UpdatePassword(userPasswordData)
+	if err != nil {
+		return err
+	}
+	return nil
 }

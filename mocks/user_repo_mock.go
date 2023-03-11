@@ -335,3 +335,19 @@ func (m *UserRepoMock) DropDownUser(user *model.User) (*[]model.UserDropDown, er
 
 	return &users, nil
 }
+
+func (m *UserRepoMock) UpdatePassword(userPasswordForm *model.UserUpdatePasswordForm) error {
+	if err := m.Called(userPasswordForm).Error(0); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *UserRepoMock) GetPassword(id int) (hashPassword string, err error) {
+	if err := m.Called(id).Error(0); err != nil {
+		return "", err
+	}
+
+	return "hashPasswordNya", nil
+}

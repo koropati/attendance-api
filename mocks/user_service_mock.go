@@ -358,3 +358,19 @@ func (m *UserServiceMock) DropDownUser(user *model.User) (*[]model.UserDropDown,
 
 	return &users, nil
 }
+
+func (m *UserServiceMock) UpdatePassword(userPasswordData *model.UserUpdatePasswordForm) error {
+	if err := m.Called(userPasswordData).Error(0); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *UserServiceMock) GetPassword(id int) (hashPassword string, err error) {
+	if err := m.Called(id).Error(0); err != nil {
+		return "", err
+	}
+
+	return "hashPasswordNya", nil
+}

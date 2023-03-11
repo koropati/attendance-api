@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -26,6 +27,8 @@ type UserRepo interface {
 	SetActiveUser(id int) (*model.User, error)
 	SetDeactiveUser(id int) (*model.User, error)
 	DropDownUser(user *model.User) (*[]model.UserDropDown, error)
+	GetPassword(id int) (hashPassword string, err error)
+	UpdatePassword(updatePasswordData *model.UserUpdatePasswordForm) error
 }
 
 type userRepo struct {
@@ -185,7 +188,7 @@ func (r *userRepo) CreateUser(user *model.User) (*model.User, error) {
 }
 
 func (r *userRepo) RetrieveUser(id int) (user *model.User, err error) {
-	if err := r.db.Table("users").Where("id = ?").First(&user).Error; err != nil {
+	if err := r.db.Table("users").Where("id = ?", id).First(&user).Error; err != nil {
 		return nil, err
 	}
 
@@ -246,6 +249,26 @@ func (r *userRepo) DropDownUser(user *model.User) (results *[]model.UserDropDown
 	query = query.Find(&results)
 	if err := query.Error; err != nil {
 		return nil, err
+	}
+	return
+}
+
+func (r *userRepo) GetPassword(id int) (hashPassword string, err error) {
+	if err := r.db.Select("password").Model(&model.User{}).Where("id = ?", id).First(&hashPassword).Error; err != nil {
+		return "", err
+	}
+
+	return
+}
+
+func (r *userRepo) UpdatePassword(userPasswordData *model.UserUpdatePasswordForm) (err error) {
+	query := r.db.Model(&model.User{}).Where("id = ?", userPasswordData.ID)
+
+	if err := query.Updates(map[string]interface{}{
+		"password":   userPasswordData.NewPassword,
+		"updated_at": time.Now(),
+	}).Error; err != nil {
+		return err
 	}
 	return
 }

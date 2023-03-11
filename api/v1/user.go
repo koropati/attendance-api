@@ -33,6 +33,7 @@ type UserHandler interface {
 	DropDown(c *gin.Context)
 	SetActive(c *gin.Context)
 	SetDeactive(c *gin.Context)
+	UpdatePassword(c *gin.Context)
 }
 
 type userHandler struct {
@@ -293,4 +294,62 @@ func (h *userHandler) SetDeactive(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 	response.New(c).Data(http.StatusOK, "success set deactive data", result)
+}
+
+func (h *userHandler) UpdatePassword(c *gin.Context) {
+	var data model.UserUpdatePasswordForm
+	c.BindJSON(&data)
+	if err := validation.Validate(data.CurrentPassword, validation.Required); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("current_password: %v", err))
+		return
+	}
+
+	if err := validation.Validate(data.NewPassword, validation.Required, validation.Length(6, 40)); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("new_password: %v", err))
+		return
+	}
+
+	if err := validation.Validate(data.ConfirmPassword, validation.Required, validation.Length(6, 40)); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("confirm_password: %v", err))
+		return
+	}
+
+	if data.NewPassword != data.ConfirmPassword {
+		err := fmt.Errorf("confirm_password: password confirmation not match")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	data.ID = uint(currentUserID)
+	hashPassword, err := h.userService.GetPassword(currentUserID)
+
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("user: %v", err))
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(data.CurrentPassword)); err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("password: password not match"))
+		return
+	}
+
+	password, err := bcrypt.GenerateFromPassword([]byte(data.NewPassword), 10)
+	if err != nil {
+		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("password: %v", err))
+		return
+	}
+
+	data.NewPassword = string(password)
+	err = h.userService.UpdatePassword(&data)
+	if err != nil {
+		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("user: %v", err))
+		return
+	}
+	response.New(c).Write(http.StatusOK, "success update password")
 }
