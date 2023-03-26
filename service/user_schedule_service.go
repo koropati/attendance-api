@@ -3,6 +3,7 @@ package service
 import (
 	"attendance-api/model"
 	"attendance-api/repo"
+	"time"
 )
 
 type UserScheduleService interface {
@@ -16,6 +17,7 @@ type UserScheduleService interface {
 	ListUserSchedule(userschedule *model.UserSchedule, pagination *model.Pagination) (*[]model.UserSchedule, error)
 	ListUserScheduleMeta(userschedule *model.UserSchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownUserSchedule(userschedule *model.UserSchedule) (*[]model.UserSchedule, error)
+	CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error)
 }
 
 type userScheduleService struct {
@@ -104,4 +106,8 @@ func (s *userScheduleService) DropDownUserSchedule(userschedule *model.UserSched
 		return nil, err
 	}
 	return datas, nil
+}
+
+func (s *userScheduleService) CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error) {
+	return s.userScheduleRepo.CheckHaveSchedule(userID, date)
 }

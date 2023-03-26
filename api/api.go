@@ -59,6 +59,14 @@ func (c *server) v1() {
 	userScheduleHandler := v1.NewUserScheduleHandler(c.service.UserScheduleService(), c.infra, c.middleware)
 	passwordResetTokenHandler := v1.NewPasswordResetTokenHandler(c.service.PasswordResetTokenService(), c.infra, c.middleware)
 	activationTokenHandler := v1.NewActivationTokenHandler(c.service.ActivationTokenService(), c.infra, c.middleware)
+	attendanceHandler := v1.NewAttendanceHandler(
+		c.service.AttendanceService(),
+		c.service.AttendanceLogService(),
+		c.service.ScheduleService(),
+		c.service.DailyScheduleService(),
+		c.infra,
+		c.middleware,
+	)
 
 	v1 := c.gin.Group("v1")
 	{
@@ -148,6 +156,17 @@ func (c *server) v1() {
 			userSchedule.DELETE("/delete", userScheduleHandler.Delete)
 			userSchedule.GET("/list", userScheduleHandler.List)
 			userSchedule.GET("/drop-down", userScheduleHandler.DropDown)
+		}
+
+		attendance := v1.Group("/attendance")
+		attendance.Use(c.middleware.AUTH())
+		{
+			attendance.POST("/create", attendanceHandler.Create)
+			attendance.GET("/retrieve", attendanceHandler.Retrieve)
+			attendance.PUT("/update", attendanceHandler.Update)
+			attendance.DELETE("/delete", attendanceHandler.Delete)
+			attendance.GET("/list", attendanceHandler.List)
+			attendance.GET("/drop-down", attendanceHandler.DropDown)
 		}
 	}
 

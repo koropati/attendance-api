@@ -8,11 +8,15 @@ import (
 type AttendanceService interface {
 	CreateAttendance(attendance *model.Attendance) (*model.Attendance, error)
 	RetrieveAttendance(id int) (*model.Attendance, error)
+	RetrieveAttendanceByUserID(id int, userID int) (*model.Attendance, error)
 	UpdateAttendance(id int, attendance *model.Attendance) (*model.Attendance, error)
+	UpdateAttendanceByUserID(id int, userID int, attendance *model.Attendance) (*model.Attendance, error)
 	DeleteAttendance(id int) error
+	DeleteAttendanceByUserID(id int, userID int) error
 	ListAttendance(attendance *model.Attendance, pagination *model.Pagination) (*[]model.Attendance, error)
 	ListAttendanceMeta(attendance *model.Attendance, pagination *model.Pagination) (*model.Meta, error)
 	DropDownAttendance(attendance *model.Attendance) (*[]model.Attendance, error)
+	CheckIsExist(id int) (isExist bool, err error)
 }
 
 type attendanceService struct {
@@ -39,6 +43,14 @@ func (s *attendanceService) RetrieveAttendance(id int) (*model.Attendance, error
 	return data, nil
 }
 
+func (s *attendanceService) RetrieveAttendanceByUserID(id int, userID int) (*model.Attendance, error) {
+	data, err := s.attendanceRepo.RetrieveAttendanceByUserID(id, userID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *attendanceService) UpdateAttendance(id int, attendance *model.Attendance) (*model.Attendance, error) {
 	data, err := s.attendanceRepo.UpdateAttendance(id, attendance)
 	if err != nil {
@@ -47,8 +59,24 @@ func (s *attendanceService) UpdateAttendance(id int, attendance *model.Attendanc
 	return data, nil
 }
 
+func (s *attendanceService) UpdateAttendanceByUserID(id int, userID int, attendance *model.Attendance) (*model.Attendance, error) {
+	data, err := s.attendanceRepo.UpdateAttendanceByUserID(id, userID, attendance)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *attendanceService) DeleteAttendance(id int) error {
 	if err := s.attendanceRepo.DeleteAttendance(id); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func (s *attendanceService) DeleteAttendanceByUserID(id int, userID int) error {
+	if err := s.attendanceRepo.DeleteAttendanceByUserID(id, userID); err != nil {
 		return err
 	} else {
 		return nil
@@ -77,4 +105,8 @@ func (s *attendanceService) DropDownAttendance(attendance *model.Attendance) (*[
 		return nil, err
 	}
 	return datas, nil
+}
+
+func (s *attendanceService) CheckIsExist(id int) (isExist bool, err error) {
+	return s.attendanceRepo.CheckIsExist(id)
 }

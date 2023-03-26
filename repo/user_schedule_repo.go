@@ -2,6 +2,8 @@ package repo
 
 import (
 	"attendance-api/model"
+	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -17,6 +19,7 @@ type UserScheduleRepo interface {
 	ListUserSchedule(userschedule *model.UserSchedule, pagination *model.Pagination) (*[]model.UserSchedule, error)
 	ListUserScheduleMeta(userschedule *model.UserSchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownUserSchedule(userschedule *model.UserSchedule) (*[]model.UserSchedule, error)
+	CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error)
 }
 
 type userScheduleRepo struct {
@@ -127,6 +130,23 @@ func (r *userScheduleRepo) DropDownUserSchedule(userschedule *model.UserSchedule
 		return nil, err
 	}
 	return &userschedules, nil
+}
+
+func (r *userScheduleRepo) CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error) {
+	type DataSchedule struct {
+		IsHaveSchedule bool `json:"is_have_schedule" query:"is_have_schedule"`
+		ScheduleID     int  `json:"schedule_id" query:"schedule_id"`
+	}
+	var data DataSchedule
+	rawQuery := fmt.Sprintf(`SELECT COUNT(*) > 0 as is_have_schedule, us.schedule_id as schedule_id 
+	FROM user_schedules us 
+	LEFT JOIN schedules s ON us.schedule_id = s.id 
+	WHERE us.user_id = %d AND %v BETWEEN s.start_date AND s.end_date`, userID, date)
+
+	if err := r.db.Raw(rawQuery).Scan(&data).Error; err != nil {
+		return data.IsHaveSchedule, data.ScheduleID, err
+	}
+	return data.IsHaveSchedule, data.ScheduleID, nil
 }
 
 func FilterUserSchedule(query *gorm.DB, userschedule *model.UserSchedule) *gorm.DB {

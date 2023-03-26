@@ -16,6 +16,7 @@ type DailyScheduleService interface {
 	ListDailySchedule(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*[]model.DailySchedule, error)
 	ListDailyScheduleMeta(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownDailySchedule(dailyschedule *model.DailySchedule) (*[]model.DailySchedule, error)
+	CheckHaveDailySchedule(scheduleID int, day string) (isHaveDailySchedule bool, dailyScheduleID int, err error)
 }
 
 type dailyScheduleService struct {
@@ -104,4 +105,8 @@ func (s *dailyScheduleService) DropDownDailySchedule(dailyschedule *model.DailyS
 		return nil, err
 	}
 	return datas, nil
+}
+
+func (s *dailyScheduleService) CheckHaveDailySchedule(scheduleID int, day string) (isHaveDailySchedule bool, dailyScheduleID int, err error) {
+	return s.dailyScheduleRepo.CheckHaveDailySchedule(scheduleID, day)
 }

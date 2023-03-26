@@ -16,6 +16,7 @@ type ScheduleService interface {
 	ListSchedule(schedule *model.Schedule, pagination *model.Pagination) (*[]model.Schedule, error)
 	ListScheduleMeta(schedule *model.Schedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error)
+	CheckIsExist(id int) (isExist bool, err error)
 }
 
 type scheduleService struct {
@@ -104,4 +105,8 @@ func (s *scheduleService) DropDownSchedule(schedule *model.Schedule) (*[]model.S
 		return nil, err
 	}
 	return datas, nil
+}
+
+func (s *scheduleService) CheckIsExist(id int) (isExist bool, err error) {
+	return s.scheduleRepo.CheckIsExist(id)
 }

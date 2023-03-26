@@ -17,6 +17,7 @@ type ScheduleRepo interface {
 	ListSchedule(schedule *model.Schedule, pagination *model.Pagination) (*[]model.Schedule, error)
 	ListScheduleMeta(schedule *model.Schedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error)
+	CheckIsExist(id int) (isExist bool, err error)
 }
 
 type scheduleRepo struct {
@@ -127,6 +128,13 @@ func (r *scheduleRepo) DropDownSchedule(schedule *model.Schedule) (*[]model.Sche
 		return nil, err
 	}
 	return &schedules, nil
+}
+
+func (r *scheduleRepo) CheckIsExist(id int) (isExist bool, err error) {
+	if err := r.db.Table("schedules").Select("count(*) > 0").Where("id = ?", id).Find(&isExist).Error; err != nil {
+		return false, err
+	}
+	return
 }
 
 func FilterSchedule(query *gorm.DB, schedule *model.Schedule) *gorm.DB {

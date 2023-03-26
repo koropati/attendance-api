@@ -9,11 +9,15 @@ import (
 type AttendanceRepo interface {
 	CreateAttendance(attendance *model.Attendance) (*model.Attendance, error)
 	RetrieveAttendance(id int) (*model.Attendance, error)
+	RetrieveAttendanceByUserID(id int, userID int) (*model.Attendance, error)
 	UpdateAttendance(id int, attendance *model.Attendance) (*model.Attendance, error)
+	UpdateAttendanceByUserID(id int, userID int, attendance *model.Attendance) (*model.Attendance, error)
 	DeleteAttendance(id int) error
+	DeleteAttendanceByUserID(id int, userID int) error
 	ListAttendance(attendance *model.Attendance, pagination *model.Pagination) (*[]model.Attendance, error)
 	ListAttendanceMeta(attendance *model.Attendance, pagination *model.Pagination) (*model.Meta, error)
 	DropDownAttendance(attendance *model.Attendance) (*[]model.Attendance, error)
+	CheckIsExist(id int) (isExist bool, err error)
 }
 
 type attendanceRepo struct {
@@ -39,6 +43,14 @@ func (r *attendanceRepo) RetrieveAttendance(id int) (*model.Attendance, error) {
 	return &attendance, nil
 }
 
+func (r *attendanceRepo) RetrieveAttendanceByUserID(id int, userID int) (*model.Attendance, error) {
+	var attendance model.Attendance
+	if err := r.db.Model(&model.Attendance{}).Where("id = ? AND user_id = ?", id, userID).First(&attendance).Error; err != nil {
+		return nil, err
+	}
+	return &attendance, nil
+}
+
 func (r *attendanceRepo) UpdateAttendance(id int, attendance *model.Attendance) (*model.Attendance, error) {
 	if err := r.db.Model(&model.Attendance{}).Where("id = ?", id).Updates(&attendance).Error; err != nil {
 		return nil, err
@@ -46,8 +58,22 @@ func (r *attendanceRepo) UpdateAttendance(id int, attendance *model.Attendance) 
 	return attendance, nil
 }
 
+func (r *attendanceRepo) UpdateAttendanceByUserID(id int, userID int, attendance *model.Attendance) (*model.Attendance, error) {
+	if err := r.db.Model(&model.Attendance{}).Where("id = ? AND user_Id = ?", id, userID).Updates(&attendance).Error; err != nil {
+		return nil, err
+	}
+	return attendance, nil
+}
+
 func (r *attendanceRepo) DeleteAttendance(id int) error {
 	if err := r.db.Delete(&model.Attendance{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *attendanceRepo) DeleteAttendanceByUserID(id int, userID int) error {
+	if err := r.db.Where("id = ? AND user_id = ?", id, userID).Delete(&model.Attendance{}).Error; err != nil {
 		return err
 	}
 	return nil
@@ -102,6 +128,13 @@ func (r *attendanceRepo) DropDownAttendance(attendance *model.Attendance) (*[]mo
 		return nil, err
 	}
 	return &attendances, nil
+}
+
+func (r *attendanceRepo) CheckIsExist(id int) (isExist bool, err error) {
+	if err := r.db.Table("attendance").Select("count(*) > 0").Where("id = ?", id).Find(&isExist).Error; err != nil {
+		return false, err
+	}
+	return
 }
 
 func FilterAttendance(query *gorm.DB, attendance *model.Attendance) *gorm.DB {

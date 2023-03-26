@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -17,6 +18,7 @@ type DailyScheduleRepo interface {
 	ListDailySchedule(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*[]model.DailySchedule, error)
 	ListDailyScheduleMeta(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownDailySchedule(dailyschedule *model.DailySchedule) (*[]model.DailySchedule, error)
+	CheckHaveDailySchedule(scheduleID int, day string) (isHaveDailySchedule bool, dailyScheduleID int, err error)
 }
 
 type dailyScheduleRepo struct {
@@ -127,6 +129,21 @@ func (r *dailyScheduleRepo) DropDownDailySchedule(dailyschedule *model.DailySche
 		return nil, err
 	}
 	return &dailyschedules, nil
+}
+
+func (r *dailyScheduleRepo) CheckHaveDailySchedule(scheduleID int, day string) (isHaveDailySchedule bool, dailyScheduleID int, err error) {
+	type DataDailySchedule struct {
+		IsHaveDailySchedule bool `json:"is_have_daily_schedule" query:"is_have_daily_schedule"`
+		DailyScheduleID     int  `json:"daily_schedule_id" query:"daily_schedule_id"`
+	}
+	var data DataDailySchedule
+	rawQuery := fmt.Sprintf(`SELECT COUNT(*) > 0 as is_have_daily_schedule, ds.id as daily_schedule_id 
+	FROM daily_schedules ds WHERE ds.schedule_id = %d AND name = %s`, scheduleID, day)
+
+	if err := r.db.Raw(rawQuery).Scan(&data).Error; err != nil {
+		return data.IsHaveDailySchedule, data.DailyScheduleID, err
+	}
+	return data.IsHaveDailySchedule, data.DailyScheduleID, nil
 }
 
 func FilterDailySchedule(query *gorm.DB, dailyschedule *model.DailySchedule) *gorm.DB {
