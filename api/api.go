@@ -131,6 +131,7 @@ func (c *server) v1() {
 			schedule.POST("/create", scheduleHandler.Create)
 			schedule.GET("/retrieve", scheduleHandler.Retrieve)
 			schedule.PUT("/update", scheduleHandler.Update)
+			schedule.PUT("/update-qr-code", scheduleHandler.UpdateQRcode)
 			schedule.DELETE("/delete", scheduleHandler.Delete)
 			schedule.GET("/list", scheduleHandler.List)
 			schedule.GET("/drop-down", scheduleHandler.DropDown)

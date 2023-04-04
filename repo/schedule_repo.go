@@ -10,14 +10,18 @@ type ScheduleRepo interface {
 	CreateSchedule(schedule *model.Schedule) (*model.Schedule, error)
 	RetrieveSchedule(id int) (*model.Schedule, error)
 	RetrieveScheduleByOwner(id int, ownerID int) (*model.Schedule, error)
+	RetrieveScheduleByQRcode(QRcode string) (*model.Schedule, error)
 	UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error)
 	UpdateScheduleByOwner(id int, ownerID int, schedule *model.Schedule) (*model.Schedule, error)
+	UpdateQRcode(id int, QRcode string) (*model.Schedule, error)
+	UpdateQRcodeByOwner(id int, ownerID int, QRcode string) (*model.Schedule, error)
 	DeleteSchedule(id int) error
 	DeleteScheduleByOwner(id int, ownerID int) error
 	ListSchedule(schedule *model.Schedule, pagination *model.Pagination) (*[]model.Schedule, error)
 	ListScheduleMeta(schedule *model.Schedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error)
 	CheckIsExist(id int) (isExist bool, err error)
+	CheckCode(code string, exceptID int) bool
 }
 
 type scheduleRepo struct {
@@ -51,6 +55,14 @@ func (r *scheduleRepo) RetrieveScheduleByOwner(id int, ownerID int) (*model.Sche
 	return &schedule, nil
 }
 
+func (r *scheduleRepo) RetrieveScheduleByQRcode(QRcode string) (*model.Schedule, error) {
+	var schedule model.Schedule
+	if err := r.db.Model(&model.Schedule{}).Where("qr_code = ?", QRcode).First(&schedule).Error; err != nil {
+		return nil, err
+	}
+	return &schedule, nil
+}
+
 func (r *scheduleRepo) UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error) {
 	if err := r.db.Model(&model.Schedule{}).Where("id = ?", id).Updates(&schedule).Error; err != nil {
 		return nil, err
@@ -60,6 +72,20 @@ func (r *scheduleRepo) UpdateSchedule(id int, schedule *model.Schedule) (*model.
 
 func (r *scheduleRepo) UpdateScheduleByOwner(id int, ownerID int, schedule *model.Schedule) (*model.Schedule, error) {
 	if err := r.db.Model(&model.Schedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&schedule).Error; err != nil {
+		return nil, err
+	}
+	return schedule, nil
+}
+
+func (r *scheduleRepo) UpdateQRcode(id int, QRcode string) (schedule *model.Schedule, err error) {
+	if err := r.db.Model(&model.Schedule{}).Where("id = ?", id).Update("qr_code", QRcode).Find(&schedule).Error; err != nil {
+		return nil, err
+	}
+	return schedule, nil
+}
+
+func (r *scheduleRepo) UpdateQRcodeByOwner(id int, ownerID int, QRcode string) (schedule *model.Schedule, err error) {
+	if err := r.db.Model(&model.Schedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Update("qr_code", QRcode).Find(&schedule).Error; err != nil {
 		return nil, err
 	}
 	return schedule, nil
@@ -135,6 +161,19 @@ func (r *scheduleRepo) CheckIsExist(id int) (isExist bool, err error) {
 		return false, err
 	}
 	return
+}
+
+func (r *scheduleRepo) CheckCode(code string, exceptID int) bool {
+	var count int64
+	if err := r.db.Table("schedules").Where("code = ? AND id != ?", code, exceptID).Count(&count).Error; err != nil {
+		return false
+	}
+
+	if count > 0 {
+		return false
+	}
+
+	return true
 }
 
 func FilterSchedule(query *gorm.DB, schedule *model.Schedule) *gorm.DB {

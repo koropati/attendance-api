@@ -9,14 +9,18 @@ type ScheduleService interface {
 	CreateSchedule(schedule *model.Schedule) (*model.Schedule, error)
 	RetrieveSchedule(id int) (*model.Schedule, error)
 	RetrieveScheduleByOwner(id int, ownerID int) (*model.Schedule, error)
+	RetrieveScheduleByQRcode(QRcode string) (*model.Schedule, error)
 	UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error)
 	UpdateScheduleByOwner(id int, ownerID int, schedule *model.Schedule) (*model.Schedule, error)
+	UpdateQRcode(id int, QRcode string) (*model.Schedule, error)
+	UpdateQRcodeByOwner(id int, ownerID int, QRcode string) (*model.Schedule, error)
 	DeleteSchedule(id int) error
 	DeleteScheduleByOwner(id int, ownerID int) error
 	ListSchedule(schedule *model.Schedule, pagination *model.Pagination) (*[]model.Schedule, error)
 	ListScheduleMeta(schedule *model.Schedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error)
 	CheckIsExist(id int) (isExist bool, err error)
+	CheckCode(code string, exceptID int) bool
 }
 
 type scheduleService struct {
@@ -51,6 +55,14 @@ func (s *scheduleService) RetrieveScheduleByOwner(id int, ownerID int) (*model.S
 	return data, nil
 }
 
+func (s *scheduleService) RetrieveScheduleByQRcode(QRcode string) (*model.Schedule, error) {
+	data, err := s.scheduleRepo.RetrieveScheduleByQRcode(QRcode)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func (s *scheduleService) UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error) {
 	data, err := s.scheduleRepo.UpdateSchedule(id, schedule)
 	if err != nil {
@@ -61,6 +73,22 @@ func (s *scheduleService) UpdateSchedule(id int, schedule *model.Schedule) (*mod
 
 func (s *scheduleService) UpdateScheduleByOwner(id int, ownerID int, schedule *model.Schedule) (*model.Schedule, error) {
 	data, err := s.scheduleRepo.UpdateScheduleByOwner(id, ownerID, schedule)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (s *scheduleService) UpdateQRcode(id int, QRcode string) (schedule *model.Schedule, err error) {
+	data, err := s.scheduleRepo.UpdateQRcode(id, QRcode)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (s *scheduleService) UpdateQRcodeByOwner(id int, ownerID int, QRcode string) (schedule *model.Schedule, err error) {
+	data, err := s.scheduleRepo.UpdateQRcodeByOwner(id, ownerID, QRcode)
 	if err != nil {
 		return nil, err
 	}
@@ -109,4 +137,8 @@ func (s *scheduleService) DropDownSchedule(schedule *model.Schedule) (*[]model.S
 
 func (s *scheduleService) CheckIsExist(id int) (isExist bool, err error) {
 	return s.scheduleRepo.CheckIsExist(id)
+}
+
+func (s *scheduleService) CheckCode(code string, exceptID int) bool {
+	return s.scheduleRepo.CheckCode(code, exceptID)
 }
