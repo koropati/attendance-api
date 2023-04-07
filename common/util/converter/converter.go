@@ -15,3 +15,18 @@ func GetTimeZone(latitude, longitude float64) (timeZoneCode int) {
 	hoursGMT := int(offset / 3600)
 	return hoursGMT
 }
+
+func MillisToTimeString(timeMillis int64, timeZone int) (timeString string) {
+	if timeMillis <= 0 {
+		return "--:--"
+	}
+	if timeZone == 0 {
+		dateTime := time.Unix(0, timeMillis*int64(time.Millisecond))
+		return dateTime.Format("15:04")
+	} else {
+		millisTimeZone := int64(timeZone) * 3600000
+		millisFinal := timeMillis + millisTimeZone
+		dateTime := time.Unix(0, millisFinal*int64(time.Millisecond))
+		return dateTime.UTC().Format("15:04")
+	}
+}
