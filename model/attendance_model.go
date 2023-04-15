@@ -20,7 +20,16 @@ type Attendance struct {
 	LatitudeOut    float64   `json:"latitude_out"`
 	LongitudeOut   float64   `json:"longitude_out"`
 	TimeZoneOut    int       `json:"time_zone_out"`
-	LocationOut    string    `json:"location_out"`
+	LocationOut    string    `json:"location_out" gorm:"type:varchar(255)"`
+}
+
+type CheckInData struct {
+	UserID    int     `json:"user_id" query:"user_id"`
+	QRCode    string  `json:"qr_code" query:"qr_code"`
+	TimeZone  int     `json:"time_zone" query:"time_zone"`
+	Latitude  float64 `json:"latitude" query:"latitude"`
+	Longitude float64 `json:"longitude" query:"longitude"`
+	Location  string  `json:"location" query:"location"`
 }
 
 func (data Attendance) GenerateStatusPresence() (statusPresence string) {

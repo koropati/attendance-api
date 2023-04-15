@@ -10,6 +10,7 @@ type AttendanceRepo interface {
 	CreateAttendance(attendance *model.Attendance) (*model.Attendance, error)
 	RetrieveAttendance(id int) (*model.Attendance, error)
 	RetrieveAttendanceByUserID(id int, userID int) (*model.Attendance, error)
+	RetrieveAttendanceByDate(userID int, scheduleID int, date string) (*model.Attendance, error)
 	UpdateAttendance(id int, attendance *model.Attendance) (*model.Attendance, error)
 	UpdateAttendanceByUserID(id int, userID int, attendance *model.Attendance) (*model.Attendance, error)
 	DeleteAttendance(id int) error
@@ -18,6 +19,7 @@ type AttendanceRepo interface {
 	ListAttendanceMeta(attendance *model.Attendance, pagination *model.Pagination) (*model.Meta, error)
 	DropDownAttendance(attendance *model.Attendance) (*[]model.Attendance, error)
 	CheckIsExist(id int) (isExist bool, err error)
+	CheckIsExistByDate(userID int, scheduleID int, date string) bool
 }
 
 type attendanceRepo struct {
@@ -46,6 +48,14 @@ func (r *attendanceRepo) RetrieveAttendance(id int) (*model.Attendance, error) {
 func (r *attendanceRepo) RetrieveAttendanceByUserID(id int, userID int) (*model.Attendance, error) {
 	var attendance model.Attendance
 	if err := r.db.Model(&model.Attendance{}).Where("id = ? AND user_id = ?", id, userID).First(&attendance).Error; err != nil {
+		return nil, err
+	}
+	return &attendance, nil
+}
+
+func (r *attendanceRepo) RetrieveAttendanceByDate(userID int, scheduleID int, date string) (*model.Attendance, error) {
+	var attendance model.Attendance
+	if err := r.db.Model(&model.Attendance{}).Where("user_id = ? AND schedule_id = ? AND DATE(date) = ?", userID, scheduleID, date).First(&attendance).Error; err != nil {
 		return nil, err
 	}
 	return &attendance, nil
@@ -131,8 +141,15 @@ func (r *attendanceRepo) DropDownAttendance(attendance *model.Attendance) (*[]mo
 }
 
 func (r *attendanceRepo) CheckIsExist(id int) (isExist bool, err error) {
-	if err := r.db.Table("attendance").Select("count(*) > 0").Where("id = ?", id).Find(&isExist).Error; err != nil {
+	if err := r.db.Table("attendances").Select("count(*) > 0").Where("id = ?", id).Find(&isExist).Error; err != nil {
 		return false, err
+	}
+	return
+}
+
+func (r *attendanceRepo) CheckIsExistByDate(userID int, scheduleID int, date string) (isExist bool) {
+	if err := r.db.Table("attendances").Select("count(*) > 0").Where("user_id = ? AND schedule_id = ? AND DATE(date) = ?", userID, scheduleID, date).Find(&isExist).Error; err != nil {
+		return false
 	}
 	return
 }

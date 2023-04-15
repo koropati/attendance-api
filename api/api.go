@@ -63,6 +63,7 @@ func (c *server) v1() {
 		c.service.AttendanceService(),
 		c.service.AttendanceLogService(),
 		c.service.ScheduleService(),
+		c.service.UserScheduleService(),
 		c.service.DailyScheduleService(),
 		c.infra,
 		c.middleware,
@@ -168,6 +169,8 @@ func (c *server) v1() {
 			attendance.DELETE("/delete", attendanceHandler.Delete)
 			attendance.GET("/list", attendanceHandler.List)
 			attendance.GET("/drop-down", attendanceHandler.DropDown)
+			attendance.POST("/clock-in", attendanceHandler.ClockIn)
+			attendance.POST("/clock-out", attendanceHandler.ClockOut)
 		}
 	}
 

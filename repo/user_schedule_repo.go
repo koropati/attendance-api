@@ -20,6 +20,7 @@ type UserScheduleRepo interface {
 	ListUserScheduleMeta(userschedule *model.UserSchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownUserSchedule(userschedule *model.UserSchedule) (*[]model.UserSchedule, error)
 	CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error)
+	CheckUserInSchedule(scheduleID int, userID int) bool
 }
 
 type userScheduleRepo struct {
@@ -147,6 +148,14 @@ func (r *userScheduleRepo) CheckHaveSchedule(userID int, date time.Time) (isHave
 		return data.IsHaveSchedule, data.ScheduleID, err
 	}
 	return data.IsHaveSchedule, data.ScheduleID, nil
+}
+
+func (r *userScheduleRepo) CheckUserInSchedule(scheduleID int, userID int) (isHave bool) {
+	rawQuery := fmt.Sprintf(`SELECT COUNT(*) > 0 FROM user_schedules us WHERE us.user_id = %d AND us.schedule_id = %d`, userID, scheduleID)
+	if err := r.db.Raw(rawQuery).Scan(&isHave).Error; err != nil {
+		return false
+	}
+	return
 }
 
 func FilterUserSchedule(query *gorm.DB, userschedule *model.UserSchedule) *gorm.DB {

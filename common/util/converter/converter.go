@@ -41,3 +41,9 @@ func FormatDuration(d time.Duration) string {
 	s := d / time.Second
 	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }
+
+func GetDayName(myTime time.Time) (dayName string) {
+	days := []string{"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"}
+
+	return days[int(myTime.Weekday())]
+}

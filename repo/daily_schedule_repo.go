@@ -11,6 +11,7 @@ type DailyScheduleRepo interface {
 	CreateDailySchedule(dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
 	RetrieveDailySchedule(id int) (*model.DailySchedule, error)
 	RetrieveDailyScheduleByOwner(id int, ownerID int) (*model.DailySchedule, error)
+	RetrieveDailyScheduleByDayName(scheduleID int, dayName string) (*model.DailySchedule, error)
 	UpdateDailySchedule(id int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
 	UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
 	DeleteDailySchedule(id int) error
@@ -47,6 +48,14 @@ func (r *dailyScheduleRepo) RetrieveDailySchedule(id int) (*model.DailySchedule,
 func (r *dailyScheduleRepo) RetrieveDailyScheduleByOwner(id int, ownerID int) (*model.DailySchedule, error) {
 	var dailyschedule model.DailySchedule
 	if err := r.db.Model(&model.DailySchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&dailyschedule).Error; err != nil {
+		return nil, err
+	}
+	return &dailyschedule, nil
+}
+
+func (r *dailyScheduleRepo) RetrieveDailyScheduleByDayName(scheduleID int, dayName string) (*model.DailySchedule, error) {
+	var dailyschedule model.DailySchedule
+	if err := r.db.Model(&model.DailySchedule{}).Where("schedule_id = ? AND name = ?", scheduleID, dayName).First(&dailyschedule).Error; err != nil {
 		return nil, err
 	}
 	return &dailyschedule, nil

@@ -3,7 +3,10 @@ package v1
 import (
 	"attendance-api/common/http/middleware"
 	"attendance-api/common/http/response"
+	"attendance-api/common/util/calculation"
+	"attendance-api/common/util/converter"
 	"attendance-api/common/util/pagination"
+	"attendance-api/common/util/presence"
 	"attendance-api/infra"
 	"attendance-api/model"
 	"attendance-api/service"
@@ -25,12 +28,15 @@ type AttendanceHandler interface {
 	Delete(c *gin.Context)
 	List(c *gin.Context)
 	DropDown(c *gin.Context)
+	ClockIn(c *gin.Context)
+	ClockOut(c *gin.Context)
 }
 
 type attendanceHandler struct {
 	attendanceService    service.AttendanceService
 	attendanceLogService service.AttendanceLogService
 	scheduleService      service.ScheduleService
+	userScheduleService  service.UserScheduleService
 	dailyScheduleService service.DailyScheduleService
 	infra                infra.Infra
 	middleware           middleware.Middleware
@@ -40,6 +46,7 @@ func NewAttendanceHandler(
 	attendanceService service.AttendanceService,
 	attendanceLogService service.AttendanceLogService,
 	scheduleService service.ScheduleService,
+	userScheduleService service.UserScheduleService,
 	dailyScheduleService service.DailyScheduleService,
 	infra infra.Infra,
 	middleware middleware.Middleware) AttendanceHandler {
@@ -47,6 +54,7 @@ func NewAttendanceHandler(
 		attendanceService:    attendanceService,
 		attendanceLogService: attendanceLogService,
 		scheduleService:      scheduleService,
+		userScheduleService:  userScheduleService,
 		dailyScheduleService: dailyScheduleService,
 		infra:                infra,
 		middleware:           middleware,
@@ -255,4 +263,304 @@ func (h *attendanceHandler) DropDown(c *gin.Context) {
 	}
 
 	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
+}
+
+func (h *attendanceHandler) ClockIn(c *gin.Context) {
+
+	var dataClockIn model.CheckInData
+	c.BindJSON(&dataClockIn)
+
+	currentCheckIn := presence.GetCurrentMillis()
+	toDay := time.Now()
+
+	if err := validation.Validate(dataClockIn.Latitude, validation.Required, is.Float); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude: %v", err))
+		return
+	}
+
+	if err := validation.Validate(dataClockIn.Longitude, validation.Required, is.Float); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("longitude: %v", err))
+		return
+	}
+
+	if dataClockIn.TimeZone == 0 {
+		dataClockIn.TimeZone = converter.GetTimeZone(dataClockIn.Latitude, dataClockIn.Longitude)
+	}
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !h.middleware.IsUser(c) {
+		err = errors.New("sorry only role user can clock-in")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// check data schedule dari scan
+	schedule, err := h.scheduleService.RetrieveScheduleByQRcode(dataClockIn.QRCode)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check daily Schedule
+	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayName(toDay))
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !isExistDailySchedule {
+		err = errors.New("attendance is not possible on this day")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	dailySchedule, err := h.dailyScheduleService.RetrieveDailySchedule(dailyScheduleID)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check Employee dalam schedule kah?
+	if isValid := h.userScheduleService.CheckUserInSchedule(int(schedule.ID), currentUserID); !isValid {
+		err = errors.New("the user is not on this schedule")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check Attendance is Exist or not
+	isExistAttendance := h.attendanceService.CheckIsExistByDate(currentUserID, int(schedule.ID), toDay.Format("2006-01-02"))
+	if isExistAttendance {
+		// Get
+		attendance, err := h.attendanceService.RetrieveAttendanceByDate(currentUserID, int(schedule.ID), toDay.Format("2006-01-02"))
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+
+		attendanceNew := attendance
+		attendanceNew.ClockIn = currentCheckIn
+		attendanceNew.LateIn = calculation.CalculateLateDuration(dailySchedule.StartTime, currentCheckIn, dataClockIn.TimeZone)
+		attendanceNew.StatusPresence = attendanceNew.GenerateStatusPresence()
+		attendanceNew.Status = attendanceNew.GenerateStatus()
+
+		if attendance.ClockIn <= 0 {
+			// Update attendance
+			attendance, err = h.attendanceService.UpdateAttendance(int(attendance.ID), attendanceNew)
+			if err != nil {
+				response.New(c).Error(http.StatusBadRequest, err)
+				return
+			}
+		}
+
+		// Add Log
+		h.attendanceLogService.CreateAttendanceLog(&model.AttendanceLog{
+			AttendanceID: attendance.ID,
+			LogType:      "clock_in",
+			CheckIn:      currentCheckIn,
+			Status:       attendanceNew.GenerateStatus(),
+			Latitude:     dataClockIn.Latitude,
+			Longitude:    dataClockIn.Longitude,
+			TimeZone:     dataClockIn.TimeZone,
+			Location:     dataClockIn.Location,
+		})
+
+		response.New(c).Data(http.StatusCreated, "success clock in", attendance)
+
+	} else {
+
+		newAttendance := model.Attendance{
+			GormCustom: model.GormCustom{
+				CreatedBy: currentUserID,
+				CreatedAt: toDay,
+			},
+			UserID:      currentUserID,
+			ScheduleID:  schedule.ID,
+			Date:        toDay,
+			ClockIn:     currentCheckIn,
+			LateIn:      calculation.CalculateLateDuration(dailySchedule.StartTime, currentCheckIn, dataClockIn.TimeZone),
+			LatitudeIn:  dataClockIn.Latitude,
+			LongitudeIn: dataClockIn.Longitude,
+			TimeZoneIn:  dataClockIn.TimeZone,
+			LocationIn:  dataClockIn.Location,
+		}
+		newAttendance.StatusPresence = newAttendance.GenerateStatusPresence()
+		newAttendance.Status = newAttendance.GenerateStatus()
+		// Create attendance
+		attendance, err := h.attendanceService.CreateAttendance(&newAttendance)
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+
+		// Add Log
+		h.attendanceLogService.CreateAttendanceLog(&model.AttendanceLog{
+			AttendanceID: attendance.ID,
+			LogType:      "clock_in",
+			CheckIn:      attendance.ClockIn,
+			Status:       attendance.Status,
+			Latitude:     attendance.LatitudeIn,
+			Longitude:    attendance.LongitudeIn,
+			TimeZone:     attendance.TimeZoneIn,
+			Location:     attendance.LocationIn,
+		})
+
+		response.New(c).Data(http.StatusCreated, "success clock in", attendance)
+	}
+
+}
+
+func (h *attendanceHandler) ClockOut(c *gin.Context) {
+
+	var dataClockOut model.CheckInData
+	c.BindJSON(&dataClockOut)
+
+	currentCheckIn := presence.GetCurrentMillis()
+	toDay := time.Now()
+
+	if err := validation.Validate(dataClockOut.Latitude, validation.Required, is.Float); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude: %v", err))
+		return
+	}
+
+	if err := validation.Validate(dataClockOut.Longitude, validation.Required, is.Float); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("longitude: %v", err))
+		return
+	}
+
+	if dataClockOut.TimeZone == 0 {
+		dataClockOut.TimeZone = converter.GetTimeZone(dataClockOut.Latitude, dataClockOut.Longitude)
+	}
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !h.middleware.IsUser(c) {
+		err = errors.New("sorry only role user can clock-out")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// check data schedule dari scan
+	schedule, err := h.scheduleService.RetrieveScheduleByQRcode(dataClockOut.QRCode)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check daily Schedule
+	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayName(toDay))
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !isExistDailySchedule {
+		err = errors.New("attendance is not possible on this day")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	dailySchedule, err := h.dailyScheduleService.RetrieveDailySchedule(dailyScheduleID)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check Employee dalam schedule kah?
+	if isValid := h.userScheduleService.CheckUserInSchedule(int(schedule.ID), currentUserID); !isValid {
+		err = errors.New("the user is not on this schedule")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check Attendance is Exist or not
+	isExistAttendance := h.attendanceService.CheckIsExistByDate(currentUserID, int(schedule.ID), toDay.Format("2006-01-02"))
+	if isExistAttendance {
+		// Get
+		attendance, err := h.attendanceService.RetrieveAttendanceByDate(currentUserID, int(schedule.ID), toDay.Format("2006-01-02"))
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+
+		attendanceNew := attendance
+		attendanceNew.ClockOut = currentCheckIn
+		attendanceNew.EarlyOut = calculation.CalculateEarlyDuration(dailySchedule.EndTime, currentCheckIn, dataClockOut.TimeZone)
+		attendanceNew.StatusPresence = attendanceNew.GenerateStatusPresence()
+		attendanceNew.Status = attendanceNew.GenerateStatus()
+		attendanceNew.LatitudeOut = dataClockOut.Latitude
+		attendanceNew.LongitudeOut = dataClockOut.Longitude
+		attendanceNew.TimeZoneOut = dataClockOut.TimeZone
+		attendanceNew.LocationOut = dataClockOut.Location
+
+		// Update attendance
+		attendance, err = h.attendanceService.UpdateAttendance(int(attendance.ID), attendanceNew)
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+
+		// Add Log
+		h.attendanceLogService.CreateAttendanceLog(&model.AttendanceLog{
+			AttendanceID: attendance.ID,
+			LogType:      "clock_out",
+			CheckIn:      currentCheckIn,
+			Status:       attendanceNew.GenerateStatus(),
+			Latitude:     dataClockOut.Latitude,
+			Longitude:    dataClockOut.Longitude,
+			TimeZone:     dataClockOut.TimeZone,
+			Location:     dataClockOut.Location,
+		})
+
+		response.New(c).Data(http.StatusCreated, "success clock out", attendance)
+
+	} else {
+
+		newAttendance := model.Attendance{
+			GormCustom: model.GormCustom{
+				CreatedBy: currentUserID,
+				CreatedAt: toDay,
+			},
+			UserID:       currentUserID,
+			ScheduleID:   schedule.ID,
+			Date:         toDay,
+			ClockOut:     currentCheckIn,
+			EarlyOut:     calculation.CalculateEarlyDuration(dailySchedule.EndTime, currentCheckIn, dataClockOut.TimeZone),
+			LatitudeOut:  dataClockOut.Latitude,
+			LongitudeOut: dataClockOut.Longitude,
+			TimeZoneOut:  dataClockOut.TimeZone,
+			LocationOut:  dataClockOut.Location,
+		}
+		newAttendance.StatusPresence = newAttendance.GenerateStatusPresence()
+		newAttendance.Status = newAttendance.GenerateStatus()
+		// Create attendance
+		attendance, err := h.attendanceService.CreateAttendance(&newAttendance)
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+
+		// Add Log
+		h.attendanceLogService.CreateAttendanceLog(&model.AttendanceLog{
+			AttendanceID: attendance.ID,
+			LogType:      "clock_out",
+			CheckIn:      attendance.ClockOut,
+			Status:       attendance.Status,
+			Latitude:     attendance.LatitudeOut,
+			Longitude:    attendance.LongitudeOut,
+			TimeZone:     attendance.TimeZoneOut,
+			Location:     attendance.LocationOut,
+		})
+
+		response.New(c).Data(http.StatusCreated, "success clock out", attendance)
+	}
+
 }

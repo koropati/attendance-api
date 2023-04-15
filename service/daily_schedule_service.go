@@ -9,6 +9,7 @@ type DailyScheduleService interface {
 	CreateDailySchedule(dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
 	RetrieveDailySchedule(id int) (*model.DailySchedule, error)
 	RetrieveDailyScheduleByOwner(id int, ownerID int) (*model.DailySchedule, error)
+	RetrieveDailyScheduleByDayName(scheduleID int, dayName string) (*model.DailySchedule, error)
 	UpdateDailySchedule(id int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
 	UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
 	DeleteDailySchedule(id int) error
@@ -45,6 +46,14 @@ func (s *dailyScheduleService) RetrieveDailySchedule(id int) (*model.DailySchedu
 
 func (s *dailyScheduleService) RetrieveDailyScheduleByOwner(id int, ownerID int) (*model.DailySchedule, error) {
 	data, err := s.dailyScheduleRepo.RetrieveDailyScheduleByOwner(id, ownerID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (s *dailyScheduleService) RetrieveDailyScheduleByDayName(scheduleID int, dayName string) (*model.DailySchedule, error) {
+	data, err := s.dailyScheduleRepo.RetrieveDailyScheduleByDayName(scheduleID, dayName)
 	if err != nil {
 		return nil, err
 	}

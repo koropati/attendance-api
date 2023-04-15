@@ -24,6 +24,8 @@ type Middleware interface {
 	GetUserID(c *gin.Context) (userID int, err error)
 	HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc
 	IsSuperAdmin(c *gin.Context) bool
+	IsUser(c *gin.Context) bool
+	IsAdmin(c *gin.Context) bool
 }
 
 type middleware struct {
@@ -211,6 +213,31 @@ func (m *middleware) IsSuperAdmin(c *gin.Context) bool {
 	}
 }
 
+func (m *middleware) IsUser(c *gin.Context) bool {
+	token, validToken, err := ValidateToken(m, c)
+	if !validToken && err != nil {
+		return false
+	} else {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			return claims["is_user"].(bool)
+		} else {
+			return false
+		}
+	}
+}
+
+func (m *middleware) IsAdmin(c *gin.Context) bool {
+	token, validToken, err := ValidateToken(m, c)
+	if !validToken && err != nil {
+		return false
+	} else {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			return claims["is_admin"].(bool)
+		} else {
+			return false
+		}
+	}
+}
 func (m *middleware) HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, validToken, err := ValidateToken(m, c)

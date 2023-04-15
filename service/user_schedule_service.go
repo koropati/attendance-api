@@ -18,6 +18,7 @@ type UserScheduleService interface {
 	ListUserScheduleMeta(userschedule *model.UserSchedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownUserSchedule(userschedule *model.UserSchedule) (*[]model.UserSchedule, error)
 	CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error)
+	CheckUserInSchedule(scheduleID int, userID int) bool
 }
 
 type userScheduleService struct {
@@ -110,4 +111,8 @@ func (s *userScheduleService) DropDownUserSchedule(userschedule *model.UserSched
 
 func (s *userScheduleService) CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error) {
 	return s.userScheduleRepo.CheckHaveSchedule(userID, date)
+}
+
+func (s *userScheduleService) CheckUserInSchedule(scheduleID int, userID int) bool {
+	return s.userScheduleRepo.CheckUserInSchedule(scheduleID, userID)
 }

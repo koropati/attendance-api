@@ -9,6 +9,7 @@ type AttendanceService interface {
 	CreateAttendance(attendance *model.Attendance) (*model.Attendance, error)
 	RetrieveAttendance(id int) (*model.Attendance, error)
 	RetrieveAttendanceByUserID(id int, userID int) (*model.Attendance, error)
+	RetrieveAttendanceByDate(userID int, scheduleID int, date string) (*model.Attendance, error)
 	UpdateAttendance(id int, attendance *model.Attendance) (*model.Attendance, error)
 	UpdateAttendanceByUserID(id int, userID int, attendance *model.Attendance) (*model.Attendance, error)
 	DeleteAttendance(id int) error
@@ -17,6 +18,7 @@ type AttendanceService interface {
 	ListAttendanceMeta(attendance *model.Attendance, pagination *model.Pagination) (*model.Meta, error)
 	DropDownAttendance(attendance *model.Attendance) (*[]model.Attendance, error)
 	CheckIsExist(id int) (isExist bool, err error)
+	CheckIsExistByDate(userID int, scheduleID int, date string) bool
 }
 
 type attendanceService struct {
@@ -45,6 +47,14 @@ func (s *attendanceService) RetrieveAttendance(id int) (*model.Attendance, error
 
 func (s *attendanceService) RetrieveAttendanceByUserID(id int, userID int) (*model.Attendance, error) {
 	data, err := s.attendanceRepo.RetrieveAttendanceByUserID(id, userID)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (s *attendanceService) RetrieveAttendanceByDate(userID int, scheduleID int, date string) (*model.Attendance, error) {
+	data, err := s.attendanceRepo.RetrieveAttendanceByDate(userID, scheduleID, date)
 	if err != nil {
 		return nil, err
 	}
@@ -109,4 +119,8 @@ func (s *attendanceService) DropDownAttendance(attendance *model.Attendance) (*[
 
 func (s *attendanceService) CheckIsExist(id int) (isExist bool, err error) {
 	return s.attendanceRepo.CheckIsExist(id)
+}
+
+func (s *attendanceService) CheckIsExistByDate(userID int, scheduleID int, date string) bool {
+	return s.attendanceRepo.CheckIsExistByDate(userID, scheduleID, date)
 }
