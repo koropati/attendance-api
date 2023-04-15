@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/zsefvlol/timezonemapper"
@@ -29,4 +30,14 @@ func MillisToTimeString(timeMillis int64, timeZone int) (timeString string) {
 		dateTime := time.Unix(0, millisFinal*int64(time.Millisecond))
 		return dateTime.UTC().Format("15:04")
 	}
+}
+
+func FormatDuration(d time.Duration) string {
+	d = d.Round(time.Minute)
+	h := d / time.Hour
+	d -= h * time.Hour
+	m := d / time.Minute
+	d -= m * time.Minute
+	s := d / time.Second
+	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }
