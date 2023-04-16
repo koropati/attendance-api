@@ -88,6 +88,7 @@ func (r *userScheduleRepo) ListUserSchedule(userschedule *model.UserSchedule, pa
 
 	query := r.db.Table("user_schedules").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterUserSchedule(query, userschedule)
+	query = SearchUserSchedule(query, pagination.Search)
 	query = query.Find(&userschedules)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -103,6 +104,7 @@ func (r *userScheduleRepo) ListUserScheduleMeta(userschedule *model.UserSchedule
 
 	queryTotal := r.db.Model(&model.UserSchedule{}).Select("count(*)")
 	queryTotal = FilterUserSchedule(queryTotal, userschedule)
+	queryTotal = SearchUserSchedule(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
 		return nil, err
@@ -111,6 +113,16 @@ func (r *userScheduleRepo) ListUserScheduleMeta(userschedule *model.UserSchedule
 	totalPage = int(totalRecord / pagination.Limit)
 	if totalRecord%pagination.Limit > 0 {
 		totalPage += 1
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+
+	query := r.db.Table("user_schedules").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = FilterUserSchedule(query, userschedule)
+	query = SearchUserSchedule(query, pagination.Search)
+	query = query.Find(&userschedules)
+	if err := query.Error; err != nil {
+		return nil, err
 	}
 
 	meta := model.Meta{
@@ -167,6 +179,13 @@ func FilterUserSchedule(query *gorm.DB, userschedule *model.UserSchedule) *gorm.
 	}
 	if userschedule.OwnerID > 0 {
 		query = query.Where("owner_id = ?", userschedule.OwnerID)
+	}
+	return query
+}
+
+func SearchUserSchedule(query *gorm.DB, search string) *gorm.DB {
+	if search != "" {
+		query = query.Where("user_id LIKE ? OR schedule_id LIKE ? OR owner_id LIKE ? ", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 	return query
 }

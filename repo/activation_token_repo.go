@@ -63,6 +63,7 @@ func (r *activationTokenRepo) ListActivationToken(subject *model.ActivationToken
 
 	query := r.db.Table("activation_tokens").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterActivationToken(query, subject)
+	query = SearchActivationToken(query, pagination.Search)
 	query = query.Find(&activationTokens)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -78,6 +79,7 @@ func (r *activationTokenRepo) ListActivationTokenMeta(subject *model.ActivationT
 
 	queryTotal := r.db.Model(&model.ActivationToken{}).Select("count(*)")
 	queryTotal = FilterActivationToken(queryTotal, subject)
+	queryTotal = SearchActivationToken(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
 		return nil, err
@@ -86,6 +88,16 @@ func (r *activationTokenRepo) ListActivationTokenMeta(subject *model.ActivationT
 	totalPage = int(totalRecord / pagination.Limit)
 	if totalRecord%pagination.Limit > 0 {
 		totalPage += 1
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+
+	query := r.db.Table("activation_tokens").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = FilterActivationToken(query, subject)
+	query = SearchActivationToken(query, pagination.Search)
+	query = query.Find(&activationTokens)
+	if err := query.Error; err != nil {
+		return nil, err
 	}
 
 	meta := model.Meta{
@@ -135,6 +147,13 @@ func FilterActivationToken(query *gorm.DB, subject *model.ActivationToken) *gorm
 	}
 	if subject.UserID > 0 {
 		query = query.Where("user_id = ?", subject.UserID)
+	}
+	return query
+}
+
+func SearchActivationToken(query *gorm.DB, search string) *gorm.DB {
+	if search != "" {
+		query = query.Where("token LIKE ? OR valid LIKE ? OR user_id LIKE ? ", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 	return query
 }

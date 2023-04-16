@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func CalculateLateDuration(scheduleIn string, clockIn int64, timeZoneIn int) (reuslt string) {
+func CalculateLateDuration(scheduleIn string, clockIn int64, timeZoneIn int, lateTolerance int) (reuslt string) {
 	timeStringIn := converter.MillisToTimeString(clockIn, timeZoneIn)
 	timeIn, err := time.Parse("2006-01-02 15:04", "2006-01-02"+" "+timeStringIn)
 	if err != nil {
@@ -18,7 +18,11 @@ func CalculateLateDuration(scheduleIn string, clockIn int64, timeZoneIn int) (re
 		log.Printf("Err time parse (schedule) : %v\n", err)
 		return "00:00:00"
 	}
+	if lateTolerance > 0 {
+		timeSchedule.Add(-time.Minute * time.Duration(lateTolerance))
+	}
 	diff := timeIn.Sub(timeSchedule)
+
 	if diff <= 0 {
 		return "00:00:00"
 	} else {

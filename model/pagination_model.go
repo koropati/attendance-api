@@ -1,9 +1,10 @@
 package model
 
 type Pagination struct {
-	Limit int    `json:"limit"`
-	Page  int    `json:"page"`
-	Sort  string `json:"sort"`
+	Limit  int    `json:"limit" query:"limit"`
+	Page   int    `json:"page" query:"page"`
+	Sort   string `json:"sort" query:"sort"`
+	Search string `json:"search" query:"search"`
 }
 
 type Meta struct {

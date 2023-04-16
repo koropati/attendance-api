@@ -144,6 +144,7 @@ func (r *userRepo) ListUser(user *model.User, pagination *model.Pagination) (*[]
 
 	query := r.db.Table("users").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterUser(query, user)
+	query = SearchUser(query, pagination.Search)
 	query = query.Find(&users)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -159,6 +160,7 @@ func (r *userRepo) ListUserMeta(user *model.User, pagination *model.Pagination) 
 
 	queryTotal := r.db.Model(&model.User{}).Select("count(*)")
 	queryTotal = FilterUser(queryTotal, user)
+	queryTotal = SearchUser(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
 		return nil, err
@@ -167,6 +169,15 @@ func (r *userRepo) ListUserMeta(user *model.User, pagination *model.Pagination) 
 	totalPage = int(totalRecord / pagination.Limit)
 	if totalRecord%pagination.Limit > 0 {
 		totalPage += 1
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+	query := r.db.Table("users").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = FilterUser(query, user)
+	query = SearchUser(query, pagination.Search)
+	query = query.Find(&users)
+	if err := query.Error; err != nil {
+		return nil, err
 	}
 
 	meta := model.Meta{
@@ -290,5 +301,12 @@ func FilterUser(query *gorm.DB, user *model.User) *gorm.DB {
 		query = query.Where("email LIKE ?", "%"+user.Email+"%")
 	}
 
+	return query
+}
+
+func SearchUser(query *gorm.DB, search string) *gorm.DB {
+	if search != "" {
+		query = query.Where("username LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR handphone LIKE ? OR email LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
+	}
 	return query
 }

@@ -60,6 +60,7 @@ func (r *attendanceLogRepo) ListAttendanceLog(attendancelog *model.AttendanceLog
 
 	query := r.db.Table("attendance_logs").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterAttendanceLog(query, attendancelog)
+	query = SearchAttendanceLog(query, pagination.Search)
 	query = query.Find(&attendance_logs)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -75,6 +76,7 @@ func (r *attendanceLogRepo) ListAttendanceLogMeta(attendancelog *model.Attendanc
 
 	queryTotal := r.db.Model(&model.AttendanceLog{}).Select("count(*)")
 	queryTotal = FilterAttendanceLog(queryTotal, attendancelog)
+	queryTotal = SearchAttendanceLog(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
 		return nil, err
@@ -83,6 +85,16 @@ func (r *attendanceLogRepo) ListAttendanceLogMeta(attendancelog *model.Attendanc
 	totalPage = int(totalRecord / pagination.Limit)
 	if totalRecord%pagination.Limit > 0 {
 		totalPage += 1
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+
+	query := r.db.Table("attendance_logs").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = FilterAttendanceLog(query, attendancelog)
+	query = SearchAttendanceLog(query, pagination.Search)
+	query = query.Find(&attendance_logs)
+	if err := query.Error; err != nil {
+		return nil, err
 	}
 
 	meta := model.Meta{
@@ -126,6 +138,13 @@ func FilterAttendanceLog(query *gorm.DB, attendancelog *model.AttendanceLog) *go
 	}
 	if attendancelog.Status != "" {
 		query = query.Where("status = ?", attendancelog.Status)
+	}
+	return query
+}
+
+func SearchAttendanceLog(query *gorm.DB, search string) *gorm.DB {
+	if search != "" {
+		query = query.Where("attendance_id LIKE ? OR log_type LIKE ? OR latitude LIKE ? OR longitude LIKE ? OR time_zone LIKE ? OR location LIKE ? OR status LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 	return query
 }

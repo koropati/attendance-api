@@ -95,6 +95,7 @@ func (r *dailyScheduleRepo) ListDailySchedule(dailyschedule *model.DailySchedule
 
 	query := r.db.Table("daily_schedules").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterDailySchedule(query, dailyschedule)
+	query = SearchDailySchedule(query, pagination.Search)
 	query = query.Find(&dailyschedules)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -110,6 +111,7 @@ func (r *dailyScheduleRepo) ListDailyScheduleMeta(dailyschedule *model.DailySche
 
 	queryTotal := r.db.Model(&model.DailySchedule{}).Select("count(*)")
 	queryTotal = FilterDailySchedule(queryTotal, dailyschedule)
+	queryTotal = SearchDailySchedule(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
 		return nil, err
@@ -118,6 +120,16 @@ func (r *dailyScheduleRepo) ListDailyScheduleMeta(dailyschedule *model.DailySche
 	totalPage = int(totalRecord / pagination.Limit)
 	if totalRecord%pagination.Limit > 0 {
 		totalPage += 1
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+
+	query := r.db.Table("daily_schedules").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = FilterDailySchedule(query, dailyschedule)
+	query = SearchDailySchedule(query, pagination.Search)
+	query = query.Find(&dailyschedules)
+	if err := query.Error; err != nil {
+		return nil, err
 	}
 
 	meta := model.Meta{
@@ -167,6 +179,13 @@ func FilterDailySchedule(query *gorm.DB, dailyschedule *model.DailySchedule) *go
 	}
 	if dailyschedule.OwnerID > 0 {
 		query = query.Where("owner_id = ?", dailyschedule.OwnerID)
+	}
+	return query
+}
+
+func SearchDailySchedule(query *gorm.DB, search string) *gorm.DB {
+	if search != "" {
+		query = query.Where("name LIKE ? OR start_time LIKE ? OR end_time LIKE ? ", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 	return query
 }

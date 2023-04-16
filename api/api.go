@@ -53,6 +53,7 @@ func (c *server) handlers() {
 func (c *server) v1() {
 	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
+	profileHandler := v1.NewProfileHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
 	scheduleHandler := v1.NewScheduleHandler(c.service.ScheduleService(), c.infra, c.middleware)
 	dailyScheduleHandler := v1.NewDailyScheduleHandler(c.service.DailyScheduleService(), c.infra, c.middleware)
@@ -91,6 +92,14 @@ func (c *server) v1() {
 			user.GET("/drop-down", userHandler.DropDown)
 			user.PATCH("/active", userHandler.SetActive)
 			user.PATCH("/deactive", userHandler.SetDeactive)
+		}
+
+		profile := v1.Group("/profile")
+		profile.Use(c.middleware.AUTH())
+		{
+			profile.GET("/", profileHandler.Retrieve)
+			profile.PUT("/update", profileHandler.Update)
+			profile.PUT("/update-password", profileHandler.UpdatePassword)
 		}
 
 		activationToken := v1.Group("/activation-token")

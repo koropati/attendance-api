@@ -111,6 +111,7 @@ func (r *scheduleRepo) ListSchedule(schedule *model.Schedule, pagination *model.
 
 	query := r.db.Table("schedules").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterSchedule(query, schedule)
+	query = SearchSchedule(query, pagination.Search)
 	query = query.Find(&schedules)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -126,6 +127,7 @@ func (r *scheduleRepo) ListScheduleMeta(schedule *model.Schedule, pagination *mo
 
 	queryTotal := r.db.Model(&model.Schedule{}).Select("count(*)")
 	queryTotal = FilterSchedule(queryTotal, schedule)
+	queryTotal = SearchSchedule(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
 		return nil, err
@@ -134,6 +136,15 @@ func (r *scheduleRepo) ListScheduleMeta(schedule *model.Schedule, pagination *mo
 	totalPage = int(totalRecord / pagination.Limit)
 	if totalRecord%pagination.Limit > 0 {
 		totalPage += 1
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+	query := r.db.Table("schedules").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = FilterSchedule(query, schedule)
+	query = SearchSchedule(query, pagination.Search)
+	query = query.Find(&schedules)
+	if err := query.Error; err != nil {
+		return nil, err
 	}
 
 	meta := model.Meta{
@@ -191,6 +202,13 @@ func FilterSchedule(query *gorm.DB, schedule *model.Schedule) *gorm.DB {
 	}
 	if schedule.OwnerID > 0 {
 		query = query.Where("owner_id = ?", schedule.OwnerID)
+	}
+	return query
+}
+
+func SearchSchedule(query *gorm.DB, search string) *gorm.DB {
+	if search != "" {
+		query = query.Where("name LIKE ? OR code LIKE ? OR qr_code LIKE ? OR start_date LIKE ? OR end_date LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 	return query
 }

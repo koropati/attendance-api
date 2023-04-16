@@ -52,6 +52,15 @@ func NewUserHandler(userService service.UserService, activationTokenService serv
 	}
 }
 
+// Create ... Create User
+// @Summary Create New User
+// @Description Create user
+// @Tags User
+// @Accept json
+// @Param data body model.UserForm true "data"
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /user/create [post]
 func (h *userHandler) Create(c *gin.Context) {
 	var data model.User
 	c.BindJSON(&data)
@@ -242,6 +251,7 @@ func (h *userHandler) Delete(c *gin.Context) {
 func (h *userHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var user model.User
+	c.BindQuery(&user)
 
 	userList, err := h.userService.ListUser(&user, &pagination)
 	if err != nil {

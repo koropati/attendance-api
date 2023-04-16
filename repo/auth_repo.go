@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -151,6 +152,9 @@ func (r *authRepo) Register(user *model.User) error {
 func (r *authRepo) Login(username string) (string, error) {
 	var user model.User
 	if err := r.db.Table("users").Where("username = ?", username).First(&user).Error; err != nil {
+		return "", err
+	}
+	if err := r.db.Table("users").Where("username = ?", username).Update("last_login", time.Now()).Error; err != nil {
 		return "", err
 	}
 

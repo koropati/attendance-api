@@ -306,6 +306,13 @@ func (h *attendanceHandler) ClockIn(c *gin.Context) {
 		return
 	}
 
+	// Check In Radius
+	if inRadius := schedule.InRange(dataClockIn.Latitude, dataClockIn.Longitude); !inRadius {
+		err = errors.New("sorry you are out of radius")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
 	// Check daily Schedule
 	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayName(toDay))
 	if err != nil {
@@ -344,7 +351,7 @@ func (h *attendanceHandler) ClockIn(c *gin.Context) {
 
 		attendanceNew := attendance
 		attendanceNew.ClockIn = currentCheckIn
-		attendanceNew.LateIn = calculation.CalculateLateDuration(dailySchedule.StartTime, currentCheckIn, dataClockIn.TimeZone)
+		attendanceNew.LateIn = calculation.CalculateLateDuration(dailySchedule.StartTime, currentCheckIn, dataClockIn.TimeZone, schedule.LateDuration)
 		attendanceNew.StatusPresence = attendanceNew.GenerateStatusPresence()
 		attendanceNew.Status = attendanceNew.GenerateStatus()
 
@@ -382,7 +389,7 @@ func (h *attendanceHandler) ClockIn(c *gin.Context) {
 			ScheduleID:  schedule.ID,
 			Date:        toDay,
 			ClockIn:     currentCheckIn,
-			LateIn:      calculation.CalculateLateDuration(dailySchedule.StartTime, currentCheckIn, dataClockIn.TimeZone),
+			LateIn:      calculation.CalculateLateDuration(dailySchedule.StartTime, currentCheckIn, dataClockIn.TimeZone, schedule.LateDuration),
 			LatitudeIn:  dataClockIn.Latitude,
 			LongitudeIn: dataClockIn.Longitude,
 			TimeZoneIn:  dataClockIn.TimeZone,
@@ -451,6 +458,13 @@ func (h *attendanceHandler) ClockOut(c *gin.Context) {
 	// check data schedule dari scan
 	schedule, err := h.scheduleService.RetrieveScheduleByQRcode(dataClockOut.QRCode)
 	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check In Radius
+	if inRadius := schedule.InRange(dataClockOut.Latitude, dataClockOut.Longitude); !inRadius {
+		err = errors.New("sorry you are out of radius")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}

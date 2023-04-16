@@ -19,6 +19,8 @@ definitions:
       message:
         type: string
     type: object
+  model.User:
+    type: object
   model.UserForm:
     properties:
       email:
@@ -136,4 +138,32 @@ paths:
       summary: Create new user based on paramters
       tags:
       - Auth
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create user
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: Create New User
+      tags:
+      - User
 swagger: "2.0"

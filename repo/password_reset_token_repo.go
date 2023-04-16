@@ -60,6 +60,7 @@ func (r *passwordResetTokenRepo) ListPasswordResetToken(subject *model.PasswordR
 
 	query := r.db.Table("password_reset_tokens").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterPasswordResetToken(query, subject)
+	query = SearchPasswordResetToken(query, pagination.Search)
 	query = query.Find(&passwordResetTokens)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -75,6 +76,7 @@ func (r *passwordResetTokenRepo) ListPasswordResetTokenMeta(subject *model.Passw
 
 	queryTotal := r.db.Model(&model.PasswordResetToken{}).Select("count(*)")
 	queryTotal = FilterPasswordResetToken(queryTotal, subject)
+	queryTotal = SearchPasswordResetToken(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
 		return nil, err
@@ -83,6 +85,16 @@ func (r *passwordResetTokenRepo) ListPasswordResetTokenMeta(subject *model.Passw
 	totalPage = int(totalRecord / pagination.Limit)
 	if totalRecord%pagination.Limit > 0 {
 		totalPage += 1
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+
+	query := r.db.Table("password_reset_tokens").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = FilterPasswordResetToken(query, subject)
+	query = SearchPasswordResetToken(query, pagination.Search)
+	query = query.Find(&passwordResetTokens)
+	if err := query.Error; err != nil {
+		return nil, err
 	}
 
 	meta := model.Meta{
@@ -114,6 +126,13 @@ func FilterPasswordResetToken(query *gorm.DB, subject *model.PasswordResetToken)
 	}
 	if subject.UserID > 0 {
 		query = query.Where("user_id = ?", subject.UserID)
+	}
+	return query
+}
+
+func SearchPasswordResetToken(query *gorm.DB, search string) *gorm.DB {
+	if search != "" {
+		query = query.Where("token LIKE ? OR valid LIKE ? OR user_id LIKE ? ", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
 	return query
 }
