@@ -2,7 +2,6 @@ package model
 
 import (
 	"math"
-	"time"
 )
 
 // tag
@@ -11,8 +10,8 @@ type Schedule struct {
 	Name          string          `json:"name" gorm:"type:varchar(100)"`
 	Code          string          `json:"code" gorm:"unique;type:varchar(100)"`
 	QRCode        string          `json:"qr_code" gorm:"unique;type:varchar(100)"`
-	StartDate     time.Time       `json:"start_date" gorm:"type:date"`
-	EndDate       time.Time       `json:"end_date" gorm:"type:date"`
+	StartDate     string          `json:"start_date" gorm:"type:date"`
+	EndDate       string          `json:"end_date" gorm:"type:date"`
 	SubjectID     uint            `json:"subject_id"`
 	Subject       Subject         `json:"subject" gorm:"foreignKey:SubjectID"`
 	DailySchedule []DailySchedule `json:"daily_schedule" gorm:"foreignKey:ScheduleID"`

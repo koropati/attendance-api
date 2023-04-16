@@ -55,7 +55,7 @@ func (c *server) v1() {
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	profileHandler := v1.NewProfileHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
-	scheduleHandler := v1.NewScheduleHandler(c.service.ScheduleService(), c.infra, c.middleware)
+	scheduleHandler := v1.NewScheduleHandler(c.service.ScheduleService(), c.service.SubjectService(), c.infra, c.middleware)
 	dailyScheduleHandler := v1.NewDailyScheduleHandler(c.service.DailyScheduleService(), c.infra, c.middleware)
 	userScheduleHandler := v1.NewUserScheduleHandler(c.service.UserScheduleService(), c.infra, c.middleware)
 	passwordResetTokenHandler := v1.NewPasswordResetTokenHandler(c.service.PasswordResetTokenService(), c.infra, c.middleware)

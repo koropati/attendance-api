@@ -23,8 +23,8 @@ var scheduleData = model.Schedule{
 	GormCustom:   gormCustom,
 	Name:         "Robot",
 	Code:         "adwd2",
-	StartDate:    time.Now(),
-	EndDate:      time.Now().AddDate(0, 1, 0),
+	StartDate:    time.Now().Format("2006-01-02"),
+	EndDate:      time.Now().AddDate(0, 1, 0).Format("2006-01-02"),
 	LateDuration: 15,
 }
 
@@ -101,7 +101,7 @@ func TestListSchedule(t *testing.T) {
 		gormDB, mock := MockGormDB()
 		query := "SELECT * FROM `schedules` WHERE name LIKE ? AND code LIKE ? AND start_date LIKE ? AND end_date LIKE ? AND late_duration LIKE ? ORDER BY created_at asc LIMIT 2"
 		mock.ExpectQuery(query).
-			WithArgs("%"+scheduleData.Name+"%", "%"+scheduleData.Code+"%", "%"+scheduleData.StartDate.Format("2006-01-02")+"%", "%"+scheduleData.EndDate.Format("2006-01-02")+"%", "%"+strconv.Itoa(scheduleData.LateDuration)+"%").
+			WithArgs("%"+scheduleData.Name+"%", "%"+scheduleData.Code+"%", "%"+scheduleData.StartDate+"%", "%"+scheduleData.EndDate+"%", "%"+strconv.Itoa(scheduleData.LateDuration)+"%").
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		scheduleRepo := repo.NewScheduleRepo(gormDB)
@@ -119,7 +119,7 @@ func TestListScheduleMeta(t *testing.T) {
 
 		queryListMeta := "SELECT count(*) FROM `schedules` WHERE name LIKE ? AND code LIKE ? AND start_date LIKE ? AND end_date LIKE ? AND late_duration LIKE ?"
 		mock.ExpectQuery(queryListMeta).
-			WithArgs("%"+scheduleData.Name+"%", "%"+scheduleData.Code+"%", "%"+scheduleData.StartDate.Format("2006-01-02")+"%", "%"+scheduleData.EndDate.Format("2006-01-02")+"%", "%"+strconv.Itoa(scheduleData.LateDuration)+"%").
+			WithArgs("%"+scheduleData.Name+"%", "%"+scheduleData.Code+"%", "%"+scheduleData.StartDate+"%", "%"+scheduleData.EndDate+"%", "%"+strconv.Itoa(scheduleData.LateDuration)+"%").
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		scheduleRepo := repo.NewScheduleRepo(gormDB)
@@ -136,7 +136,7 @@ func TestDropDownSchedule(t *testing.T) {
 		gormDB, mock := MockGormDB()
 		query := "SELECT * FROM `schedules` WHERE name LIKE ? AND code LIKE ? AND start_date LIKE ? AND end_date LIKE ? AND late_duration LIKE ?"
 		mock.ExpectQuery(query).
-			WithArgs("%"+scheduleData.Name+"%", "%"+scheduleData.Code+"%", "%"+scheduleData.StartDate.Format("2006-01-02")+"%", "%"+scheduleData.EndDate.Format("2006-01-02")+"%", "%"+strconv.Itoa(scheduleData.LateDuration)+"%").
+			WithArgs("%"+scheduleData.Name+"%", "%"+scheduleData.Code+"%", "%"+scheduleData.StartDate+"%", "%"+scheduleData.EndDate+"%", "%"+strconv.Itoa(scheduleData.LateDuration)+"%").
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		scheduleRepo := repo.NewScheduleRepo(gormDB)

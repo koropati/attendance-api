@@ -16,6 +16,7 @@ type SubjectService interface {
 	ListSubject(subject *model.Subject, pagination *model.Pagination) (*[]model.Subject, error)
 	ListSubjectMeta(subject *model.Subject, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSubject(subject *model.Subject) (*[]model.Subject, error)
+	CheckIsExist(id int) (isExist bool)
 }
 
 type subjectService struct {
@@ -104,4 +105,8 @@ func (s *subjectService) DropDownSubject(subject *model.Subject) (*[]model.Subje
 		return nil, err
 	}
 	return datas, nil
+}
+
+func (s *subjectService) CheckIsExist(id int) (isExist bool) {
+	return s.subjectRepo.CheckIsExist(id)
 }

@@ -20,7 +20,7 @@ type ScheduleService interface {
 	ListScheduleMeta(schedule *model.Schedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error)
 	CheckIsExist(id int) (isExist bool, err error)
-	CheckCode(code string, exceptID int) bool
+	CheckCodeIsExist(code string, exceptID int) bool
 }
 
 type scheduleService struct {
@@ -139,6 +139,6 @@ func (s *scheduleService) CheckIsExist(id int) (isExist bool, err error) {
 	return s.scheduleRepo.CheckIsExist(id)
 }
 
-func (s *scheduleService) CheckCode(code string, exceptID int) bool {
-	return s.scheduleRepo.CheckCode(code, exceptID)
+func (s *scheduleService) CheckCodeIsExist(code string, exceptID int) bool {
+	return s.scheduleRepo.CheckCodeIsExist(code, exceptID)
 }

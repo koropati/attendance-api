@@ -17,6 +17,7 @@ type SubjectRepo interface {
 	ListSubject(subject *model.Subject, pagination *model.Pagination) (*[]model.Subject, error)
 	ListSubjectMeta(subject *model.Subject, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSubject(subject *model.Subject) (*[]model.Subject, error)
+	CheckIsExist(id int) (isExist bool)
 }
 
 type subjectRepo struct {
@@ -139,6 +140,13 @@ func (r *subjectRepo) DropDownSubject(subject *model.Subject) (*[]model.Subject,
 		return nil, err
 	}
 	return &subjects, nil
+}
+
+func (r *subjectRepo) CheckIsExist(id int) (isExist bool) {
+	if err := r.db.Table("subjects").Select("count(*) > 0").Where("id = ?", id).Find(&isExist).Error; err != nil {
+		return false
+	}
+	return
 }
 
 func FilterSubject(query *gorm.DB, subject *model.Subject) *gorm.DB {

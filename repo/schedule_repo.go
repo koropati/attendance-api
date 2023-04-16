@@ -21,7 +21,7 @@ type ScheduleRepo interface {
 	ListScheduleMeta(schedule *model.Schedule, pagination *model.Pagination) (*model.Meta, error)
 	DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error)
 	CheckIsExist(id int) (isExist bool, err error)
-	CheckCode(code string, exceptID int) bool
+	CheckCodeIsExist(code string, exceptID int) bool
 }
 
 type scheduleRepo struct {
@@ -33,7 +33,10 @@ func NewScheduleRepo(db *gorm.DB) ScheduleRepo {
 }
 
 func (r *scheduleRepo) CreateSchedule(schedule *model.Schedule) (*model.Schedule, error) {
-	if err := r.db.Table("schedules").Create(&schedule).Error; err != nil {
+
+	query := r.db.Table("schedules")
+	query = PreloadSchedule(query)
+	if err := query.Create(&schedule).Error; err != nil {
 		return nil, err
 	}
 	return schedule, nil
@@ -41,7 +44,9 @@ func (r *scheduleRepo) CreateSchedule(schedule *model.Schedule) (*model.Schedule
 
 func (r *scheduleRepo) RetrieveSchedule(id int) (*model.Schedule, error) {
 	var schedule model.Schedule
-	if err := r.db.First(&schedule, id).Error; err != nil {
+	query := r.db.Table("schedules")
+	query = PreloadSchedule(query)
+	if err := query.First(&schedule, id).Error; err != nil {
 		return nil, err
 	}
 	return &schedule, nil
@@ -49,7 +54,9 @@ func (r *scheduleRepo) RetrieveSchedule(id int) (*model.Schedule, error) {
 
 func (r *scheduleRepo) RetrieveScheduleByOwner(id int, ownerID int) (*model.Schedule, error) {
 	var schedule model.Schedule
-	if err := r.db.Model(&model.Schedule{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&schedule).Error; err != nil {
+	query := r.db.Model(&model.Schedule{})
+	query = PreloadSchedule(query)
+	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).First(&schedule).Error; err != nil {
 		return nil, err
 	}
 	return &schedule, nil
@@ -57,14 +64,18 @@ func (r *scheduleRepo) RetrieveScheduleByOwner(id int, ownerID int) (*model.Sche
 
 func (r *scheduleRepo) RetrieveScheduleByQRcode(QRcode string) (*model.Schedule, error) {
 	var schedule model.Schedule
-	if err := r.db.Model(&model.Schedule{}).Where("qr_code = ?", QRcode).First(&schedule).Error; err != nil {
+	query := r.db.Model(&model.Schedule{})
+	query = PreloadSchedule(query)
+	if err := query.Where("qr_code = ?", QRcode).First(&schedule).Error; err != nil {
 		return nil, err
 	}
 	return &schedule, nil
 }
 
 func (r *scheduleRepo) UpdateSchedule(id int, schedule *model.Schedule) (*model.Schedule, error) {
-	if err := r.db.Model(&model.Schedule{}).Where("id = ?", id).Updates(&schedule).Error; err != nil {
+	query := r.db.Model(&model.Schedule{})
+	query = PreloadSchedule(query)
+	if err := query.Where("id = ?", id).Updates(&schedule).Error; err != nil {
 		return nil, err
 	}
 	return schedule, nil
@@ -110,6 +121,7 @@ func (r *scheduleRepo) ListSchedule(schedule *model.Schedule, pagination *model.
 	offset := (pagination.Page - 1) * pagination.Limit
 
 	query := r.db.Table("schedules").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = PreloadSchedule(query)
 	query = FilterSchedule(query, schedule)
 	query = SearchSchedule(query, pagination.Search)
 	query = query.Find(&schedules)
@@ -159,6 +171,7 @@ func (r *scheduleRepo) ListScheduleMeta(schedule *model.Schedule, pagination *mo
 func (r *scheduleRepo) DropDownSchedule(schedule *model.Schedule) (*[]model.Schedule, error) {
 	var schedules []model.Schedule
 	query := r.db.Table("schedules")
+	query = PreloadSchedule(query)
 	query = FilterSchedule(query, schedule)
 	query = query.Find(&schedules)
 	if err := query.Error; err != nil {
@@ -174,17 +187,17 @@ func (r *scheduleRepo) CheckIsExist(id int) (isExist bool, err error) {
 	return
 }
 
-func (r *scheduleRepo) CheckCode(code string, exceptID int) bool {
+func (r *scheduleRepo) CheckCodeIsExist(code string, exceptID int) bool {
 	var count int64
 	if err := r.db.Table("schedules").Where("code = ? AND id != ?", code, exceptID).Count(&count).Error; err != nil {
-		return false
+		return true
 	}
 
 	if count > 0 {
-		return false
+		return true
 	}
 
-	return true
+	return false
 }
 
 func FilterSchedule(query *gorm.DB, schedule *model.Schedule) *gorm.DB {
@@ -194,11 +207,11 @@ func FilterSchedule(query *gorm.DB, schedule *model.Schedule) *gorm.DB {
 	if schedule.Code != "" {
 		query = query.Where("code LIKE ?", "%"+schedule.Code+"%")
 	}
-	if schedule.StartDate.String() != "" {
-		query = query.Where("start_date LIKE ?", "%"+schedule.StartDate.String()+"%")
+	if schedule.StartDate != "" {
+		query = query.Where("start_date LIKE ?", "%"+schedule.StartDate+"%")
 	}
-	if schedule.EndDate.String() != "" {
-		query = query.Where("end_date LIKE ?", "%"+schedule.EndDate.String()+"%")
+	if schedule.EndDate != "" {
+		query = query.Where("end_date LIKE ?", "%"+schedule.EndDate+"%")
 	}
 	if schedule.OwnerID > 0 {
 		query = query.Where("owner_id = ?", schedule.OwnerID)
@@ -210,5 +223,11 @@ func SearchSchedule(query *gorm.DB, search string) *gorm.DB {
 	if search != "" {
 		query = query.Where("name LIKE ? OR code LIKE ? OR qr_code LIKE ? OR start_date LIKE ? OR end_date LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
+	return query
+}
+
+func PreloadSchedule(query *gorm.DB) *gorm.DB {
+	query = query.Preload("Subject")
+	query = query.Preload("DailySchedule")
 	return query
 }

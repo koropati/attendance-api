@@ -32,13 +32,20 @@ type ScheduleHandler interface {
 
 type scheduleHandler struct {
 	scheduleService service.ScheduleService
+	subjectService  service.SubjectService
 	infra           infra.Infra
 	middleware      middleware.Middleware
 }
 
-func NewScheduleHandler(scheduleService service.ScheduleService, infra infra.Infra, middleware middleware.Middleware) ScheduleHandler {
+func NewScheduleHandler(
+	scheduleService service.ScheduleService,
+	subjectService service.SubjectService,
+	infra infra.Infra,
+	middleware middleware.Middleware,
+) ScheduleHandler {
 	return &scheduleHandler{
 		scheduleService: scheduleService,
+		subjectService:  subjectService,
 		infra:           infra,
 		middleware:      middleware,
 	}
@@ -71,13 +78,18 @@ func (h *scheduleHandler) Create(c *gin.Context) {
 		return
 	}
 
-	if err := validation.Validate(data.SubjectID, validation.Required, validation.Min(1), is.Int); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", "subject choice must be filled in"))
+	if err := validation.Validate(data.SubjectID, validation.Required); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("subject_id: %v", "subject choice must be filled in"))
 		return
 	}
 
-	if exist := h.scheduleService.CheckCode(data.Code, 0); exist {
+	if exist := h.scheduleService.CheckCodeIsExist(data.Code, 0); exist {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", "the code is already in use"))
+		return
+	}
+
+	if isExist := h.subjectService.CheckIsExist(int(data.SubjectID)); !isExist {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("subject_id: %v", "subject id is not exist"))
 		return
 	}
 
@@ -88,6 +100,13 @@ func (h *scheduleHandler) Create(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
+
+	result, err = h.scheduleService.RetrieveSchedule(int(result.ID))
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
@@ -155,22 +174,41 @@ func (h *scheduleHandler) Update(c *gin.Context) {
 		return
 	}
 
-	if exist := h.scheduleService.CheckCode(data.Code, int(data.ID)); exist {
+	if exist := h.scheduleService.CheckCodeIsExist(data.Code, int(data.ID)); exist {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", "the code is already in use"))
+		return
+	}
+
+	if isExist := h.subjectService.CheckIsExist(int(data.SubjectID)); !isExist {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("subject_id: %v", "subject id is not exist"))
 		return
 	}
 
 	var result *model.Schedule
 	if h.middleware.IsSuperAdmin(c) {
 		result, err = h.scheduleService.UpdateSchedule(id, &data)
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+		result, err = h.scheduleService.RetrieveSchedule(int(result.ID))
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
 	} else {
 		result, err = h.scheduleService.UpdateScheduleByOwner(id, currentUserID, &data)
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+		result, err = h.scheduleService.RetrieveScheduleByOwner(int(result.ID), currentUserID)
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
 	}
 
-	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, err)
-		return
-	}
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
