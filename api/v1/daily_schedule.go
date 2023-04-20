@@ -41,7 +41,7 @@ func NewDailyScheduleHandler(dailyScheduleService service.DailyScheduleService, 
 	}
 }
 
-func (h *dailyScheduleHandler) Create(c *gin.Context) {
+func (h dailyScheduleHandler) Create(c *gin.Context) {
 	var data model.DailySchedule
 	c.BindJSON(&data)
 
@@ -61,7 +61,7 @@ func (h *dailyScheduleHandler) Create(c *gin.Context) {
 		return
 	}
 
-	result, err := h.dailyScheduleService.CreateDailySchedule(&data)
+	result, err := h.dailyScheduleService.CreateDailySchedule(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -69,7 +69,7 @@ func (h *dailyScheduleHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
-func (h *dailyScheduleHandler) Retrieve(c *gin.Context) {
+func (h dailyScheduleHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -82,7 +82,7 @@ func (h *dailyScheduleHandler) Retrieve(c *gin.Context) {
 		return
 	}
 
-	var result *model.DailySchedule
+	var result model.DailySchedule
 	if h.middleware.IsSuperAdmin(c) {
 		result, err = h.dailyScheduleService.RetrieveDailySchedule(id)
 		if err != nil {
@@ -99,7 +99,7 @@ func (h *dailyScheduleHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *dailyScheduleHandler) Update(c *gin.Context) {
+func (h dailyScheduleHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -123,11 +123,11 @@ func (h *dailyScheduleHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var result *model.DailySchedule
+	var result model.DailySchedule
 	if h.middleware.IsSuperAdmin(c) {
-		result, err = h.dailyScheduleService.UpdateDailySchedule(id, &data)
+		result, err = h.dailyScheduleService.UpdateDailySchedule(id, data)
 	} else {
-		result, err = h.dailyScheduleService.UpdateDailyScheduleByOwner(id, currentUserID, &data)
+		result, err = h.dailyScheduleService.UpdateDailyScheduleByOwner(id, currentUserID, data)
 	}
 
 	if err != nil {
@@ -137,7 +137,7 @@ func (h *dailyScheduleHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *dailyScheduleHandler) Delete(c *gin.Context) {
+func (h dailyScheduleHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -165,7 +165,7 @@ func (h *dailyScheduleHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
-func (h *dailyScheduleHandler) List(c *gin.Context) {
+func (h dailyScheduleHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.DailySchedule
 	c.BindQuery(&data)
@@ -180,12 +180,12 @@ func (h *dailyScheduleHandler) List(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	dataList, err := h.dailyScheduleService.ListDailySchedule(&data, &pagination)
+	dataList, err := h.dailyScheduleService.ListDailySchedule(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.dailyScheduleService.ListDailyScheduleMeta(&data, &pagination)
+	metaList, err := h.dailyScheduleService.ListDailyScheduleMeta(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -193,7 +193,7 @@ func (h *dailyScheduleHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
-func (h *dailyScheduleHandler) DropDown(c *gin.Context) {
+func (h dailyScheduleHandler) DropDown(c *gin.Context) {
 	var data model.DailySchedule
 	c.BindQuery(&data)
 
@@ -207,7 +207,7 @@ func (h *dailyScheduleHandler) DropDown(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	dataList, err := h.dailyScheduleService.DropDownDailySchedule(&data)
+	dataList, err := h.dailyScheduleService.DropDownDailySchedule(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}

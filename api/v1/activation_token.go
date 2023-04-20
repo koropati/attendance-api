@@ -41,7 +41,7 @@ func NewActivationTokenHandler(activationTokenService service.ActivationTokenSer
 	}
 }
 
-func (h *activationTokenHandler) Create(c *gin.Context) {
+func (h activationTokenHandler) Create(c *gin.Context) {
 	var data model.ActivationToken
 	c.BindJSON(&data)
 
@@ -64,7 +64,7 @@ func (h *activationTokenHandler) Create(c *gin.Context) {
 
 	data.Valid = time.Now().Add((time.Hour * 2))
 
-	result, err := h.activationTokenService.CreateActivationToken(&data)
+	result, err := h.activationTokenService.CreateActivationToken(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -72,7 +72,7 @@ func (h *activationTokenHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
-func (h *activationTokenHandler) Retrieve(c *gin.Context) {
+func (h activationTokenHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -88,7 +88,7 @@ func (h *activationTokenHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *activationTokenHandler) Update(c *gin.Context) {
+func (h activationTokenHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -117,7 +117,7 @@ func (h *activationTokenHandler) Update(c *gin.Context) {
 		return
 	}
 
-	result, err := h.activationTokenService.UpdateActivationToken(id, &data)
+	result, err := h.activationTokenService.UpdateActivationToken(id, data)
 
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -126,7 +126,7 @@ func (h *activationTokenHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *activationTokenHandler) Delete(c *gin.Context) {
+func (h activationTokenHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -141,17 +141,17 @@ func (h *activationTokenHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
-func (h *activationTokenHandler) List(c *gin.Context) {
+func (h activationTokenHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.ActivationToken
 	c.BindQuery(&data)
 
-	dataList, err := h.activationTokenService.ListActivationToken(&data, &pagination)
+	dataList, err := h.activationTokenService.ListActivationToken(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.activationTokenService.ListActivationTokenMeta(&data, &pagination)
+	metaList, err := h.activationTokenService.ListActivationTokenMeta(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -159,11 +159,11 @@ func (h *activationTokenHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
-func (h *activationTokenHandler) DropDown(c *gin.Context) {
+func (h activationTokenHandler) DropDown(c *gin.Context) {
 	var data model.ActivationToken
 	c.BindQuery(&data)
 
-	dataList, err := h.activationTokenService.DropDownActivationToken(&data)
+	dataList, err := h.activationTokenService.DropDownActivationToken(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}

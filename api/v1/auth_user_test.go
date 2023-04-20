@@ -33,7 +33,7 @@ func TestRegister(t *testing.T) {
 		authServiceMock.On("CheckUsername", mock.AnythingOfType("string")).Return(nil)
 		authServiceMock.On("CheckHandphone", mock.AnythingOfType("string")).Return(nil)
 		authServiceMock.On("CheckEmail", mock.AnythingOfType("string")).Return(nil)
-		authServiceMock.On("Register", mock.AnythingOfType("*model.User")).Return(nil)
+		authServiceMock.On("Register", mock.AnythingOfType("model.User")).Return(nil)
 
 		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
 

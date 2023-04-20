@@ -7,18 +7,19 @@ import (
 )
 
 type UserScheduleService interface {
-	CreateUserSchedule(userschedule *model.UserSchedule) (*model.UserSchedule, error)
-	RetrieveUserSchedule(id int) (*model.UserSchedule, error)
-	RetrieveUserScheduleByOwner(id int, ownerID int) (*model.UserSchedule, error)
-	UpdateUserSchedule(id int, userschedule *model.UserSchedule) (*model.UserSchedule, error)
-	UpdateUserScheduleByOwner(id int, ownerID int, userschedule *model.UserSchedule) (*model.UserSchedule, error)
+	CreateUserSchedule(userschedule model.UserSchedule) (model.UserSchedule, error)
+	RetrieveUserSchedule(id int) (model.UserSchedule, error)
+	RetrieveUserScheduleByOwner(id int, ownerID int) (model.UserSchedule, error)
+	UpdateUserSchedule(id int, userschedule model.UserSchedule) (model.UserSchedule, error)
+	UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	DeleteUserSchedule(id int) error
 	DeleteUserScheduleByOwner(id int, ownerID int) error
-	ListUserSchedule(userschedule *model.UserSchedule, pagination *model.Pagination) (*[]model.UserSchedule, error)
-	ListUserScheduleMeta(userschedule *model.UserSchedule, pagination *model.Pagination) (*model.Meta, error)
-	DropDownUserSchedule(userschedule *model.UserSchedule) (*[]model.UserSchedule, error)
+	ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error)
+	ListUserScheduleMeta(userschedule model.UserSchedule, pagination model.Pagination) (model.Meta, error)
+	DropDownUserSchedule(userschedule model.UserSchedule) ([]model.UserSchedule, error)
 	CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error)
 	CheckUserInSchedule(scheduleID int, userID int) bool
+	CountByScheduleID(scheduleID int) (total int)
 }
 
 type userScheduleService struct {
@@ -26,50 +27,50 @@ type userScheduleService struct {
 }
 
 func NewUserScheduleService(userScheduleRepo repo.UserScheduleRepo) UserScheduleService {
-	return &userScheduleService{userScheduleRepo: userScheduleRepo}
+	return userScheduleService{userScheduleRepo: userScheduleRepo}
 }
 
-func (s *userScheduleService) CreateUserSchedule(userschedule *model.UserSchedule) (*model.UserSchedule, error) {
+func (s userScheduleService) CreateUserSchedule(userschedule model.UserSchedule) (model.UserSchedule, error) {
 	data, err := s.userScheduleRepo.CreateUserSchedule(userschedule)
 	if err != nil {
-		return nil, err
+		return model.UserSchedule{}, err
 	}
 	return data, nil
 }
 
-func (s *userScheduleService) RetrieveUserSchedule(id int) (*model.UserSchedule, error) {
+func (s userScheduleService) RetrieveUserSchedule(id int) (model.UserSchedule, error) {
 	data, err := s.userScheduleRepo.RetrieveUserSchedule(id)
 	if err != nil {
-		return nil, err
+		return model.UserSchedule{}, err
 	}
 	return data, nil
 }
 
-func (s *userScheduleService) RetrieveUserScheduleByOwner(id int, ownerID int) (*model.UserSchedule, error) {
+func (s userScheduleService) RetrieveUserScheduleByOwner(id int, ownerID int) (model.UserSchedule, error) {
 	data, err := s.userScheduleRepo.RetrieveUserScheduleByOwner(id, ownerID)
 	if err != nil {
-		return nil, err
+		return model.UserSchedule{}, err
 	}
 	return data, nil
 }
 
-func (s *userScheduleService) UpdateUserSchedule(id int, userschedule *model.UserSchedule) (*model.UserSchedule, error) {
+func (s userScheduleService) UpdateUserSchedule(id int, userschedule model.UserSchedule) (model.UserSchedule, error) {
 	data, err := s.userScheduleRepo.UpdateUserSchedule(id, userschedule)
 	if err != nil {
-		return nil, err
+		return model.UserSchedule{}, err
 	}
 	return data, nil
 }
 
-func (s *userScheduleService) UpdateUserScheduleByOwner(id int, ownerID int, userschedule *model.UserSchedule) (*model.UserSchedule, error) {
+func (s userScheduleService) UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (model.UserSchedule, error) {
 	data, err := s.userScheduleRepo.UpdateUserScheduleByOwner(id, ownerID, userschedule)
 	if err != nil {
-		return nil, err
+		return model.UserSchedule{}, err
 	}
 	return data, nil
 }
 
-func (s *userScheduleService) DeleteUserSchedule(id int) error {
+func (s userScheduleService) DeleteUserSchedule(id int) error {
 	if err := s.userScheduleRepo.DeleteUserSchedule(id); err != nil {
 		return err
 	} else {
@@ -77,7 +78,7 @@ func (s *userScheduleService) DeleteUserSchedule(id int) error {
 	}
 }
 
-func (s *userScheduleService) DeleteUserScheduleByOwner(id int, ownerID int) error {
+func (s userScheduleService) DeleteUserScheduleByOwner(id int, ownerID int) error {
 	if err := s.userScheduleRepo.DeleteUserScheduleByOwner(id, ownerID); err != nil {
 		return err
 	} else {
@@ -85,7 +86,7 @@ func (s *userScheduleService) DeleteUserScheduleByOwner(id int, ownerID int) err
 	}
 }
 
-func (s *userScheduleService) ListUserSchedule(userschedule *model.UserSchedule, pagination *model.Pagination) (*[]model.UserSchedule, error) {
+func (s userScheduleService) ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error) {
 	datas, err := s.userScheduleRepo.ListUserSchedule(userschedule, pagination)
 	if err != nil {
 		return nil, err
@@ -93,15 +94,15 @@ func (s *userScheduleService) ListUserSchedule(userschedule *model.UserSchedule,
 	return datas, nil
 }
 
-func (s *userScheduleService) ListUserScheduleMeta(userschedule *model.UserSchedule, pagination *model.Pagination) (*model.Meta, error) {
+func (s userScheduleService) ListUserScheduleMeta(userschedule model.UserSchedule, pagination model.Pagination) (model.Meta, error) {
 	data, err := s.userScheduleRepo.ListUserScheduleMeta(userschedule, pagination)
 	if err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 	return data, nil
 }
 
-func (s *userScheduleService) DropDownUserSchedule(userschedule *model.UserSchedule) (*[]model.UserSchedule, error) {
+func (s userScheduleService) DropDownUserSchedule(userschedule model.UserSchedule) ([]model.UserSchedule, error) {
 	datas, err := s.userScheduleRepo.DropDownUserSchedule(userschedule)
 	if err != nil {
 		return nil, err
@@ -109,10 +110,14 @@ func (s *userScheduleService) DropDownUserSchedule(userschedule *model.UserSched
 	return datas, nil
 }
 
-func (s *userScheduleService) CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error) {
+func (s userScheduleService) CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error) {
 	return s.userScheduleRepo.CheckHaveSchedule(userID, date)
 }
 
-func (s *userScheduleService) CheckUserInSchedule(scheduleID int, userID int) bool {
+func (s userScheduleService) CheckUserInSchedule(scheduleID int, userID int) bool {
 	return s.userScheduleRepo.CheckUserInSchedule(scheduleID, userID)
+}
+
+func (s userScheduleService) CountByScheduleID(scheduleID int) (total int) {
+	return s.userScheduleRepo.CountByScheduleID(scheduleID)
 }

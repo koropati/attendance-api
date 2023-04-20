@@ -53,7 +53,7 @@ func NewAuthHandler(authService service.AuthService, activationTokenService serv
 // @Success 200 {object} model.Response
 // @Failure 400,500 {object} model.Response
 // @Router /auth/register [post]
-func (h *authUserHandler) Register(c *gin.Context) {
+func (h authUserHandler) Register(c *gin.Context) {
 	var data model.User
 	c.BindJSON(&data)
 
@@ -93,7 +93,7 @@ func (h *authUserHandler) Register(c *gin.Context) {
 		}
 
 		data.Password = string(password)
-		if err := h.authService.Register(&data); err != nil {
+		if err := h.authService.Register(data); err != nil {
 			response.New(c).Error(http.StatusInternalServerError, err)
 			return
 		}
@@ -104,10 +104,10 @@ func (h *authUserHandler) Register(c *gin.Context) {
 			return
 		}
 
-		expiredToken, activationToken := activation.New(*user).GenerateSHA1(24)
+		expiredToken, activationToken := activation.New(user).GenerateSHA1(24)
 
 		// Save Activation token to data base
-		activationData, err := h.activationTokenService.CreateActivationToken(&model.ActivationToken{
+		activationData, err := h.activationTokenService.CreateActivationToken(model.ActivationToken{
 			UserID: user.ID,
 			Token:  activationToken,
 			Valid:  expiredToken,
@@ -118,7 +118,7 @@ func (h *authUserHandler) Register(c *gin.Context) {
 			return
 		}
 
-		go func(user *model.User) {
+		go func(user model.User) {
 			config := h.infra.Config().Sub("server")
 			urlActivation := fmt.Sprintf("%s:%s/auth/activation?token=%s", config.GetString("url"), config.GetString("port"), activationData.Token)
 
@@ -143,7 +143,7 @@ func (h *authUserHandler) Register(c *gin.Context) {
 // @Success 200 {object} model.Response
 // @Failure 400,500 {object} model.Response
 // @Router /auth/login [post]
-func (h *authUserHandler) Login(c *gin.Context) {
+func (h authUserHandler) Login(c *gin.Context) {
 	var data model.Login
 	c.BindJSON(&data)
 
@@ -192,7 +192,7 @@ func (h *authUserHandler) Login(c *gin.Context) {
 	}
 
 	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(
-		&model.UserTokenPayload{
+		model.UserTokenPayload{
 			UserID:       userData.ID,
 			Username:     data.Username,
 			IsSuperAdmin: isSuper,
@@ -204,7 +204,7 @@ func (h *authUserHandler) Login(c *gin.Context) {
 	)
 
 	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(
-		&model.UserTokenPayload{
+		model.UserTokenPayload{
 			Username: data.Username,
 			Expired:  h.infra.Config().GetInt("refresh_token_expired"),
 		},
@@ -227,7 +227,7 @@ func (h *authUserHandler) Login(c *gin.Context) {
 // @Success 200 {object} model.Response
 // @Failure 400,500 {object} model.Response
 // @Router /auth/refresh [post]
-func (h *authUserHandler) Refresh(c *gin.Context) {
+func (h authUserHandler) Refresh(c *gin.Context) {
 	var data model.Refresh
 	c.BindJSON(&data)
 	dataToken, err := token.NewToken(h.infra.Config().GetString("secret.key")).ValidateRefreshToken(data.RefreshToken)
@@ -248,7 +248,7 @@ func (h *authUserHandler) Refresh(c *gin.Context) {
 	}
 
 	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(
-		&model.UserTokenPayload{
+		model.UserTokenPayload{
 			UserID:       user.ID,
 			Username:     user.Username,
 			IsSuperAdmin: user.IsSuperAdmin,
@@ -259,7 +259,7 @@ func (h *authUserHandler) Refresh(c *gin.Context) {
 		},
 	)
 	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(
-		&model.UserTokenPayload{
+		model.UserTokenPayload{
 			UserID:   user.ID,
 			Username: user.Username,
 			Expired:  h.infra.Config().GetInt("refresh_token_expired"),
@@ -274,7 +274,7 @@ func (h *authUserHandler) Refresh(c *gin.Context) {
 	response.New(c).Data(200, "success refresh", dataOutput)
 }
 
-func (h *authUserHandler) Activation(c *gin.Context) {
+func (h authUserHandler) Activation(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
 		err := fmt.Errorf("invalid activation token")

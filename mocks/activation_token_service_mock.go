@@ -12,9 +12,9 @@ type ActivationTokenServiceMock struct {
 	mock.Mock
 }
 
-func (m *ActivationTokenServiceMock) CreateActivationToken(user *model.ActivationToken) (*model.ActivationToken, error) {
+func (m ActivationTokenServiceMock) CreateActivationToken(user model.ActivationToken) (model.ActivationToken, error) {
 	if err := m.Called(user).Error(0); err != nil {
-		return nil, err
+		return model.ActivationToken{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 	gormData := model.GormCustom{
@@ -30,12 +30,12 @@ func (m *ActivationTokenServiceMock) CreateActivationToken(user *model.Activatio
 		Valid:      dateTimeData,
 	}
 
-	return &tokenData, nil
+	return tokenData, nil
 }
 
-func (m *ActivationTokenServiceMock) RetrieveActivationToken(id int) (*model.ActivationToken, error) {
+func (m ActivationTokenServiceMock) RetrieveActivationToken(id int) (model.ActivationToken, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.ActivationToken{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 	gormData := model.GormCustom{
@@ -51,12 +51,12 @@ func (m *ActivationTokenServiceMock) RetrieveActivationToken(id int) (*model.Act
 		Valid:      dateTimeData,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *ActivationTokenServiceMock) UpdateActivationToken(id int, user *model.ActivationToken) (*model.ActivationToken, error) {
+func (m ActivationTokenServiceMock) UpdateActivationToken(id int, user model.ActivationToken) (model.ActivationToken, error) {
 	if err := m.Called(id, user).Error(0); err != nil {
-		return nil, err
+		return model.ActivationToken{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 
@@ -73,10 +73,10 @@ func (m *ActivationTokenServiceMock) UpdateActivationToken(id int, user *model.A
 		Valid:      dateTimeData,
 	}
 
-	return &data, nil
+	return data, nil
 }
 
-func (m *ActivationTokenServiceMock) DeleteActivationToken(id int) error {
+func (m ActivationTokenServiceMock) DeleteActivationToken(id int) error {
 	if err := m.Called(id).Error(0); err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func (m *ActivationTokenServiceMock) DeleteActivationToken(id int) error {
 	return nil
 }
 
-func (m *ActivationTokenServiceMock) ListActivationToken(user *model.ActivationToken, pagination *model.Pagination) (*[]model.ActivationToken, error) {
+func (m ActivationTokenServiceMock) ListActivationToken(user model.ActivationToken, pagination model.Pagination) ([]model.ActivationToken, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
 		return nil, err
 	}
@@ -106,12 +106,12 @@ func (m *ActivationTokenServiceMock) ListActivationToken(user *model.ActivationT
 		datas = append(datas, data)
 	}
 
-	return &datas, nil
+	return datas, nil
 }
 
-func (m *ActivationTokenServiceMock) ListActivationTokenMeta(user *model.ActivationToken, pagination *model.Pagination) (*model.Meta, error) {
+func (m ActivationTokenServiceMock) ListActivationTokenMeta(user model.ActivationToken, pagination model.Pagination) (model.Meta, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	metaData := model.Meta{
@@ -121,10 +121,10 @@ func (m *ActivationTokenServiceMock) ListActivationTokenMeta(user *model.Activat
 		CurrentRecord: 3,
 	}
 
-	return &metaData, nil
+	return metaData, nil
 }
 
-func (m *ActivationTokenServiceMock) DropDownActivationToken(user *model.ActivationToken) (*[]model.ActivationToken, error) {
+func (m ActivationTokenServiceMock) DropDownActivationToken(user model.ActivationToken) ([]model.ActivationToken, error) {
 	if err := m.Called(user).Error(0); err != nil {
 		return nil, err
 	}
@@ -146,10 +146,10 @@ func (m *ActivationTokenServiceMock) DropDownActivationToken(user *model.Activat
 		datas = append(datas, data)
 	}
 
-	return &datas, nil
+	return datas, nil
 }
 
-func (m *ActivationTokenServiceMock) IsValid(token string) (isValid bool, userID uint) {
+func (m ActivationTokenServiceMock) IsValid(token string) (isValid bool, userID uint) {
 	if err := m.Called(token).Error(0); err != nil {
 		return false, 0
 	}

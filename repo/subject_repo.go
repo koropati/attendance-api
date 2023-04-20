@@ -7,16 +7,16 @@ import (
 )
 
 type SubjectRepo interface {
-	CreateSubject(subject *model.Subject) (*model.Subject, error)
-	RetrieveSubject(id int) (*model.Subject, error)
-	RetrieveSubjectByOwner(id int, ownerID int) (*model.Subject, error)
-	UpdateSubject(id int, subject *model.Subject) (*model.Subject, error)
-	UpdateSubjectByOwner(id int, ownerID int, subject *model.Subject) (*model.Subject, error)
+	CreateSubject(subject model.Subject) (model.Subject, error)
+	RetrieveSubject(id int) (model.Subject, error)
+	RetrieveSubjectByOwner(id int, ownerID int) (model.Subject, error)
+	UpdateSubject(id int, subject model.Subject) (model.Subject, error)
+	UpdateSubjectByOwner(id int, ownerID int, subject model.Subject) (model.Subject, error)
 	DeleteSubject(id int) error
 	DeleteSubjectByOwner(id int, ownerID int) error
-	ListSubject(subject *model.Subject, pagination *model.Pagination) (*[]model.Subject, error)
-	ListSubjectMeta(subject *model.Subject, pagination *model.Pagination) (*model.Meta, error)
-	DropDownSubject(subject *model.Subject) (*[]model.Subject, error)
+	ListSubject(subject model.Subject, pagination model.Pagination) ([]model.Subject, error)
+	ListSubjectMeta(subject model.Subject, pagination model.Pagination) (model.Meta, error)
+	DropDownSubject(subject model.Subject) ([]model.Subject, error)
 	CheckIsExist(id int) (isExist bool)
 }
 
@@ -28,59 +28,59 @@ func NewSubjectRepo(db *gorm.DB) SubjectRepo {
 	return &subjectRepo{db: db}
 }
 
-func (r *subjectRepo) CreateSubject(subject *model.Subject) (*model.Subject, error) {
+func (r subjectRepo) CreateSubject(subject model.Subject) (model.Subject, error) {
 	if err := r.db.Table("subjects").Create(&subject).Error; err != nil {
-		return nil, err
+		return model.Subject{}, err
 	}
 
 	return subject, nil
 }
 
-func (r *subjectRepo) RetrieveSubject(id int) (*model.Subject, error) {
+func (r subjectRepo) RetrieveSubject(id int) (model.Subject, error) {
 	var subject model.Subject
 	if err := r.db.First(&subject, id).Error; err != nil {
-		return nil, err
+		return model.Subject{}, err
 	}
-	return &subject, nil
+	return subject, nil
 }
 
-func (r *subjectRepo) RetrieveSubjectByOwner(id int, ownerID int) (*model.Subject, error) {
+func (r subjectRepo) RetrieveSubjectByOwner(id int, ownerID int) (model.Subject, error) {
 	var subject model.Subject
 	if err := r.db.Model(&model.Subject{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&subject).Error; err != nil {
-		return nil, err
+		return model.Subject{}, err
 	}
-	return &subject, nil
+	return subject, nil
 }
 
-func (r *subjectRepo) UpdateSubject(id int, subject *model.Subject) (*model.Subject, error) {
+func (r subjectRepo) UpdateSubject(id int, subject model.Subject) (model.Subject, error) {
 	if err := r.db.Model(&model.Subject{}).Where("id = ?", id).Updates(&subject).Error; err != nil {
-		return nil, err
+		return model.Subject{}, err
 	}
 	return subject, nil
 }
 
-func (r *subjectRepo) UpdateSubjectByOwner(id int, ownerID int, subject *model.Subject) (*model.Subject, error) {
+func (r subjectRepo) UpdateSubjectByOwner(id int, ownerID int, subject model.Subject) (model.Subject, error) {
 	if err := r.db.Model(&model.Subject{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&subject).Error; err != nil {
-		return nil, err
+		return model.Subject{}, err
 	}
 	return subject, nil
 }
 
-func (r *subjectRepo) DeleteSubject(id int) error {
+func (r subjectRepo) DeleteSubject(id int) error {
 	if err := r.db.Delete(&model.Subject{}, id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *subjectRepo) DeleteSubjectByOwner(id int, ownerID int) error {
+func (r subjectRepo) DeleteSubjectByOwner(id int, ownerID int) error {
 	if err := r.db.Where("id = ? AND owner_id = ?", id, ownerID).Delete(&model.Subject{}).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *subjectRepo) ListSubject(subject *model.Subject, pagination *model.Pagination) (*[]model.Subject, error) {
+func (r subjectRepo) ListSubject(subject model.Subject, pagination model.Pagination) ([]model.Subject, error) {
 	var subjects []model.Subject
 	offset := (pagination.Page - 1) * pagination.Limit
 
@@ -92,10 +92,10 @@ func (r *subjectRepo) ListSubject(subject *model.Subject, pagination *model.Pagi
 		return nil, err
 	}
 
-	return &subjects, nil
+	return subjects, nil
 }
 
-func (r *subjectRepo) ListSubjectMeta(subject *model.Subject, pagination *model.Pagination) (*model.Meta, error) {
+func (r subjectRepo) ListSubjectMeta(subject model.Subject, pagination model.Pagination) (model.Meta, error) {
 	var subjects []model.Subject
 	var totalRecord int
 	var totalPage int
@@ -105,7 +105,7 @@ func (r *subjectRepo) ListSubjectMeta(subject *model.Subject, pagination *model.
 	queryTotal = SearchSubject(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	totalPage = int(totalRecord / pagination.Limit)
@@ -119,7 +119,7 @@ func (r *subjectRepo) ListSubjectMeta(subject *model.Subject, pagination *model.
 	query = SearchSubject(query, pagination.Search)
 	query = query.Find(&subjects)
 	if err := query.Error; err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	meta := model.Meta{
@@ -128,10 +128,10 @@ func (r *subjectRepo) ListSubjectMeta(subject *model.Subject, pagination *model.
 		TotalRecord:   totalRecord,
 		CurrentRecord: len(subjects),
 	}
-	return &meta, nil
+	return meta, nil
 }
 
-func (r *subjectRepo) DropDownSubject(subject *model.Subject) (*[]model.Subject, error) {
+func (r subjectRepo) DropDownSubject(subject model.Subject) ([]model.Subject, error) {
 	var subjects []model.Subject
 	query := r.db.Table("subjects")
 	query = FilterSubject(query, subject)
@@ -139,17 +139,17 @@ func (r *subjectRepo) DropDownSubject(subject *model.Subject) (*[]model.Subject,
 	if err := query.Error; err != nil {
 		return nil, err
 	}
-	return &subjects, nil
+	return subjects, nil
 }
 
-func (r *subjectRepo) CheckIsExist(id int) (isExist bool) {
+func (r subjectRepo) CheckIsExist(id int) (isExist bool) {
 	if err := r.db.Table("subjects").Select("count(*) > 0").Where("id = ?", id).Find(&isExist).Error; err != nil {
 		return false
 	}
 	return
 }
 
-func FilterSubject(query *gorm.DB, subject *model.Subject) *gorm.DB {
+func FilterSubject(query *gorm.DB, subject model.Subject) *gorm.DB {
 	if subject.Name != "" {
 		query = query.Where("name LIKE ?", "%"+subject.Name+"%")
 	}

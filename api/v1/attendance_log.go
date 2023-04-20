@@ -38,11 +38,11 @@ func NewAttendanceLogHandler(attendancelogService service.AttendanceLogService, 
 	}
 }
 
-func (h *attendancelogHandler) Create(c *gin.Context) {
+func (h attendancelogHandler) Create(c *gin.Context) {
 	var data model.AttendanceLog
 	c.BindJSON(&data)
 
-	result, err := h.attendancelogService.CreateAttendanceLog(&data)
+	result, err := h.attendancelogService.CreateAttendanceLog(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -50,7 +50,7 @@ func (h *attendancelogHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
-func (h *attendancelogHandler) Retrieve(c *gin.Context) {
+func (h attendancelogHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -66,7 +66,7 @@ func (h *attendancelogHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *attendancelogHandler) Update(c *gin.Context) {
+func (h attendancelogHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -85,7 +85,7 @@ func (h *attendancelogHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	result, err := h.attendancelogService.UpdateAttendanceLog(id, &data)
+	result, err := h.attendancelogService.UpdateAttendanceLog(id, data)
 
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -94,7 +94,7 @@ func (h *attendancelogHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *attendancelogHandler) Delete(c *gin.Context) {
+func (h attendancelogHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -109,17 +109,17 @@ func (h *attendancelogHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
-func (h *attendancelogHandler) List(c *gin.Context) {
+func (h attendancelogHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.AttendanceLog
 	c.BindQuery(&data)
 
-	dataList, err := h.attendancelogService.ListAttendanceLog(&data, &pagination)
+	dataList, err := h.attendancelogService.ListAttendanceLog(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.attendancelogService.ListAttendanceLogMeta(&data, &pagination)
+	metaList, err := h.attendancelogService.ListAttendanceLogMeta(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -127,11 +127,11 @@ func (h *attendancelogHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
-func (h *attendancelogHandler) DropDown(c *gin.Context) {
+func (h attendancelogHandler) DropDown(c *gin.Context) {
 	var data model.AttendanceLog
 	c.BindQuery(&data)
 
-	dataList, err := h.attendancelogService.DropDownAttendanceLog(&data)
+	dataList, err := h.attendancelogService.DropDownAttendanceLog(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}

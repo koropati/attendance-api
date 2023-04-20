@@ -12,7 +12,7 @@ type UserRepoMock struct {
 	mock.Mock
 }
 
-func (m *UserRepoMock) CheckID(id int) bool {
+func (m UserRepoMock) CheckID(id int) bool {
 	if err := m.Called(id).Error(0); err != nil {
 		return false
 	}
@@ -20,7 +20,7 @@ func (m *UserRepoMock) CheckID(id int) bool {
 	return true
 }
 
-func (m *UserRepoMock) CheckUsername(username string) bool {
+func (m UserRepoMock) CheckUsername(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
 	}
@@ -28,7 +28,7 @@ func (m *UserRepoMock) CheckUsername(username string) bool {
 	return true
 }
 
-func (m *UserRepoMock) CheckEmail(email string) bool {
+func (m UserRepoMock) CheckEmail(email string) bool {
 	if err := m.Called(email).Error(0); err != nil {
 		return false
 	}
@@ -36,7 +36,7 @@ func (m *UserRepoMock) CheckEmail(email string) bool {
 	return true
 }
 
-func (m *UserRepoMock) CheckHandphone(handphone string) bool {
+func (m UserRepoMock) CheckHandphone(handphone string) bool {
 	if err := m.Called(handphone).Error(0); err != nil {
 		return false
 	}
@@ -44,7 +44,7 @@ func (m *UserRepoMock) CheckHandphone(handphone string) bool {
 	return true
 }
 
-func (m *UserRepoMock) CheckIsActive(username string) bool {
+func (m UserRepoMock) CheckIsActive(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
 	}
@@ -52,7 +52,7 @@ func (m *UserRepoMock) CheckIsActive(username string) bool {
 	return true
 }
 
-func (m *UserRepoMock) CheckUpdateUsername(id int, username string) bool {
+func (m UserRepoMock) CheckUpdateUsername(id int, username string) bool {
 	if err := m.Called(id, username).Error(0); err != nil {
 		return false
 	}
@@ -60,7 +60,7 @@ func (m *UserRepoMock) CheckUpdateUsername(id int, username string) bool {
 	return true
 }
 
-func (m *UserRepoMock) CheckUpdateEmail(id int, email string) bool {
+func (m UserRepoMock) CheckUpdateEmail(id int, email string) bool {
 	if err := m.Called(id, email).Error(0); err != nil {
 		return false
 	}
@@ -68,7 +68,7 @@ func (m *UserRepoMock) CheckUpdateEmail(id int, email string) bool {
 	return true
 }
 
-func (m *UserRepoMock) CheckUpdateHandphone(id int, handphone string) bool {
+func (m UserRepoMock) CheckUpdateHandphone(id int, handphone string) bool {
 	if err := m.Called(id, handphone).Error(0); err != nil {
 		return false
 	}
@@ -76,7 +76,7 @@ func (m *UserRepoMock) CheckUpdateHandphone(id int, handphone string) bool {
 	return true
 }
 
-func (m *UserRepoMock) ListUser(user *model.User, pagination *model.Pagination) (*[]model.User, error) {
+func (m UserRepoMock) ListUser(user model.User, pagination model.Pagination) ([]model.User, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
 		return nil, err
 	}
@@ -108,12 +108,12 @@ func (m *UserRepoMock) ListUser(user *model.User, pagination *model.Pagination) 
 		users = append(users, userData)
 	}
 
-	return &users, nil
+	return users, nil
 }
 
-func (m *UserRepoMock) ListUserMeta(user *model.User, pagination *model.Pagination) (*model.Meta, error) {
+func (m UserRepoMock) ListUserMeta(user model.User, pagination model.Pagination) (model.Meta, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	metaData := model.Meta{
@@ -123,12 +123,12 @@ func (m *UserRepoMock) ListUserMeta(user *model.User, pagination *model.Paginati
 		CurrentRecord: 3,
 	}
 
-	return &metaData, nil
+	return metaData, nil
 }
 
-func (m *UserRepoMock) CreateUser(user *model.User) (*model.User, error) {
+func (m UserRepoMock) CreateUser(user model.User) (model.User, error) {
 	if err := m.Called(user).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 	gormData := model.GormCustom{
@@ -154,12 +154,12 @@ func (m *UserRepoMock) CreateUser(user *model.User) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserRepoMock) UpdateUser(id int, user *model.User) (*model.User, error) {
+func (m UserRepoMock) UpdateUser(id int, user model.User) (model.User, error) {
 	if err := m.Called(id, user).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
@@ -187,10 +187,10 @@ func (m *UserRepoMock) UpdateUser(id int, user *model.User) (*model.User, error)
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserRepoMock) DeleteUser(id int) error {
+func (m UserRepoMock) DeleteUser(id int) error {
 	if err := m.Called(id).Error(0); err != nil {
 		return err
 	}
@@ -198,16 +198,16 @@ func (m *UserRepoMock) DeleteUser(id int) error {
 	return nil
 }
 
-func (m *UserRepoMock) RetrieveUser(id int) (result *model.User, err error) {
+func (m UserRepoMock) RetrieveUser(id int) (result model.User, err error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 	return
 }
 
-func (m *UserRepoMock) RetrieveUserByUsername(username string) (data *model.User, err error) {
+func (m UserRepoMock) RetrieveUserByUsername(username string) (data model.User, err error) {
 	if err := m.Called(username).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	data.ID = 1
@@ -227,9 +227,9 @@ func (m *UserRepoMock) RetrieveUserByUsername(username string) (data *model.User
 	return data, nil
 }
 
-func (m *UserRepoMock) RetrieveUserByEmail(email string) (data *model.User, err error) {
+func (m UserRepoMock) RetrieveUserByEmail(email string) (data model.User, err error) {
 	if err := m.Called(email).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	data.ID = 1
@@ -249,9 +249,9 @@ func (m *UserRepoMock) RetrieveUserByEmail(email string) (data *model.User, err 
 	return data, nil
 }
 
-func (m *UserRepoMock) SetActiveUser(id int) (*model.User, error) {
+func (m UserRepoMock) SetActiveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 
@@ -278,12 +278,12 @@ func (m *UserRepoMock) SetActiveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserRepoMock) SetDeactiveUser(id int) (*model.User, error) {
+func (m UserRepoMock) SetDeactiveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
@@ -311,10 +311,10 @@ func (m *UserRepoMock) SetDeactiveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserRepoMock) DropDownUser(user *model.User) (*[]model.UserDropDown, error) {
+func (m UserRepoMock) DropDownUser(user model.User) ([]model.UserDropDown, error) {
 	if err := m.Called(user).Error(0); err != nil {
 		return nil, err
 	}
@@ -333,10 +333,10 @@ func (m *UserRepoMock) DropDownUser(user *model.User) (*[]model.UserDropDown, er
 		users = append(users, userData)
 	}
 
-	return &users, nil
+	return users, nil
 }
 
-func (m *UserRepoMock) UpdatePassword(userPasswordForm *model.UserUpdatePasswordForm) error {
+func (m UserRepoMock) UpdatePassword(userPasswordForm model.UserUpdatePasswordForm) error {
 	if err := m.Called(userPasswordForm).Error(0); err != nil {
 		return err
 	}
@@ -344,7 +344,7 @@ func (m *UserRepoMock) UpdatePassword(userPasswordForm *model.UserUpdatePassword
 	return nil
 }
 
-func (m *UserRepoMock) GetPassword(id int) (hashPassword string, err error) {
+func (m UserRepoMock) GetPassword(id int) (hashPassword string, err error) {
 	if err := m.Called(id).Error(0); err != nil {
 		return "", err
 	}

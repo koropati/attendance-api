@@ -61,7 +61,7 @@ func NewAttendanceHandler(
 	}
 }
 
-func (h *attendanceHandler) Create(c *gin.Context) {
+func (h attendanceHandler) Create(c *gin.Context) {
 	var data model.Attendance
 	c.BindJSON(&data)
 
@@ -96,7 +96,7 @@ func (h *attendanceHandler) Create(c *gin.Context) {
 		return
 	}
 
-	result, err := h.attendanceService.CreateAttendance(&data)
+	result, err := h.attendanceService.CreateAttendance(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -104,7 +104,7 @@ func (h *attendanceHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
-func (h *attendanceHandler) Retrieve(c *gin.Context) {
+func (h attendanceHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -117,7 +117,7 @@ func (h *attendanceHandler) Retrieve(c *gin.Context) {
 		return
 	}
 
-	var result *model.Attendance
+	var result model.Attendance
 	if h.middleware.IsSuperAdmin(c) {
 		result, err = h.attendanceService.RetrieveAttendance(id)
 		if err != nil {
@@ -134,7 +134,7 @@ func (h *attendanceHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *attendanceHandler) Update(c *gin.Context) {
+func (h attendanceHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -173,11 +173,11 @@ func (h *attendanceHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var result *model.Attendance
+	var result model.Attendance
 	if h.middleware.IsSuperAdmin(c) {
-		result, err = h.attendanceService.UpdateAttendance(id, &data)
+		result, err = h.attendanceService.UpdateAttendance(id, data)
 	} else {
-		result, err = h.attendanceService.UpdateAttendanceByUserID(id, currentUserID, &data)
+		result, err = h.attendanceService.UpdateAttendanceByUserID(id, currentUserID, data)
 	}
 
 	if err != nil {
@@ -187,7 +187,7 @@ func (h *attendanceHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *attendanceHandler) Delete(c *gin.Context) {
+func (h attendanceHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -215,7 +215,7 @@ func (h *attendanceHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
-func (h *attendanceHandler) List(c *gin.Context) {
+func (h attendanceHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.Attendance
 	c.BindQuery(&data)
@@ -230,12 +230,12 @@ func (h *attendanceHandler) List(c *gin.Context) {
 		data.UserID = currentUserID
 	}
 
-	dataList, err := h.attendanceService.ListAttendance(&data, &pagination)
+	dataList, err := h.attendanceService.ListAttendance(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.attendanceService.ListAttendanceMeta(&data, &pagination)
+	metaList, err := h.attendanceService.ListAttendanceMeta(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -243,7 +243,7 @@ func (h *attendanceHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
-func (h *attendanceHandler) DropDown(c *gin.Context) {
+func (h attendanceHandler) DropDown(c *gin.Context) {
 	var data model.Attendance
 	c.BindQuery(&data)
 
@@ -257,7 +257,7 @@ func (h *attendanceHandler) DropDown(c *gin.Context) {
 		data.UserID = currentUserID
 	}
 
-	dataList, err := h.attendanceService.DropDownAttendance(&data)
+	dataList, err := h.attendanceService.DropDownAttendance(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -265,7 +265,7 @@ func (h *attendanceHandler) DropDown(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
 }
 
-func (h *attendanceHandler) ClockIn(c *gin.Context) {
+func (h attendanceHandler) ClockIn(c *gin.Context) {
 
 	var dataClockIn model.CheckInData
 	c.BindJSON(&dataClockIn)
@@ -365,7 +365,7 @@ func (h *attendanceHandler) ClockIn(c *gin.Context) {
 		}
 
 		// Add Log
-		h.attendanceLogService.CreateAttendanceLog(&model.AttendanceLog{
+		h.attendanceLogService.CreateAttendanceLog(model.AttendanceLog{
 			AttendanceID: attendance.ID,
 			LogType:      "clock_in",
 			CheckIn:      currentCheckIn,
@@ -398,14 +398,14 @@ func (h *attendanceHandler) ClockIn(c *gin.Context) {
 		newAttendance.StatusPresence = newAttendance.GenerateStatusPresence()
 		newAttendance.Status = newAttendance.GenerateStatus()
 		// Create attendance
-		attendance, err := h.attendanceService.CreateAttendance(&newAttendance)
+		attendance, err := h.attendanceService.CreateAttendance(newAttendance)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
 		}
 
 		// Add Log
-		h.attendanceLogService.CreateAttendanceLog(&model.AttendanceLog{
+		h.attendanceLogService.CreateAttendanceLog(model.AttendanceLog{
 			AttendanceID: attendance.ID,
 			LogType:      "clock_in",
 			CheckIn:      attendance.ClockIn,
@@ -421,7 +421,7 @@ func (h *attendanceHandler) ClockIn(c *gin.Context) {
 
 }
 
-func (h *attendanceHandler) ClockOut(c *gin.Context) {
+func (h attendanceHandler) ClockOut(c *gin.Context) {
 
 	var dataClockOut model.CheckInData
 	c.BindJSON(&dataClockOut)
@@ -523,7 +523,7 @@ func (h *attendanceHandler) ClockOut(c *gin.Context) {
 		}
 
 		// Add Log
-		h.attendanceLogService.CreateAttendanceLog(&model.AttendanceLog{
+		h.attendanceLogService.CreateAttendanceLog(model.AttendanceLog{
 			AttendanceID: attendance.ID,
 			LogType:      "clock_out",
 			CheckIn:      currentCheckIn,
@@ -556,14 +556,14 @@ func (h *attendanceHandler) ClockOut(c *gin.Context) {
 		newAttendance.StatusPresence = newAttendance.GenerateStatusPresence()
 		newAttendance.Status = newAttendance.GenerateStatus()
 		// Create attendance
-		attendance, err := h.attendanceService.CreateAttendance(&newAttendance)
+		attendance, err := h.attendanceService.CreateAttendance(newAttendance)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
 		}
 
 		// Add Log
-		h.attendanceLogService.CreateAttendanceLog(&model.AttendanceLog{
+		h.attendanceLogService.CreateAttendanceLog(model.AttendanceLog{
 			AttendanceID: attendance.ID,
 			LogType:      "clock_out",
 			CheckIn:      attendance.ClockOut,

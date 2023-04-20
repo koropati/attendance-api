@@ -61,7 +61,7 @@ func NewUserHandler(userService service.UserService, activationTokenService serv
 // @Success 200 {object} model.Response
 // @Failure 400,500 {object} model.Response
 // @Router /user/create [post]
-func (h *userHandler) Create(c *gin.Context) {
+func (h userHandler) Create(c *gin.Context) {
 	var data model.User
 	c.BindJSON(&data)
 
@@ -108,7 +108,7 @@ func (h *userHandler) Create(c *gin.Context) {
 		}
 
 		data.Password = string(password)
-		if _, err := h.userService.CreateUser(&data); err != nil {
+		if _, err := h.userService.CreateUser(data); err != nil {
 			response.New(c).Error(http.StatusInternalServerError, err)
 			return
 		}
@@ -119,10 +119,10 @@ func (h *userHandler) Create(c *gin.Context) {
 			return
 		}
 
-		expiredToken, activationToken := activation.New(*user).GenerateSHA1(24)
+		expiredToken, activationToken := activation.New(user).GenerateSHA1(24)
 
 		// Save Activation token to data base
-		activationData, err := h.activationTokenService.CreateActivationToken(&model.ActivationToken{
+		activationData, err := h.activationTokenService.CreateActivationToken(model.ActivationToken{
 			UserID: user.ID,
 			Token:  activationToken,
 			Valid:  expiredToken,
@@ -133,7 +133,7 @@ func (h *userHandler) Create(c *gin.Context) {
 			return
 		}
 
-		go func(user *model.User) {
+		go func(user model.User) {
 			config := h.infra.Config().Sub("server")
 			urlActivation := fmt.Sprintf("%s:%s/auth/activation?token=%s", config.GetString("url"), config.GetString("port"), activationData.Token)
 
@@ -147,7 +147,7 @@ func (h *userHandler) Create(c *gin.Context) {
 	}
 }
 
-func (h *userHandler) Retrieve(c *gin.Context) {
+func (h userHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -162,7 +162,7 @@ func (h *userHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *userHandler) Update(c *gin.Context) {
+func (h userHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -224,7 +224,7 @@ func (h *userHandler) Update(c *gin.Context) {
 		data.Password = string(password)
 	}
 
-	result, err := h.userService.UpdateUser(id, &data)
+	result, err := h.userService.UpdateUser(id, data)
 
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -233,7 +233,7 @@ func (h *userHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *userHandler) Delete(c *gin.Context) {
+func (h userHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -248,17 +248,17 @@ func (h *userHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
-func (h *userHandler) List(c *gin.Context) {
+func (h userHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var user model.User
 	c.BindQuery(&user)
 
-	userList, err := h.userService.ListUser(&user, &pagination)
+	userList, err := h.userService.ListUser(user, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.userService.ListUserMeta(&user, &pagination)
+	metaList, err := h.userService.ListUserMeta(user, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -266,11 +266,11 @@ func (h *userHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list user", userList, metaList)
 }
 
-func (h *userHandler) DropDown(c *gin.Context) {
+func (h userHandler) DropDown(c *gin.Context) {
 	var data model.User
 	c.BindQuery(&data)
 
-	dataList, err := h.userService.DropDownUser(&data)
+	dataList, err := h.userService.DropDownUser(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -278,7 +278,7 @@ func (h *userHandler) DropDown(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
 }
 
-func (h *userHandler) SetActive(c *gin.Context) {
+func (h userHandler) SetActive(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -292,7 +292,7 @@ func (h *userHandler) SetActive(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success set active data", result)
 }
 
-func (h *userHandler) SetDeactive(c *gin.Context) {
+func (h userHandler) SetDeactive(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -306,7 +306,7 @@ func (h *userHandler) SetDeactive(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success set deactive data", result)
 }
 
-func (h *userHandler) UpdatePassword(c *gin.Context) {
+func (h userHandler) UpdatePassword(c *gin.Context) {
 	var data model.UserUpdatePasswordForm
 	c.BindJSON(&data)
 	if err := validation.Validate(data.CurrentPassword, validation.Required); err != nil {
@@ -356,7 +356,7 @@ func (h *userHandler) UpdatePassword(c *gin.Context) {
 	}
 
 	data.NewPassword = string(password)
-	err = h.userService.UpdatePassword(&data)
+	err = h.userService.UpdatePassword(data)
 	if err != nil {
 		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("user: %v", err))
 		return

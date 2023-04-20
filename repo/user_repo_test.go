@@ -27,7 +27,7 @@ func TestCreateUser(testCreate *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		userRepo := repo.NewUserRepo(gormDB)
-		_, errCreate := userRepo.CreateUser(&u)
+		_, errCreate := userRepo.CreateUser(u)
 
 		testCreate.Run("test store data with no error", func(testCreate *testing.T) {
 			assert.Equal(testCreate, nil, errCreate)
@@ -44,7 +44,7 @@ func TestUpdateUser(testUpdate *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		userRepo := repo.NewUserRepo(gormDB)
-		_, errUpdate := userRepo.UpdateUser(1, &u)
+		_, errUpdate := userRepo.UpdateUser(1, u)
 
 		testUpdate.Run("test data updated with no error", func(testUpdate *testing.T) {
 			assert.Equal(testUpdate, nil, errUpdate)
@@ -62,7 +62,7 @@ func TestListUser(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		userRepo := repo.NewUserRepo(gormDB)
-		_, err := userRepo.ListUser(&u, &pagination)
+		_, err := userRepo.ListUser(u, pagination)
 
 		t.Run("test list data with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)
@@ -80,7 +80,7 @@ func TestListUserMeta(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		userRepo := repo.NewUserRepo(gormDB)
-		_, err := userRepo.ListUserMeta(&u, &pagination)
+		_, err := userRepo.ListUserMeta(u, pagination)
 
 		t.Run("test list meta data with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)
@@ -156,7 +156,7 @@ func TestUpdatePassword(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		userRepo := repo.NewUserRepo(gormDB)
-		err := userRepo.UpdatePassword(&uPassword)
+		err := userRepo.UpdatePassword(uPassword)
 
 		t.Run("test data update password with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)

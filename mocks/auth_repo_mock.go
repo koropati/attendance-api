@@ -11,7 +11,7 @@ type AuthRepoMock struct {
 	mock.Mock
 }
 
-func (m *AuthRepoMock) CheckID(id int) bool {
+func (m AuthRepoMock) CheckID(id int) bool {
 	if err := m.Called(id).Error(0); err != nil {
 		return false
 	}
@@ -19,7 +19,7 @@ func (m *AuthRepoMock) CheckID(id int) bool {
 	return true
 }
 
-func (m *AuthRepoMock) CheckUsername(username string) bool {
+func (m AuthRepoMock) CheckUsername(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
 	}
@@ -27,7 +27,7 @@ func (m *AuthRepoMock) CheckUsername(username string) bool {
 	return true
 }
 
-func (m *AuthRepoMock) CheckEmail(email string) bool {
+func (m AuthRepoMock) CheckEmail(email string) bool {
 	if err := m.Called(email).Error(0); err != nil {
 		return false
 	}
@@ -35,7 +35,7 @@ func (m *AuthRepoMock) CheckEmail(email string) bool {
 	return true
 }
 
-func (m *AuthRepoMock) CheckHandphone(handphone string) bool {
+func (m AuthRepoMock) CheckHandphone(handphone string) bool {
 	if err := m.Called(handphone).Error(0); err != nil {
 		return false
 	}
@@ -43,7 +43,7 @@ func (m *AuthRepoMock) CheckHandphone(handphone string) bool {
 	return true
 }
 
-func (m *AuthRepoMock) CheckIsActive(username string) bool {
+func (m AuthRepoMock) CheckIsActive(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
 	}
@@ -51,7 +51,7 @@ func (m *AuthRepoMock) CheckIsActive(username string) bool {
 	return true
 }
 
-func (m *AuthRepoMock) IsSuperAdmin(username string) (bool, error) {
+func (m AuthRepoMock) IsSuperAdmin(username string) (bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return false, err
 	}
@@ -59,7 +59,7 @@ func (m *AuthRepoMock) IsSuperAdmin(username string) (bool, error) {
 	return true, nil
 }
 
-func (m *AuthRepoMock) IsAdmin(username string) (bool, error) {
+func (m AuthRepoMock) IsAdmin(username string) (bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return false, err
 	}
@@ -67,7 +67,7 @@ func (m *AuthRepoMock) IsAdmin(username string) (bool, error) {
 	return false, nil
 }
 
-func (m *AuthRepoMock) IsUser(username string) (bool, error) {
+func (m AuthRepoMock) IsUser(username string) (bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return false, err
 	}
@@ -75,7 +75,7 @@ func (m *AuthRepoMock) IsUser(username string) (bool, error) {
 	return false, nil
 }
 
-func (m *AuthRepoMock) GetRole(username string) (bool, bool, bool, error) {
+func (m AuthRepoMock) GetRole(username string) (bool, bool, bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return false, false, false, err
 	}
@@ -83,7 +83,7 @@ func (m *AuthRepoMock) GetRole(username string) (bool, bool, bool, error) {
 	return true, false, false, nil
 }
 
-func (m *AuthRepoMock) GetEmail(username string) (string, error) {
+func (m AuthRepoMock) GetEmail(username string) (string, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return "", err
 	}
@@ -91,7 +91,7 @@ func (m *AuthRepoMock) GetEmail(username string) (string, error) {
 	return "admin@gmail.com", nil
 }
 
-func (m *AuthRepoMock) Register(user *model.User) error {
+func (m AuthRepoMock) Register(user model.User) error {
 	if err := m.Called(user).Error(0); err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ func (m *AuthRepoMock) Register(user *model.User) error {
 	return nil
 }
 
-func (m *AuthRepoMock) Login(username string) (string, error) {
+func (m AuthRepoMock) Login(username string) (string, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return "", err
 	}
@@ -107,9 +107,9 @@ func (m *AuthRepoMock) Login(username string) (string, error) {
 	return "$2a$10$fk9IPSmo/VYhu5VJm.vPy.5.XVowBHU3otSDAzTBpMR3YpX2cqYwW", nil
 }
 
-func (m *AuthRepoMock) GetByUsername(username string) (data *model.User, err error) {
+func (m AuthRepoMock) GetByUsername(username string) (data model.User, err error) {
 	if err := m.Called(username).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	data.ID = 1
@@ -129,9 +129,9 @@ func (m *AuthRepoMock) GetByUsername(username string) (data *model.User, err err
 	return data, nil
 }
 
-func (m *AuthRepoMock) GetByEmail(email string) (data *model.User, err error) {
+func (m AuthRepoMock) GetByEmail(email string) (data model.User, err error) {
 	if err := m.Called(email).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	data.ID = 1
@@ -151,7 +151,7 @@ func (m *AuthRepoMock) GetByEmail(email string) (data *model.User, err error) {
 	return data, nil
 }
 
-func (m *AuthRepoMock) Create(user *model.User) error {
+func (m AuthRepoMock) Create(user model.User) error {
 	if err := m.Called(user).Error(0); err != nil {
 		return err
 	}
@@ -159,7 +159,7 @@ func (m *AuthRepoMock) Create(user *model.User) error {
 	return nil
 }
 
-func (m *AuthRepoMock) Delete(id int) error {
+func (m AuthRepoMock) Delete(id int) error {
 	if err := m.Called(id).Error(0); err != nil {
 		return err
 	}
@@ -167,9 +167,9 @@ func (m *AuthRepoMock) Delete(id int) error {
 	return nil
 }
 
-func (m *AuthRepoMock) SetActiveUser(id int) (*model.User, error) {
+func (m AuthRepoMock) SetActiveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 
@@ -196,12 +196,12 @@ func (m *AuthRepoMock) SetActiveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *AuthRepoMock) SetDeactiveUser(id int) (*model.User, error) {
+func (m AuthRepoMock) SetDeactiveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
@@ -229,5 +229,5 @@ func (m *AuthRepoMock) SetDeactiveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }

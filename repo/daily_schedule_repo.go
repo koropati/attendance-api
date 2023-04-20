@@ -8,17 +8,17 @@ import (
 )
 
 type DailyScheduleRepo interface {
-	CreateDailySchedule(dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
-	RetrieveDailySchedule(id int) (*model.DailySchedule, error)
-	RetrieveDailyScheduleByOwner(id int, ownerID int) (*model.DailySchedule, error)
-	RetrieveDailyScheduleByDayName(scheduleID int, dayName string) (*model.DailySchedule, error)
-	UpdateDailySchedule(id int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
-	UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error)
+	CreateDailySchedule(dailyschedule model.DailySchedule) (model.DailySchedule, error)
+	RetrieveDailySchedule(id int) (model.DailySchedule, error)
+	RetrieveDailyScheduleByOwner(id int, ownerID int) (model.DailySchedule, error)
+	RetrieveDailyScheduleByDayName(scheduleID int, dayName string) (model.DailySchedule, error)
+	UpdateDailySchedule(id int, dailyschedule model.DailySchedule) (model.DailySchedule, error)
+	UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule model.DailySchedule) (model.DailySchedule, error)
 	DeleteDailySchedule(id int) error
 	DeleteDailyScheduleByOwner(id int, ownerID int) error
-	ListDailySchedule(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*[]model.DailySchedule, error)
-	ListDailyScheduleMeta(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*model.Meta, error)
-	DropDownDailySchedule(dailyschedule *model.DailySchedule) (*[]model.DailySchedule, error)
+	ListDailySchedule(dailyschedule model.DailySchedule, pagination model.Pagination) ([]model.DailySchedule, error)
+	ListDailyScheduleMeta(dailyschedule model.DailySchedule, pagination model.Pagination) (model.Meta, error)
+	DropDownDailySchedule(dailyschedule model.DailySchedule) ([]model.DailySchedule, error)
 	CheckHaveDailySchedule(scheduleID int, day string) (isHaveDailySchedule bool, dailyScheduleID int, err error)
 }
 
@@ -30,66 +30,66 @@ func NewDailyScheduleRepo(db *gorm.DB) DailyScheduleRepo {
 	return &dailyScheduleRepo{db: db}
 }
 
-func (r *dailyScheduleRepo) CreateDailySchedule(dailyschedule *model.DailySchedule) (*model.DailySchedule, error) {
+func (r dailyScheduleRepo) CreateDailySchedule(dailyschedule model.DailySchedule) (model.DailySchedule, error) {
 	if err := r.db.Table("daily_schedules").Create(&dailyschedule).Error; err != nil {
-		return nil, err
+		return model.DailySchedule{}, err
 	}
 	return dailyschedule, nil
 }
 
-func (r *dailyScheduleRepo) RetrieveDailySchedule(id int) (*model.DailySchedule, error) {
+func (r dailyScheduleRepo) RetrieveDailySchedule(id int) (model.DailySchedule, error) {
 	var dailyschedule model.DailySchedule
 	if err := r.db.First(&dailyschedule, id).Error; err != nil {
-		return nil, err
+		return model.DailySchedule{}, err
 	}
-	return &dailyschedule, nil
+	return dailyschedule, nil
 }
 
-func (r *dailyScheduleRepo) RetrieveDailyScheduleByOwner(id int, ownerID int) (*model.DailySchedule, error) {
+func (r dailyScheduleRepo) RetrieveDailyScheduleByOwner(id int, ownerID int) (model.DailySchedule, error) {
 	var dailyschedule model.DailySchedule
 	if err := r.db.Model(&model.DailySchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&dailyschedule).Error; err != nil {
-		return nil, err
+		return model.DailySchedule{}, err
 	}
-	return &dailyschedule, nil
+	return dailyschedule, nil
 }
 
-func (r *dailyScheduleRepo) RetrieveDailyScheduleByDayName(scheduleID int, dayName string) (*model.DailySchedule, error) {
+func (r dailyScheduleRepo) RetrieveDailyScheduleByDayName(scheduleID int, dayName string) (model.DailySchedule, error) {
 	var dailyschedule model.DailySchedule
 	if err := r.db.Model(&model.DailySchedule{}).Where("schedule_id = ? AND name = ?", scheduleID, dayName).First(&dailyschedule).Error; err != nil {
-		return nil, err
+		return model.DailySchedule{}, err
 	}
-	return &dailyschedule, nil
+	return dailyschedule, nil
 }
 
-func (r *dailyScheduleRepo) UpdateDailySchedule(id int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error) {
+func (r dailyScheduleRepo) UpdateDailySchedule(id int, dailyschedule model.DailySchedule) (model.DailySchedule, error) {
 	if err := r.db.Model(&model.DailySchedule{}).Where("id = ?", id).Updates(&dailyschedule).Error; err != nil {
-		return nil, err
+		return model.DailySchedule{}, err
 	}
 	return dailyschedule, nil
 }
 
-func (r *dailyScheduleRepo) UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule *model.DailySchedule) (*model.DailySchedule, error) {
+func (r dailyScheduleRepo) UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule model.DailySchedule) (model.DailySchedule, error) {
 	if err := r.db.Model(&model.DailySchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&dailyschedule).Error; err != nil {
-		return nil, err
+		return model.DailySchedule{}, err
 	}
 	return dailyschedule, nil
 }
 
-func (r *dailyScheduleRepo) DeleteDailySchedule(id int) error {
+func (r dailyScheduleRepo) DeleteDailySchedule(id int) error {
 	if err := r.db.Delete(&model.DailySchedule{}, id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *dailyScheduleRepo) DeleteDailyScheduleByOwner(id int, ownerID int) error {
+func (r dailyScheduleRepo) DeleteDailyScheduleByOwner(id int, ownerID int) error {
 	if err := r.db.Where("id = ? AND owner_id = ?", id, ownerID).Delete(&model.DailySchedule{}).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *dailyScheduleRepo) ListDailySchedule(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*[]model.DailySchedule, error) {
+func (r dailyScheduleRepo) ListDailySchedule(dailyschedule model.DailySchedule, pagination model.Pagination) ([]model.DailySchedule, error) {
 	var dailyschedules []model.DailySchedule
 	offset := (pagination.Page - 1) * pagination.Limit
 
@@ -101,10 +101,10 @@ func (r *dailyScheduleRepo) ListDailySchedule(dailyschedule *model.DailySchedule
 		return nil, err
 	}
 
-	return &dailyschedules, nil
+	return dailyschedules, nil
 }
 
-func (r *dailyScheduleRepo) ListDailyScheduleMeta(dailyschedule *model.DailySchedule, pagination *model.Pagination) (*model.Meta, error) {
+func (r dailyScheduleRepo) ListDailyScheduleMeta(dailyschedule model.DailySchedule, pagination model.Pagination) (model.Meta, error) {
 	var dailyschedules []model.DailySchedule
 	var totalRecord int
 	var totalPage int
@@ -114,7 +114,7 @@ func (r *dailyScheduleRepo) ListDailyScheduleMeta(dailyschedule *model.DailySche
 	queryTotal = SearchDailySchedule(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	totalPage = int(totalRecord / pagination.Limit)
@@ -129,7 +129,7 @@ func (r *dailyScheduleRepo) ListDailyScheduleMeta(dailyschedule *model.DailySche
 	query = SearchDailySchedule(query, pagination.Search)
 	query = query.Find(&dailyschedules)
 	if err := query.Error; err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	meta := model.Meta{
@@ -138,10 +138,10 @@ func (r *dailyScheduleRepo) ListDailyScheduleMeta(dailyschedule *model.DailySche
 		TotalRecord:   totalRecord,
 		CurrentRecord: len(dailyschedules),
 	}
-	return &meta, nil
+	return meta, nil
 }
 
-func (r *dailyScheduleRepo) DropDownDailySchedule(dailyschedule *model.DailySchedule) (*[]model.DailySchedule, error) {
+func (r dailyScheduleRepo) DropDownDailySchedule(dailyschedule model.DailySchedule) ([]model.DailySchedule, error) {
 	var dailyschedules []model.DailySchedule
 	query := r.db.Table("daily_schedules")
 	query = FilterDailySchedule(query, dailyschedule)
@@ -149,10 +149,10 @@ func (r *dailyScheduleRepo) DropDownDailySchedule(dailyschedule *model.DailySche
 	if err := query.Error; err != nil {
 		return nil, err
 	}
-	return &dailyschedules, nil
+	return dailyschedules, nil
 }
 
-func (r *dailyScheduleRepo) CheckHaveDailySchedule(scheduleID int, day string) (isHaveDailySchedule bool, dailyScheduleID int, err error) {
+func (r dailyScheduleRepo) CheckHaveDailySchedule(scheduleID int, day string) (isHaveDailySchedule bool, dailyScheduleID int, err error) {
 	type DataDailySchedule struct {
 		IsHaveDailySchedule bool `json:"is_have_daily_schedule" query:"is_have_daily_schedule"`
 		DailyScheduleID     int  `json:"daily_schedule_id" query:"daily_schedule_id"`
@@ -167,7 +167,7 @@ func (r *dailyScheduleRepo) CheckHaveDailySchedule(scheduleID int, day string) (
 	return data.IsHaveDailySchedule, data.DailyScheduleID, nil
 }
 
-func FilterDailySchedule(query *gorm.DB, dailyschedule *model.DailySchedule) *gorm.DB {
+func FilterDailySchedule(query *gorm.DB, dailyschedule model.DailySchedule) *gorm.DB {
 	if dailyschedule.Name != "" {
 		query = query.Where("name LIKE ?", "%"+dailyschedule.Name+"%")
 	}

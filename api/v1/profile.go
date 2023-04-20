@@ -41,7 +41,7 @@ func NewProfileHandler(userService service.UserService, activationTokenService s
 	}
 }
 
-func (h *profileHandler) Retrieve(c *gin.Context) {
+func (h profileHandler) Retrieve(c *gin.Context) {
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -56,7 +56,7 @@ func (h *profileHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *profileHandler) Update(c *gin.Context) {
+func (h profileHandler) Update(c *gin.Context) {
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -112,7 +112,7 @@ func (h *profileHandler) Update(c *gin.Context) {
 		data.Password = string(password)
 	}
 
-	result, err := h.userService.UpdateUser(currentUserID, &data)
+	result, err := h.userService.UpdateUser(currentUserID, data)
 
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -121,7 +121,7 @@ func (h *profileHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *profileHandler) UpdatePassword(c *gin.Context) {
+func (h profileHandler) UpdatePassword(c *gin.Context) {
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -171,7 +171,7 @@ func (h *profileHandler) UpdatePassword(c *gin.Context) {
 	}
 
 	data.NewPassword = string(password)
-	err = h.userService.UpdatePassword(&data)
+	err = h.userService.UpdatePassword(data)
 	if err != nil {
 		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("user: %v", err))
 		return

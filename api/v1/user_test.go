@@ -19,8 +19,8 @@ import (
 func TestListUser(t *testing.T) {
 	t.Run("test normal case list user", func(t *testing.T) {
 		userServiceMock := new(mocks.UserServiceMock)
-		userServiceMock.On("ListUser", mock.AnythingOfType("*model.User"), mock.AnythingOfType("*model.Pagination")).Return(nil)
-		userServiceMock.On("ListUserMeta", mock.AnythingOfType("*model.User"), mock.AnythingOfType("*model.Pagination")).Return(nil)
+		userServiceMock.On("ListUser", mock.AnythingOfType("model.User"), mock.AnythingOfType("model.Pagination")).Return(nil)
+		userServiceMock.On("ListUserMeta", mock.AnythingOfType("model.User"), mock.AnythingOfType("model.Pagination")).Return(nil)
 
 		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
 

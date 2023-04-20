@@ -12,9 +12,9 @@ type ActivationTokenRepoMock struct {
 	mock.Mock
 }
 
-func (m *ActivationTokenRepoMock) CreateActivationToken(token *model.ActivationToken) (*model.ActivationToken, error) {
+func (m ActivationTokenRepoMock) CreateActivationToken(token model.ActivationToken) (model.ActivationToken, error) {
 	if err := m.Called(token).Error(0); err != nil {
-		return nil, err
+		return model.ActivationToken{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 	gormData := model.GormCustom{
@@ -30,19 +30,19 @@ func (m *ActivationTokenRepoMock) CreateActivationToken(token *model.ActivationT
 		Valid:      dateTimeData,
 	}
 
-	return &tokenData, nil
+	return tokenData, nil
 }
 
-func (m *ActivationTokenRepoMock) RetrieveActivationToken(id int) (result *model.ActivationToken, err error) {
+func (m ActivationTokenRepoMock) RetrieveActivationToken(id int) (result model.ActivationToken, err error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.ActivationToken{}, err
 	}
 	return
 }
 
-func (m *ActivationTokenRepoMock) UpdateActivationToken(id int, user *model.ActivationToken) (*model.ActivationToken, error) {
+func (m ActivationTokenRepoMock) UpdateActivationToken(id int, user model.ActivationToken) (model.ActivationToken, error) {
 	if err := m.Called(id, user).Error(0); err != nil {
-		return nil, err
+		return model.ActivationToken{}, err
 	}
 
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
@@ -60,10 +60,10 @@ func (m *ActivationTokenRepoMock) UpdateActivationToken(id int, user *model.Acti
 		Valid:      dateTimeData,
 	}
 
-	return &data, nil
+	return data, nil
 }
 
-func (m *ActivationTokenRepoMock) DeleteActivationToken(id int) error {
+func (m ActivationTokenRepoMock) DeleteActivationToken(id int) error {
 	if err := m.Called(id).Error(0); err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (m *ActivationTokenRepoMock) DeleteActivationToken(id int) error {
 	return nil
 }
 
-func (m *ActivationTokenRepoMock) ListActivationToken(user *model.ActivationToken, pagination *model.Pagination) (*[]model.ActivationToken, error) {
+func (m ActivationTokenRepoMock) ListActivationToken(user model.ActivationToken, pagination model.Pagination) ([]model.ActivationToken, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
 		return nil, err
 	}
@@ -93,12 +93,12 @@ func (m *ActivationTokenRepoMock) ListActivationToken(user *model.ActivationToke
 		datas = append(datas, data)
 	}
 
-	return &datas, nil
+	return datas, nil
 }
 
-func (m *ActivationTokenRepoMock) ListActivationTokenMeta(user *model.ActivationToken, pagination *model.Pagination) (*model.Meta, error) {
+func (m ActivationTokenRepoMock) ListActivationTokenMeta(user model.ActivationToken, pagination model.Pagination) (model.Meta, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	metaData := model.Meta{
@@ -108,10 +108,10 @@ func (m *ActivationTokenRepoMock) ListActivationTokenMeta(user *model.Activation
 		CurrentRecord: 3,
 	}
 
-	return &metaData, nil
+	return metaData, nil
 }
 
-func (m *ActivationTokenRepoMock) DropDownActivationToken(user *model.ActivationToken) (*[]model.ActivationToken, error) {
+func (m ActivationTokenRepoMock) DropDownActivationToken(user model.ActivationToken) ([]model.ActivationToken, error) {
 	if err := m.Called(user).Error(0); err != nil {
 		return nil, err
 	}
@@ -133,10 +133,10 @@ func (m *ActivationTokenRepoMock) DropDownActivationToken(user *model.Activation
 		datas = append(datas, data)
 	}
 
-	return &datas, nil
+	return datas, nil
 }
 
-func (m *ActivationTokenRepoMock) IsValid(token string) (isValid bool, userID uint) {
+func (m ActivationTokenRepoMock) IsValid(token string) (isValid bool, userID uint) {
 	if err := m.Called(token).Error(0); err != nil {
 		return false, 0
 	}

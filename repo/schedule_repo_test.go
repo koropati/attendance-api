@@ -38,7 +38,7 @@ func TestCreateSchedule(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		scheduleRepo := repo.NewScheduleRepo(gormDB)
-		_, err := scheduleRepo.CreateSchedule(&scheduleData)
+		_, err := scheduleRepo.CreateSchedule(scheduleData)
 
 		t.Run("test store data with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)
@@ -71,7 +71,7 @@ func TestUpdateSchedule(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		scheduleRepo := repo.NewScheduleRepo(gormDB)
-		_, err := scheduleRepo.UpdateSchedule(1, &scheduleData)
+		_, err := scheduleRepo.UpdateSchedule(1, scheduleData)
 
 		t.Run("test data updated with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)
@@ -105,7 +105,7 @@ func TestListSchedule(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		scheduleRepo := repo.NewScheduleRepo(gormDB)
-		_, err := scheduleRepo.ListSchedule(&scheduleData, &pagination)
+		_, err := scheduleRepo.ListSchedule(scheduleData, pagination)
 
 		t.Run("test data list with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)
@@ -123,7 +123,7 @@ func TestListScheduleMeta(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		scheduleRepo := repo.NewScheduleRepo(gormDB)
-		_, err := scheduleRepo.ListScheduleMeta(&scheduleData, &pagination)
+		_, err := scheduleRepo.ListScheduleMeta(scheduleData, pagination)
 
 		t.Run("test list meta data with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)
@@ -140,7 +140,7 @@ func TestDropDownSchedule(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows(nil))
 
 		scheduleRepo := repo.NewScheduleRepo(gormDB)
-		_, err := scheduleRepo.DropDownSchedule(&scheduleData)
+		_, err := scheduleRepo.DropDownSchedule(scheduleData)
 
 		t.Run("test data dropdown with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)

@@ -8,13 +8,13 @@ import (
 )
 
 type AttendanceLogRepo interface {
-	CreateAttendanceLog(attendancelog *model.AttendanceLog) (*model.AttendanceLog, error)
-	RetrieveAttendanceLog(id int) (*model.AttendanceLog, error)
-	UpdateAttendanceLog(id int, attendancelog *model.AttendanceLog) (*model.AttendanceLog, error)
+	CreateAttendanceLog(attendancelog model.AttendanceLog) (model.AttendanceLog, error)
+	RetrieveAttendanceLog(id int) (model.AttendanceLog, error)
+	UpdateAttendanceLog(id int, attendancelog model.AttendanceLog) (model.AttendanceLog, error)
 	DeleteAttendanceLog(id int) error
-	ListAttendanceLog(attendancelog *model.AttendanceLog, pagination *model.Pagination) (*[]model.AttendanceLog, error)
-	ListAttendanceLogMeta(attendancelog *model.AttendanceLog, pagination *model.Pagination) (*model.Meta, error)
-	DropDownAttendanceLog(attendancelog *model.AttendanceLog) (*[]model.AttendanceLog, error)
+	ListAttendanceLog(attendancelog model.AttendanceLog, pagination model.Pagination) ([]model.AttendanceLog, error)
+	ListAttendanceLogMeta(attendancelog model.AttendanceLog, pagination model.Pagination) (model.Meta, error)
+	DropDownAttendanceLog(attendancelog model.AttendanceLog) ([]model.AttendanceLog, error)
 }
 
 type attendanceLogRepo struct {
@@ -25,52 +25,52 @@ func NewAttendanceLogRepo(db *gorm.DB) AttendanceLogRepo {
 	return &attendanceLogRepo{db: db}
 }
 
-func (r *attendanceLogRepo) CreateAttendanceLog(attendancelog *model.AttendanceLog) (*model.AttendanceLog, error) {
+func (r attendanceLogRepo) CreateAttendanceLog(attendancelog model.AttendanceLog) (model.AttendanceLog, error) {
 	if err := r.db.Table("attendance_logs").Create(&attendancelog).Error; err != nil {
-		return nil, err
+		return model.AttendanceLog{}, err
 	}
 	return attendancelog, nil
 }
 
-func (r *attendanceLogRepo) RetrieveAttendanceLog(id int) (*model.AttendanceLog, error) {
+func (r attendanceLogRepo) RetrieveAttendanceLog(id int) (model.AttendanceLog, error) {
 	var attendancelog model.AttendanceLog
 	if err := r.db.First(&attendancelog, id).Error; err != nil {
-		return nil, err
-	}
-	return &attendancelog, nil
-}
-
-func (r *attendanceLogRepo) UpdateAttendanceLog(id int, attendancelog *model.AttendanceLog) (*model.AttendanceLog, error) {
-	if err := r.db.Model(&model.AttendanceLog{}).Where("id = ?", id).Updates(&attendancelog).Error; err != nil {
-		return nil, err
+		return model.AttendanceLog{}, err
 	}
 	return attendancelog, nil
 }
 
-func (r *attendanceLogRepo) DeleteAttendanceLog(id int) error {
+func (r attendanceLogRepo) UpdateAttendanceLog(id int, attendancelog model.AttendanceLog) (model.AttendanceLog, error) {
+	if err := r.db.Model(&model.AttendanceLog{}).Where("id = ?", id).Updates(&attendancelog).Error; err != nil {
+		return model.AttendanceLog{}, err
+	}
+	return attendancelog, nil
+}
+
+func (r attendanceLogRepo) DeleteAttendanceLog(id int) error {
 	if err := r.db.Delete(&model.AttendanceLog{}, id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *attendanceLogRepo) ListAttendanceLog(attendancelog *model.AttendanceLog, pagination *model.Pagination) (*[]model.AttendanceLog, error) {
-	var attendance_logs []model.AttendanceLog
+func (r attendanceLogRepo) ListAttendanceLog(attendancelog model.AttendanceLog, pagination model.Pagination) ([]model.AttendanceLog, error) {
+	var attendanceLogs []model.AttendanceLog
 	offset := (pagination.Page - 1) * pagination.Limit
 
 	query := r.db.Table("attendance_logs").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterAttendanceLog(query, attendancelog)
 	query = SearchAttendanceLog(query, pagination.Search)
-	query = query.Find(&attendance_logs)
+	query = query.Find(&attendanceLogs)
 	if err := query.Error; err != nil {
 		return nil, err
 	}
 
-	return &attendance_logs, nil
+	return attendanceLogs, nil
 }
 
-func (r *attendanceLogRepo) ListAttendanceLogMeta(attendancelog *model.AttendanceLog, pagination *model.Pagination) (*model.Meta, error) {
-	var attendance_logs []model.AttendanceLog
+func (r attendanceLogRepo) ListAttendanceLogMeta(attendancelog model.AttendanceLog, pagination model.Pagination) (model.Meta, error) {
+	var attendanceLogs []model.AttendanceLog
 	var totalRecord int
 	var totalPage int
 
@@ -79,7 +79,7 @@ func (r *attendanceLogRepo) ListAttendanceLogMeta(attendancelog *model.Attendanc
 	queryTotal = SearchAttendanceLog(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	totalPage = int(totalRecord / pagination.Limit)
@@ -92,32 +92,32 @@ func (r *attendanceLogRepo) ListAttendanceLogMeta(attendancelog *model.Attendanc
 	query := r.db.Table("attendance_logs").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterAttendanceLog(query, attendancelog)
 	query = SearchAttendanceLog(query, pagination.Search)
-	query = query.Find(&attendance_logs)
+	query = query.Find(&attendanceLogs)
 	if err := query.Error; err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	meta := model.Meta{
 		CurrentPage:   pagination.Page,
 		TotalPage:     totalPage,
 		TotalRecord:   totalRecord,
-		CurrentRecord: len(attendance_logs),
+		CurrentRecord: len(attendanceLogs),
 	}
-	return &meta, nil
+	return meta, nil
 }
 
-func (r *attendanceLogRepo) DropDownAttendanceLog(attendancelog *model.AttendanceLog) (*[]model.AttendanceLog, error) {
-	var attendance_logs []model.AttendanceLog
+func (r attendanceLogRepo) DropDownAttendanceLog(attendancelog model.AttendanceLog) ([]model.AttendanceLog, error) {
+	var attendanceLogs []model.AttendanceLog
 	query := r.db.Table("attendance_logs")
 	query = FilterAttendanceLog(query, attendancelog)
-	query = query.Find(&attendance_logs)
+	query = query.Find(&attendanceLogs)
 	if err := query.Error; err != nil {
 		return nil, err
 	}
-	return &attendance_logs, nil
+	return attendanceLogs, nil
 }
 
-func FilterAttendanceLog(query *gorm.DB, attendancelog *model.AttendanceLog) *gorm.DB {
+func FilterAttendanceLog(query *gorm.DB, attendancelog model.AttendanceLog) *gorm.DB {
 	if attendancelog.AttendanceID > 0 {
 		query = query.Where("attendance_id = ?", attendancelog.AttendanceID)
 	}

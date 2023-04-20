@@ -11,8 +11,8 @@ import (
 )
 
 type Token interface {
-	GenerateToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string)
-	GenerateRefreshToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string)
+	GenerateToken(data model.UserTokenPayload) (expiredDate int64, tokenData string)
+	GenerateRefreshToken(data model.UserTokenPayload) (expiredDate int64, tokenData string)
 	ValidateToken(token string) (*jwt.Token, error)
 	ValidateRefreshToken(token string) (*jwt.Token, error)
 }
@@ -43,7 +43,7 @@ type refreshClaims struct {
 	jwt.StandardClaims
 }
 
-func (t *token) GenerateToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string) {
+func (t *token) GenerateToken(data model.UserTokenPayload) (expiredDate int64, tokenData string) {
 	expiredTime := time.Now().Add(time.Minute * time.Duration(data.Expired)).Unix()
 	claims := &authClaims{
 		data.UserID,
@@ -74,7 +74,7 @@ func (t *token) ValidateToken(encodedToken string) (*jwt.Token, error) {
 	})
 }
 
-func (t *token) GenerateRefreshToken(data *model.UserTokenPayload) (expiredDate int64, tokenData string) {
+func (t *token) GenerateRefreshToken(data model.UserTokenPayload) (expiredDate int64, tokenData string) {
 	expiredTime := time.Now().Add(time.Minute * time.Duration(data.Expired)).Unix()
 	claims := &refreshClaims{
 		data.UserID,

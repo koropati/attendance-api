@@ -11,7 +11,7 @@ type AuthServiceMock struct {
 	mock.Mock
 }
 
-func (m *AuthServiceMock) CheckID(id int) bool {
+func (m AuthServiceMock) CheckID(id int) bool {
 	if err := m.Called(id).Error(0); err != nil {
 		return false
 	}
@@ -19,7 +19,7 @@ func (m *AuthServiceMock) CheckID(id int) bool {
 	return true
 }
 
-func (m *AuthServiceMock) CheckUsername(username string) bool {
+func (m AuthServiceMock) CheckUsername(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
 	}
@@ -27,7 +27,7 @@ func (m *AuthServiceMock) CheckUsername(username string) bool {
 	return true
 }
 
-func (m *AuthServiceMock) CheckEmail(email string) bool {
+func (m AuthServiceMock) CheckEmail(email string) bool {
 	if err := m.Called(email).Error(0); err != nil {
 		return false
 	}
@@ -35,7 +35,7 @@ func (m *AuthServiceMock) CheckEmail(email string) bool {
 	return true
 }
 
-func (m *AuthServiceMock) CheckHandphone(handphone string) bool {
+func (m AuthServiceMock) CheckHandphone(handphone string) bool {
 	if err := m.Called(handphone).Error(0); err != nil {
 		return false
 	}
@@ -43,7 +43,7 @@ func (m *AuthServiceMock) CheckHandphone(handphone string) bool {
 	return true
 }
 
-func (m *AuthServiceMock) CheckIsActive(username string) bool {
+func (m AuthServiceMock) CheckIsActive(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
 	}
@@ -51,7 +51,7 @@ func (m *AuthServiceMock) CheckIsActive(username string) bool {
 	return true
 }
 
-func (m *AuthServiceMock) IsSuperAdmin(username string) (bool, error) {
+func (m AuthServiceMock) IsSuperAdmin(username string) (bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return false, err
 	}
@@ -59,7 +59,7 @@ func (m *AuthServiceMock) IsSuperAdmin(username string) (bool, error) {
 	return true, nil
 }
 
-func (m *AuthServiceMock) IsAdmin(username string) (bool, error) {
+func (m AuthServiceMock) IsAdmin(username string) (bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return false, err
 	}
@@ -67,7 +67,7 @@ func (m *AuthServiceMock) IsAdmin(username string) (bool, error) {
 	return false, nil
 }
 
-func (m *AuthServiceMock) IsUser(username string) (bool, error) {
+func (m AuthServiceMock) IsUser(username string) (bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return false, err
 	}
@@ -75,7 +75,7 @@ func (m *AuthServiceMock) IsUser(username string) (bool, error) {
 	return false, nil
 }
 
-func (m *AuthServiceMock) GetRole(username string) (bool, bool, bool, error) {
+func (m AuthServiceMock) GetRole(username string) (bool, bool, bool, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return false, false, false, err
 	}
@@ -83,7 +83,7 @@ func (m *AuthServiceMock) GetRole(username string) (bool, bool, bool, error) {
 	return true, false, false, nil
 }
 
-func (m *AuthServiceMock) GetEmail(username string) (string, error) {
+func (m AuthServiceMock) GetEmail(username string) (string, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return "", err
 	}
@@ -91,7 +91,7 @@ func (m *AuthServiceMock) GetEmail(username string) (string, error) {
 	return "admin@gmail.com", nil
 }
 
-func (m *AuthServiceMock) Register(user *model.User) error {
+func (m AuthServiceMock) Register(user model.User) error {
 	if err := m.Called(user).Error(0); err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ func (m *AuthServiceMock) Register(user *model.User) error {
 	return nil
 }
 
-func (m *AuthServiceMock) Login(username string) (string, error) {
+func (m AuthServiceMock) Login(username string) (string, error) {
 	if err := m.Called(username).Error(0); err != nil {
 		return "", err
 	}
@@ -107,9 +107,9 @@ func (m *AuthServiceMock) Login(username string) (string, error) {
 	return "$2a$10$fk9IPSmo/VYhu5VJm.vPy.5.XVowBHU3otSDAzTBpMR3YpX2cqYwW", nil
 }
 
-func (m *AuthServiceMock) GetByUsername(username string) (data *model.User, err error) {
+func (m AuthServiceMock) GetByUsername(username string) (data model.User, err error) {
 	if err := m.Called(username).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	data.ID = 1
@@ -129,9 +129,9 @@ func (m *AuthServiceMock) GetByUsername(username string) (data *model.User, err 
 	return data, nil
 }
 
-func (m *AuthServiceMock) GetByEmail(email string) (data *model.User, err error) {
+func (m AuthServiceMock) GetByEmail(email string) (data model.User, err error) {
 	if err := m.Called(email).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	data.ID = 1
@@ -151,7 +151,7 @@ func (m *AuthServiceMock) GetByEmail(email string) (data *model.User, err error)
 	return data, nil
 }
 
-func (m *AuthServiceMock) Create(user *model.User) error {
+func (m AuthServiceMock) Create(user model.User) error {
 	if err := m.Called(user).Error(0); err != nil {
 		return err
 	}
@@ -159,7 +159,7 @@ func (m *AuthServiceMock) Create(user *model.User) error {
 	return nil
 }
 
-func (m *AuthServiceMock) Delete(id int) error {
+func (m AuthServiceMock) Delete(id int) error {
 	if err := m.Called(id).Error(0); err != nil {
 		return err
 	}
@@ -167,9 +167,9 @@ func (m *AuthServiceMock) Delete(id int) error {
 	return nil
 }
 
-func (m *AuthServiceMock) SetActiveUser(id int) (*model.User, error) {
+func (m AuthServiceMock) SetActiveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
@@ -197,12 +197,12 @@ func (m *AuthServiceMock) SetActiveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *AuthServiceMock) SetDeactiveUser(id int) (*model.User, error) {
+func (m AuthServiceMock) SetDeactiveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
@@ -230,5 +230,5 @@ func (m *AuthServiceMock) SetDeactiveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }

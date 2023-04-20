@@ -12,7 +12,7 @@ type UserServiceMock struct {
 	mock.Mock
 }
 
-func (m *UserServiceMock) CheckID(id int) bool {
+func (m UserServiceMock) CheckID(id int) bool {
 	if err := m.Called(id).Error(0); err != nil {
 		return false
 	}
@@ -20,7 +20,7 @@ func (m *UserServiceMock) CheckID(id int) bool {
 	return true
 }
 
-func (m *UserServiceMock) CheckUsername(username string) bool {
+func (m UserServiceMock) CheckUsername(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
 	}
@@ -28,7 +28,7 @@ func (m *UserServiceMock) CheckUsername(username string) bool {
 	return true
 }
 
-func (m *UserServiceMock) CheckEmail(email string) bool {
+func (m UserServiceMock) CheckEmail(email string) bool {
 	if err := m.Called(email).Error(0); err != nil {
 		return false
 	}
@@ -36,7 +36,7 @@ func (m *UserServiceMock) CheckEmail(email string) bool {
 	return true
 }
 
-func (m *UserServiceMock) CheckHandphone(handphone string) bool {
+func (m UserServiceMock) CheckHandphone(handphone string) bool {
 	if err := m.Called(handphone).Error(0); err != nil {
 		return false
 	}
@@ -44,7 +44,7 @@ func (m *UserServiceMock) CheckHandphone(handphone string) bool {
 	return true
 }
 
-func (m *UserServiceMock) CheckIsActive(username string) bool {
+func (m UserServiceMock) CheckIsActive(username string) bool {
 	if err := m.Called(username).Error(0); err != nil {
 		return false
 	}
@@ -52,7 +52,7 @@ func (m *UserServiceMock) CheckIsActive(username string) bool {
 	return true
 }
 
-func (m *UserServiceMock) CheckUpdateUsername(id int, username string) bool {
+func (m UserServiceMock) CheckUpdateUsername(id int, username string) bool {
 	if err := m.Called(id, username).Error(0); err != nil {
 		return false
 	}
@@ -60,7 +60,7 @@ func (m *UserServiceMock) CheckUpdateUsername(id int, username string) bool {
 	return true
 }
 
-func (m *UserServiceMock) CheckUpdateEmail(id int, email string) bool {
+func (m UserServiceMock) CheckUpdateEmail(id int, email string) bool {
 	if err := m.Called(id, email).Error(0); err != nil {
 		return false
 	}
@@ -68,7 +68,7 @@ func (m *UserServiceMock) CheckUpdateEmail(id int, email string) bool {
 	return true
 }
 
-func (m *UserServiceMock) CheckUpdateHandphone(id int, handphone string) bool {
+func (m UserServiceMock) CheckUpdateHandphone(id int, handphone string) bool {
 	if err := m.Called(id, handphone).Error(0); err != nil {
 		return false
 	}
@@ -76,7 +76,7 @@ func (m *UserServiceMock) CheckUpdateHandphone(id int, handphone string) bool {
 	return true
 }
 
-func (m *UserServiceMock) ListUser(user *model.User, pagination *model.Pagination) (*[]model.User, error) {
+func (m UserServiceMock) ListUser(user model.User, pagination model.Pagination) ([]model.User, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
 		return nil, err
 	}
@@ -108,12 +108,12 @@ func (m *UserServiceMock) ListUser(user *model.User, pagination *model.Paginatio
 		users = append(users, userData)
 	}
 
-	return &users, nil
+	return users, nil
 }
 
-func (m *UserServiceMock) ListUserMeta(user *model.User, pagination *model.Pagination) (*model.Meta, error) {
+func (m UserServiceMock) ListUserMeta(user model.User, pagination model.Pagination) (model.Meta, error) {
 	if err := m.Called(user, pagination).Error(0); err != nil {
-		return nil, err
+		return model.Meta{}, err
 	}
 
 	metaData := model.Meta{
@@ -123,12 +123,12 @@ func (m *UserServiceMock) ListUserMeta(user *model.User, pagination *model.Pagin
 		CurrentRecord: 3,
 	}
 
-	return &metaData, nil
+	return metaData, nil
 }
 
-func (m *UserServiceMock) CreateUser(user *model.User) (*model.User, error) {
+func (m UserServiceMock) CreateUser(user model.User) (model.User, error) {
 	if err := m.Called(user).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 	gormData := model.GormCustom{
@@ -154,12 +154,12 @@ func (m *UserServiceMock) CreateUser(user *model.User) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserServiceMock) RetrieveUser(id int) (*model.User, error) {
+func (m UserServiceMock) RetrieveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 	gormData := model.GormCustom{
@@ -185,12 +185,12 @@ func (m *UserServiceMock) RetrieveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserServiceMock) RetrieveUserByUsername(username string) (data *model.User, err error) {
+func (m UserServiceMock) RetrieveUserByUsername(username string) (data model.User, err error) {
 	if err := m.Called(username).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	data.ID = 1
@@ -210,9 +210,9 @@ func (m *UserServiceMock) RetrieveUserByUsername(username string) (data *model.U
 	return data, nil
 }
 
-func (m *UserServiceMock) RetrieveUserByEmail(email string) (data *model.User, err error) {
+func (m UserServiceMock) RetrieveUserByEmail(email string) (data model.User, err error) {
 	if err := m.Called(email).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	data.ID = 1
@@ -232,9 +232,9 @@ func (m *UserServiceMock) RetrieveUserByEmail(email string) (data *model.User, e
 	return data, nil
 }
 
-func (m *UserServiceMock) UpdateUser(id int, user *model.User) (*model.User, error) {
+func (m UserServiceMock) UpdateUser(id int, user model.User) (model.User, error) {
 	if err := m.Called(id, user).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
 
@@ -261,10 +261,10 @@ func (m *UserServiceMock) UpdateUser(id int, user *model.User) (*model.User, err
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserServiceMock) DeleteUser(id int) error {
+func (m UserServiceMock) DeleteUser(id int) error {
 	if err := m.Called(id).Error(0); err != nil {
 		return err
 	}
@@ -272,9 +272,9 @@ func (m *UserServiceMock) DeleteUser(id int) error {
 	return nil
 }
 
-func (m *UserServiceMock) SetActiveUser(id int) (*model.User, error) {
+func (m UserServiceMock) SetActiveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
@@ -302,12 +302,12 @@ func (m *UserServiceMock) SetActiveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserServiceMock) SetDeactiveUser(id int) (*model.User, error) {
+func (m UserServiceMock) SetDeactiveUser(id int) (model.User, error) {
 	if err := m.Called(id).Error(0); err != nil {
-		return nil, err
+		return model.User{}, err
 	}
 
 	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
@@ -335,10 +335,10 @@ func (m *UserServiceMock) SetDeactiveUser(id int) (*model.User, error) {
 		IsUser:       false,
 	}
 
-	return &userData, nil
+	return userData, nil
 }
 
-func (m *UserServiceMock) DropDownUser(user *model.User) (*[]model.UserDropDown, error) {
+func (m UserServiceMock) DropDownUser(user model.User) ([]model.UserDropDown, error) {
 	if err := m.Called(user).Error(0); err != nil {
 		return nil, err
 	}
@@ -356,10 +356,10 @@ func (m *UserServiceMock) DropDownUser(user *model.User) (*[]model.UserDropDown,
 		users = append(users, userData)
 	}
 
-	return &users, nil
+	return users, nil
 }
 
-func (m *UserServiceMock) UpdatePassword(userPasswordData *model.UserUpdatePasswordForm) error {
+func (m UserServiceMock) UpdatePassword(userPasswordData model.UserUpdatePasswordForm) error {
 	if err := m.Called(userPasswordData).Error(0); err != nil {
 		return err
 	}
@@ -367,7 +367,7 @@ func (m *UserServiceMock) UpdatePassword(userPasswordData *model.UserUpdatePassw
 	return nil
 }
 
-func (m *UserServiceMock) GetPassword(id int) (hashPassword string, err error) {
+func (m UserServiceMock) GetPassword(id int) (hashPassword string, err error) {
 	if err := m.Called(id).Error(0); err != nil {
 		return "", err
 	}

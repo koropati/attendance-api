@@ -19,6 +19,7 @@ type Schedule struct {
 	Latitude      float64         `json:"latitude"`
 	Longitude     float64         `json:"longitude"`
 	Radius        int             `json:"radius"` //in metter
+	UserInRule    int             `json:"user_in_rule" gorm:"-"`
 	OwnerID       int             `json:"owner_id" gorm:"not null"`
 }
 

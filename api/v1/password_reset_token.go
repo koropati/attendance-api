@@ -41,7 +41,7 @@ func NewPasswordResetTokenHandler(passwordResetTokenService service.PasswordRese
 	}
 }
 
-func (h *passwordResetTokenHandler) Create(c *gin.Context) {
+func (h passwordResetTokenHandler) Create(c *gin.Context) {
 	var data model.PasswordResetToken
 	c.BindJSON(&data)
 
@@ -64,7 +64,7 @@ func (h *passwordResetTokenHandler) Create(c *gin.Context) {
 
 	data.Valid = time.Now().Add((time.Hour * 2))
 
-	result, err := h.passwordResetTokenService.CreatePasswordResetToken(&data)
+	result, err := h.passwordResetTokenService.CreatePasswordResetToken(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -72,7 +72,7 @@ func (h *passwordResetTokenHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
-func (h *passwordResetTokenHandler) Retrieve(c *gin.Context) {
+func (h passwordResetTokenHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -88,7 +88,7 @@ func (h *passwordResetTokenHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *passwordResetTokenHandler) Update(c *gin.Context) {
+func (h passwordResetTokenHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -117,7 +117,7 @@ func (h *passwordResetTokenHandler) Update(c *gin.Context) {
 		return
 	}
 
-	result, err := h.passwordResetTokenService.UpdatePasswordResetToken(id, &data)
+	result, err := h.passwordResetTokenService.UpdatePasswordResetToken(id, data)
 
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -126,7 +126,7 @@ func (h *passwordResetTokenHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *passwordResetTokenHandler) Delete(c *gin.Context) {
+func (h passwordResetTokenHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -141,17 +141,17 @@ func (h *passwordResetTokenHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
-func (h *passwordResetTokenHandler) List(c *gin.Context) {
+func (h passwordResetTokenHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.PasswordResetToken
 	c.BindQuery(&data)
 
-	dataList, err := h.passwordResetTokenService.ListPasswordResetToken(&data, &pagination)
+	dataList, err := h.passwordResetTokenService.ListPasswordResetToken(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.passwordResetTokenService.ListPasswordResetTokenMeta(&data, &pagination)
+	metaList, err := h.passwordResetTokenService.ListPasswordResetTokenMeta(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -159,11 +159,11 @@ func (h *passwordResetTokenHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
-func (h *passwordResetTokenHandler) DropDown(c *gin.Context) {
+func (h passwordResetTokenHandler) DropDown(c *gin.Context) {
 	var data model.PasswordResetToken
 	c.BindQuery(&data)
 
-	dataList, err := h.passwordResetTokenService.DropDownPasswordResetToken(&data)
+	dataList, err := h.passwordResetTokenService.DropDownPasswordResetToken(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}

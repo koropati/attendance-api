@@ -89,7 +89,7 @@ func TestRegister(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 
 		authRepo := repo.NewAuthRepo(gormDB)
-		err := authRepo.Register(&u)
+		err := authRepo.Register(u)
 
 		t.Run("test store data with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)

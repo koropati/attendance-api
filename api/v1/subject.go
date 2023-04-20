@@ -41,7 +41,7 @@ func NewSubjectHandler(subjectService service.SubjectService, infra infra.Infra,
 	}
 }
 
-func (h *subjectHandler) Create(c *gin.Context) {
+func (h subjectHandler) Create(c *gin.Context) {
 	var data model.Subject
 	c.BindJSON(&data)
 
@@ -59,7 +59,7 @@ func (h *subjectHandler) Create(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
 		return
 	}
-	result, err := h.subjectService.CreateSubject(&data)
+	result, err := h.subjectService.CreateSubject(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -67,7 +67,7 @@ func (h *subjectHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
-func (h *subjectHandler) Retrieve(c *gin.Context) {
+func (h subjectHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -80,7 +80,7 @@ func (h *subjectHandler) Retrieve(c *gin.Context) {
 		return
 	}
 
-	var result *model.Subject
+	var result model.Subject
 	if h.middleware.IsSuperAdmin(c) {
 		result, err = h.subjectService.RetrieveSubject(id)
 		if err != nil {
@@ -97,7 +97,7 @@ func (h *subjectHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
-func (h *subjectHandler) Update(c *gin.Context) {
+func (h subjectHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -121,11 +121,11 @@ func (h *subjectHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var result *model.Subject
+	var result model.Subject
 	if h.middleware.IsSuperAdmin(c) {
-		result, err = h.subjectService.UpdateSubject(id, &data)
+		result, err = h.subjectService.UpdateSubject(id, data)
 	} else {
-		result, err = h.subjectService.UpdateSubjectByOwner(id, currentUserID, &data)
+		result, err = h.subjectService.UpdateSubjectByOwner(id, currentUserID, data)
 	}
 
 	if err != nil {
@@ -135,7 +135,7 @@ func (h *subjectHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
-func (h *subjectHandler) Delete(c *gin.Context) {
+func (h subjectHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
@@ -163,7 +163,7 @@ func (h *subjectHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
-func (h *subjectHandler) List(c *gin.Context) {
+func (h subjectHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.Subject
 	c.BindQuery(&data)
@@ -178,12 +178,12 @@ func (h *subjectHandler) List(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	dataList, err := h.subjectService.ListSubject(&data, &pagination)
+	dataList, err := h.subjectService.ListSubject(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.subjectService.ListSubjectMeta(&data, &pagination)
+	metaList, err := h.subjectService.ListSubjectMeta(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -191,7 +191,7 @@ func (h *subjectHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
-func (h *subjectHandler) DropDown(c *gin.Context) {
+func (h subjectHandler) DropDown(c *gin.Context) {
 	var data model.Subject
 	c.BindQuery(&data)
 
@@ -205,7 +205,7 @@ func (h *subjectHandler) DropDown(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	dataList, err := h.subjectService.DropDownSubject(&data)
+	dataList, err := h.subjectService.DropDownSubject(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}

@@ -33,7 +33,7 @@ func NewServer(infra infra.Infra) Server {
 	}
 }
 
-func (c *server) Run() {
+func (c server) Run() {
 	docs.SwaggerInfo.BasePath = "/v1"
 	c.gin.Use(c.middleware.CORS())
 	c.handlers()
@@ -43,19 +43,25 @@ func (c *server) Run() {
 	c.gin.Run(c.infra.Port())
 }
 
-func (c *server) handlers() {
+func (c server) handlers() {
 	h := request.DefaultHandler()
 
 	c.gin.NoRoute(h.NoRoute)
 	c.gin.GET("/", h.Index)
 }
 
-func (c *server) v1() {
+func (c server) v1() {
 	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	profileHandler := v1.NewProfileHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
-	scheduleHandler := v1.NewScheduleHandler(c.service.ScheduleService(), c.service.SubjectService(), c.infra, c.middleware)
+	scheduleHandler := v1.NewScheduleHandler(
+		c.service.ScheduleService(),
+		c.service.SubjectService(),
+		c.service.UserScheduleService(),
+		c.infra,
+		c.middleware,
+	)
 	dailyScheduleHandler := v1.NewDailyScheduleHandler(c.service.DailyScheduleService(), c.infra, c.middleware)
 	userScheduleHandler := v1.NewUserScheduleHandler(c.service.UserScheduleService(), c.infra, c.middleware)
 	passwordResetTokenHandler := v1.NewPasswordResetTokenHandler(c.service.PasswordResetTokenService(), c.infra, c.middleware)

@@ -116,10 +116,10 @@ func TestIsUser(t *testing.T) {
 func TestRegister(t *testing.T) {
 	t.Run("test normal case service register", func(t *testing.T) {
 		authRepoMock := new(mocks.AuthRepoMock)
-		authRepoMock.On("Register", mock.AnythingOfType("*model.User")).Return(nil)
+		authRepoMock.On("Register", mock.AnythingOfType("model.User")).Return(nil)
 
 		authService := service.NewAuthService(authRepoMock)
-		err := authService.Register(&u)
+		err := authService.Register(u)
 
 		t.Run("test store data with no error", func(t *testing.T) {
 			assert.Equal(t, nil, err)
