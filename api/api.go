@@ -175,6 +175,12 @@ func (c server) v1() {
 			userSchedule.GET("/drop-down", userScheduleHandler.DropDown)
 		}
 
+		mySchedule := v1.Group("/my-schedule")
+		mySchedule.Use(c.middleware.AUTH())
+		{
+			mySchedule.GET("/list", userScheduleHandler.MySchedule)
+		}
+
 		attendance := v1.Group("/attendance")
 		attendance.Use(c.middleware.AUTH())
 		{

@@ -12,6 +12,7 @@ type UserScheduleRepo interface {
 	CreateUserSchedule(userschedule model.UserSchedule) (model.UserSchedule, error)
 	RetrieveUserSchedule(id int) (model.UserSchedule, error)
 	RetrieveUserScheduleByOwner(id int, ownerID int) (model.UserSchedule, error)
+	ListMySchedule(userID int) ([]model.MySchedule, error)
 	ListUserInRule(scheduleID int, user model.User, pagination model.Pagination) ([]model.User, error)
 	ListUserInRuleMeta(scheduleID int, user model.User, pagination model.Pagination) (model.Meta, error)
 	UpdateUserSchedule(id int, userschedule model.UserSchedule) (model.UserSchedule, error)
@@ -83,6 +84,32 @@ func (r userScheduleRepo) DeleteUserScheduleByOwner(id int, ownerID int) error {
 		return err
 	}
 	return nil
+}
+
+func (r userScheduleRepo) ListMySchedule(userID int) (results []model.MySchedule, err error) {
+	today := time.Now().Format("2006-01-02")
+	query := fmt.Sprintf(`
+	SELECT 
+	us.schedule_id as schedule_id, 
+	s.name as schedule_name, 
+	s.code as schedule_code, 
+	s.start_date as start_date, 
+	s.end_date as end_date, 
+	s.subject_id as subject_id, 
+	sbj.name as subject_name, 
+	sbj.code as subject_code, 
+	s.late_duration as late_duration, 
+	s.latitude as latitude, 
+	s.longitude as longitude, 
+	s.radius as radius 
+	FROM user_schedules us 
+	LEFT JOIN schedules s ON us.schedule_id = s.id 
+	LEFT JOIN subjects sbj ON s.subject_id = sbj.id 
+	WHERE us.user_id = %d AND '%s' BETWEEN DATE(s.start_date) AND DATE(s.end_date) AND us.deleted_at IS NULL`, userID, today)
+	if err := r.db.Raw(query).Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	return
 }
 
 func (r userScheduleRepo) ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error) {

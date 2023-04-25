@@ -22,6 +22,7 @@ type UserScheduleHandler interface {
 	Delete(c *gin.Context)
 	List(c *gin.Context)
 	DropDown(c *gin.Context)
+	MySchedule(s *gin.Context)
 }
 
 type userScheduleHandler struct {
@@ -200,4 +201,19 @@ func (h userScheduleHandler) DropDown(c *gin.Context) {
 	}
 
 	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
+}
+
+func (h userScheduleHandler) MySchedule(c *gin.Context) {
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	results, err := h.userScheduleService.ListMySchedule(currentUserID)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+	}
+
+	response.New(c).Data(http.StatusOK, "success list data my schedule", results)
 }
