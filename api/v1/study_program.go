@@ -15,7 +15,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 type StudyProgramHandler interface {
@@ -55,10 +54,28 @@ func (h studyProgramHandler) Create(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
 		return
 	}
+
+	if err := validation.Validate(data.MajorID, validation.Required); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("major_id: %v", err))
+		return
+	}
+
+	if h.studyProgramService.CheckIsExistByName(data.Name, int(data.MajorID), 0) {
+		err := errors.New("study program name is already exists")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		return
+	}
+
+	if h.studyProgramService.CheckIsExistByCode(data.Code, 0) {
+		err := errors.New("study program code is already exists")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
+		return
+	}
+
 	result, err := h.studyProgramService.CreateStudyProgram(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -116,8 +133,25 @@ func (h studyProgramHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		return
+	}
+
+	if err := validation.Validate(data.MajorID, validation.Required); err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("major_id: %v", err))
+		return
+	}
+
+	if h.studyProgramService.CheckIsExistByName(data.Name, int(data.MajorID), id) {
+		err := errors.New("study program name is already exists")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		return
+	}
+
+	if h.studyProgramService.CheckIsExistByCode(data.Code, id) {
+		err := errors.New("study program code is already exists")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
 		return
 	}
 

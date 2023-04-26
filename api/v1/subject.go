@@ -15,7 +15,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 type SubjectHandler interface {
@@ -55,7 +54,7 @@ func (h subjectHandler) Create(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
 		return
 	}
@@ -116,7 +115,7 @@ func (h subjectHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
 		return
 	}

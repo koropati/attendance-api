@@ -17,6 +17,8 @@ type StudyProgramService interface {
 	ListStudyProgramMeta(studyProgram model.StudyProgram, pagination model.Pagination) (model.Meta, error)
 	DropDownStudyProgram(studyProgram model.StudyProgram) ([]model.StudyProgram, error)
 	CheckIsExist(id int) (isExist bool)
+	CheckIsExistByName(name string, majorID int, exceptID int) (isExist bool)
+	CheckIsExistByCode(code string, exceptID int) (isExist bool)
 }
 
 type studyProgramService struct {
@@ -109,4 +111,12 @@ func (s studyProgramService) DropDownStudyProgram(studyProgram model.StudyProgra
 
 func (s studyProgramService) CheckIsExist(id int) (isExist bool) {
 	return s.studyProgramRepo.CheckIsExist(id)
+}
+
+func (s studyProgramService) CheckIsExistByName(name string, majorID int, exceptID int) (isExist bool) {
+	return s.studyProgramRepo.CheckIsExistByName(name, majorID, exceptID)
+}
+
+func (s studyProgramService) CheckIsExistByCode(code string, exceptID int) (isExist bool) {
+	return s.studyProgramRepo.CheckIsExistByCode(code, exceptID)
 }

@@ -144,7 +144,7 @@ func (c server) v1() {
 		}
 
 		major := v1.Group("/major")
-		major.Use(c.middleware.ADMIN())
+		major.Use(c.middleware.SUPERADMIN())
 		{
 			major.POST("/create", majorHandler.Create)
 			major.GET("/retrieve", majorHandler.Retrieve)
@@ -155,7 +155,7 @@ func (c server) v1() {
 		}
 
 		studyProgram := v1.Group("/study-program")
-		studyProgram.Use(c.middleware.ADMIN())
+		studyProgram.Use(c.middleware.SUPERADMIN())
 		{
 			studyProgram.POST("/create", studyProgramHandler.Create)
 			studyProgram.GET("/retrieve", studyProgramHandler.Retrieve)

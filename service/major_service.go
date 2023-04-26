@@ -17,6 +17,8 @@ type MajorService interface {
 	ListMajorMeta(major model.Major, pagination model.Pagination) (model.Meta, error)
 	DropDownMajor(major model.Major) ([]model.Major, error)
 	CheckIsExist(id int) (isExist bool)
+	CheckIsExistByName(name string, exceptID int) (isExist bool)
+	CheckIsExistByCode(code string, exceptID int) (isExist bool)
 }
 
 type majorService struct {
@@ -109,4 +111,12 @@ func (s majorService) DropDownMajor(major model.Major) ([]model.Major, error) {
 
 func (s majorService) CheckIsExist(id int) (isExist bool) {
 	return s.majorRepo.CheckIsExist(id)
+}
+
+func (s majorService) CheckIsExistByName(name string, exceptID int) (isExist bool) {
+	return s.majorRepo.CheckIsExistByName(name, exceptID)
+}
+
+func (s majorService) CheckIsExistByCode(code string, exceptID int) (isExist bool) {
+	return s.majorRepo.CheckIsExistByCode(code, exceptID)
 }

@@ -15,7 +15,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 type MajorHandler interface {
@@ -55,10 +54,23 @@ func (h majorHandler) Create(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
 		return
 	}
+
+	if h.majorService.CheckIsExistByName(data.Name, 0) {
+		err := errors.New("major name is already exists")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		return
+	}
+
+	if h.majorService.CheckIsExistByCode(data.Code, 0) {
+		err := errors.New("major code is already exists")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
+		return
+	}
+
 	result, err := h.majorService.CreateMajor(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -116,8 +128,20 @@ func (h majorHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		return
+	}
+
+	if h.majorService.CheckIsExistByName(data.Name, id) {
+		err := errors.New("major name is already exists")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		return
+	}
+
+	if h.majorService.CheckIsExistByCode(data.Code, id) {
+		err := errors.New("major code is already exists")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
 		return
 	}
 

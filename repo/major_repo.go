@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -18,6 +19,8 @@ type MajorRepo interface {
 	ListMajorMeta(major model.Major, pagination model.Pagination) (model.Meta, error)
 	DropDownMajor(major model.Major) ([]model.Major, error)
 	CheckIsExist(id int) (isExist bool)
+	CheckIsExistByName(name string, exceptID int) (isExist bool)
+	CheckIsExistByCode(code string, exceptID int) (isExist bool)
 }
 
 type majorRepo struct {
@@ -144,6 +147,20 @@ func (r majorRepo) DropDownMajor(major model.Major) ([]model.Major, error) {
 
 func (r majorRepo) CheckIsExist(id int) (isExist bool) {
 	if err := r.db.Table("majors").Select("count(*) > 0").Where("id = ?", id).Find(&isExist).Error; err != nil {
+		return false
+	}
+	return
+}
+
+func (r majorRepo) CheckIsExistByName(name string, exceptID int) (isExist bool) {
+	if err := r.db.Table("majors").Select("count(*) > 0").Where("LOWER(name) = ? AND id != ?", strings.ToLower(name), exceptID).Find(&isExist).Error; err != nil {
+		return false
+	}
+	return
+}
+
+func (r majorRepo) CheckIsExistByCode(code string, exceptID int) (isExist bool) {
+	if err := r.db.Table("majors").Select("count(*) > 0").Where("code = ? AND id != ?", code, exceptID).Find(&isExist).Error; err != nil {
 		return false
 	}
 	return

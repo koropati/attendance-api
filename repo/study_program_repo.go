@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -18,6 +19,8 @@ type StudyProgramRepo interface {
 	ListStudyProgramMeta(studyProgram model.StudyProgram, pagination model.Pagination) (model.Meta, error)
 	DropDownStudyProgram(studyProgram model.StudyProgram) ([]model.StudyProgram, error)
 	CheckIsExist(id int) (isExist bool)
+	CheckIsExistByName(name string, majorID int, exceptID int) (isExist bool)
+	CheckIsExistByCode(code string, exceptID int) (isExist bool)
 }
 
 type studyProgramRepo struct {
@@ -32,6 +35,12 @@ func (r studyProgramRepo) CreateStudyProgram(studyProgram model.StudyProgram) (m
 	query := r.db.Table("study_programs")
 	query = PreloadStudyProgram(query)
 	if err := query.Create(&studyProgram).Error; err != nil {
+		return model.StudyProgram{}, err
+	}
+
+	query2 := r.db.Table("study_programs")
+	query2 = PreloadStudyProgram(query2)
+	if err := query2.Where("id = ?", studyProgram.ID).First(&studyProgram).Error; err != nil {
 		return model.StudyProgram{}, err
 	}
 
@@ -62,6 +71,12 @@ func (r studyProgramRepo) UpdateStudyProgram(id int, studyProgram model.StudyPro
 	query := r.db.Table("study_programs")
 	query = PreloadStudyProgram(query)
 	if err := query.Where("id = ?", id).Updates(&studyProgram).Error; err != nil {
+		return model.StudyProgram{}, err
+	}
+
+	query2 := r.db.Table("study_programs")
+	query2 = PreloadStudyProgram(query2)
+	if err := query2.Where("id = ?", id).First(&studyProgram).Error; err != nil {
 		return model.StudyProgram{}, err
 	}
 	return studyProgram, nil
@@ -156,6 +171,20 @@ func (r studyProgramRepo) DropDownStudyProgram(studyProgram model.StudyProgram) 
 
 func (r studyProgramRepo) CheckIsExist(id int) (isExist bool) {
 	if err := r.db.Table("study_programs").Select("count(*) > 0").Where("id = ?", id).Find(&isExist).Error; err != nil {
+		return false
+	}
+	return
+}
+
+func (r studyProgramRepo) CheckIsExistByName(name string, majorID int, exceptID int) (isExist bool) {
+	if err := r.db.Table("study_programs").Select("count(*) > 0").Where("LOWER(name) = ? AND major_id = ? AND id != ?", strings.ToLower(name), majorID, exceptID).Find(&isExist).Error; err != nil {
+		return false
+	}
+	return
+}
+
+func (r studyProgramRepo) CheckIsExistByCode(code string, exceptID int) (isExist bool) {
+	if err := r.db.Table("study_programs").Select("count(*) > 0").Where("code = ? AND id != ?", code, exceptID).Find(&isExist).Error; err != nil {
 		return false
 	}
 	return

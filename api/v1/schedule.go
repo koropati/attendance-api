@@ -71,12 +71,12 @@ func (h scheduleHandler) Create(c *gin.Context) {
 
 	data.Code = strings.ToUpper(data.Code)
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.Code, validation.Required, validation.Length(1, 100), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Code, validation.Required, validation.Length(1, 100)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
 		return
 	}
@@ -166,12 +166,12 @@ func (h scheduleHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.Code, validation.Required, validation.Length(1, 100), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Code, validation.Required, validation.Length(1, 100)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
 		return
 	}
