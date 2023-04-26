@@ -143,6 +143,7 @@ func (r userRepo) ListUser(user model.User, pagination model.Pagination) ([]mode
 	offset := (pagination.Page - 1) * pagination.Limit
 
 	query := r.db.Table("users").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = PreloadUser(query)
 	query = FilterUser(query, user)
 	query = SearchUser(query, pagination.Search)
 	query = query.Find(&users)
@@ -191,7 +192,9 @@ func (r userRepo) ListUserMeta(user model.User, pagination model.Pagination) (mo
 }
 
 func (r userRepo) CreateUser(user model.User) (model.User, error) {
-	if err := r.db.Table("users").Create(&user).Error; err != nil {
+	query := r.db.Table("users")
+	query = PreloadUser(query)
+	if err := query.Create(&user).Error; err != nil {
 		return model.User{}, err
 	}
 
@@ -199,7 +202,9 @@ func (r userRepo) CreateUser(user model.User) (model.User, error) {
 }
 
 func (r userRepo) RetrieveUser(id int) (user model.User, err error) {
-	if err := r.db.Table("users").Where("id = ?", id).First(&user).Error; err != nil {
+	query := r.db.Table("users")
+	query = PreloadUser(query)
+	if err := query.Where("id = ?", id).First(&user).Error; err != nil {
 		return model.User{}, err
 	}
 
@@ -208,7 +213,9 @@ func (r userRepo) RetrieveUser(id int) (user model.User, err error) {
 
 func (r userRepo) RetrieveUserByUsername(username string) (user model.User, err error) {
 	var userData model.User
-	if err := r.db.Table("users").Where("username = ?", username).First(&userData).Error; err != nil {
+	query := r.db.Table("users")
+	query = PreloadUser(query)
+	if err := query.Where("username = ?", username).First(&userData).Error; err != nil {
 		return model.User{}, err
 	}
 
@@ -217,7 +224,9 @@ func (r userRepo) RetrieveUserByUsername(username string) (user model.User, err 
 
 func (r userRepo) RetrieveUserByEmail(email string) (user model.User, err error) {
 	var userData model.User
-	if err := r.db.Table("users").Where("email = ?", email).First(&userData).Error; err != nil {
+	query := r.db.Table("users")
+	query = PreloadUser(query)
+	if err := query.Where("email = ?", email).First(&userData).Error; err != nil {
 		return model.User{}, err
 	}
 
@@ -225,7 +234,9 @@ func (r userRepo) RetrieveUserByEmail(email string) (user model.User, err error)
 }
 
 func (r userRepo) UpdateUser(id int, user model.User) (model.User, error) {
-	if err := r.db.Model(&model.User{}).Where("id = ?", id).Updates(&user).Error; err != nil {
+	query := r.db.Table("users")
+	query = PreloadUser(query)
+	if err := query.Where("id = ?", id).Updates(&user).Error; err != nil {
 		return model.User{}, err
 	}
 	return user, nil
@@ -240,7 +251,9 @@ func (r userRepo) DeleteUser(id int) error {
 
 func (r *userRepo) SetActiveUser(id int) (model.User, error) {
 	var user model.User
-	if err := r.db.Model(&user).Where("id = ?", id).Update("is_active", true).Error; err != nil {
+	query := r.db.Model(&user)
+	query = PreloadUser(query)
+	if err := query.Where("id = ?", id).Update("is_active", true).Error; err != nil {
 		return model.User{}, err
 	}
 	return user, nil
@@ -248,7 +261,9 @@ func (r *userRepo) SetActiveUser(id int) (model.User, error) {
 
 func (r userRepo) SetDeactiveUser(id int) (model.User, error) {
 	var user model.User
-	if err := r.db.Model(&user).Where("id = ?", id).Update("is_active", false).Error; err != nil {
+	query := r.db.Model(&user)
+	query = PreloadUser(query)
+	if err := query.Where("id = ?", id).Update("is_active", false).Error; err != nil {
 		return model.User{}, err
 	}
 	return user, nil
@@ -256,6 +271,7 @@ func (r userRepo) SetDeactiveUser(id int) (model.User, error) {
 
 func (r userRepo) DropDownUser(user model.User) (results []model.UserDropDown, err error) {
 	query := r.db.Table("users")
+	query = PreloadUser(query)
 	query = FilterUser(query, user)
 	query = query.Find(&results)
 	if err := query.Error; err != nil {
@@ -308,5 +324,11 @@ func SearchUser(query *gorm.DB, search string) *gorm.DB {
 	if search != "" {
 		query = query.Where("username LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR handphone LIKE ? OR email LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
+	return query
+}
+
+func PreloadUser(query *gorm.DB) *gorm.DB {
+	query = query.Preload("Major")
+	query = query.Preload("StudyProgram")
 	return query
 }

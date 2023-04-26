@@ -18,6 +18,8 @@ type RepoManager interface {
 	UserScheduleRepo() repo.UserScheduleRepo
 	AttendanceLogRepo() repo.AttendanceLogRepo
 	AttendanceRepo() repo.AttendanceRepo
+	MajorRepo() repo.MajorRepo
+	StudyProgramRepo() repo.StudyProgramRepo
 }
 
 type repoManager struct {
@@ -29,6 +31,8 @@ func NewRepoManager(infra infra.Infra) RepoManager {
 }
 
 var (
+	majorRepoOnce              sync.Once
+	studyProgramRepoOnce       sync.Once
 	authRepoOnce               sync.Once
 	userRepoOnce               sync.Once
 	passwordResetTokenRepoOnce sync.Once
@@ -39,6 +43,8 @@ var (
 	userScheduleRepoOnce       sync.Once
 	attendanceLogRepoOnce      sync.Once
 	attendanceRepoOnce         sync.Once
+	majorRepo                  repo.MajorRepo
+	studyProgramRepo           repo.StudyProgramRepo
 	authRepo                   repo.AuthRepo
 	userRepo                   repo.UserRepo
 	passwordResetTokenRepo     repo.PasswordResetTokenRepo
@@ -50,6 +56,20 @@ var (
 	attendanceLogRepo          repo.AttendanceLogRepo
 	attendanceRepo             repo.AttendanceRepo
 )
+
+func (rm *repoManager) MajorRepo() repo.MajorRepo {
+	majorRepoOnce.Do(func() {
+		majorRepo = repo.NewMajorRepo(rm.infra.GormDB())
+	})
+	return majorRepo
+}
+
+func (rm *repoManager) StudyProgramRepo() repo.StudyProgramRepo {
+	studyProgramRepoOnce.Do(func() {
+		studyProgramRepo = repo.NewStudyProgramRepo(rm.infra.GormDB())
+	})
+	return studyProgramRepo
+}
 
 func (rm *repoManager) AuthRepo() repo.AuthRepo {
 	authRepoOnce.Do(func() {

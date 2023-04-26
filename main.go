@@ -26,6 +26,8 @@ func main() {
 	i := infra.New("config/config.json")
 	i.SetMode()
 	i.Migrate(
+		&model.Major{},
+		&model.StudyProgram{},
 		&model.User{},
 		&model.PasswordResetToken{},
 		&model.ActivationToken{},

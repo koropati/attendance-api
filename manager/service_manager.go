@@ -8,6 +8,8 @@ import (
 )
 
 type ServiceManager interface {
+	MajorService() service.MajorService
+	StudyProgramService() service.StudyProgramService
 	AuthService() service.AuthService
 	UserService() service.UserService
 	PasswordResetTokenService() service.PasswordResetTokenService
@@ -33,6 +35,8 @@ func NewServiceManager(infra infra.Infra) ServiceManager {
 }
 
 var (
+	majorServiceOnce              sync.Once
+	studyProgramServiceOnce       sync.Once
 	authServiceOnce               sync.Once
 	userServiceOnce               sync.Once
 	passwordResetTokenServiceOnce sync.Once
@@ -43,6 +47,8 @@ var (
 	userScheduleServiceOnce       sync.Once
 	attendanceLogServiceOnce      sync.Once
 	attendanceServiceOnce         sync.Once
+	majorService                  service.MajorService
+	studyProgramService           service.StudyProgramService
 	authService                   service.AuthService
 	userService                   service.UserService
 	passwordResetTokenService     service.PasswordResetTokenService
@@ -54,6 +60,20 @@ var (
 	attendanceLogService          service.AttendanceLogService
 	attendanceService             service.AttendanceService
 )
+
+func (sm *serviceManager) MajorService() service.MajorService {
+	majorServiceOnce.Do(func() {
+		majorService = sm.repo.MajorRepo()
+	})
+	return majorService
+}
+
+func (sm *serviceManager) StudyProgramService() service.StudyProgramService {
+	studyProgramServiceOnce.Do(func() {
+		studyProgramService = sm.repo.StudyProgramRepo()
+	})
+	return studyProgramService
+}
 
 func (sm *serviceManager) AuthService() service.AuthService {
 	authServiceOnce.Do(func() {

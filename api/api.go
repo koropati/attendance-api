@@ -55,6 +55,8 @@ func (c server) v1() {
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	profileHandler := v1.NewProfileHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
+	majorHandler := v1.NewMajorHandler(c.service.MajorService(), c.infra, c.middleware)
+	studyProgramHandler := v1.NewStudyProgramHandler(c.service.StudyProgramService(), c.infra, c.middleware)
 	scheduleHandler := v1.NewScheduleHandler(
 		c.service.ScheduleService(),
 		c.service.SubjectService(),
@@ -139,6 +141,28 @@ func (c server) v1() {
 			subject.DELETE("/delete", subjectHandler.Delete)
 			subject.GET("/list", subjectHandler.List)
 			subject.GET("/drop-down", subjectHandler.DropDown)
+		}
+
+		major := v1.Group("/major")
+		major.Use(c.middleware.ADMIN())
+		{
+			major.POST("/create", majorHandler.Create)
+			major.GET("/retrieve", majorHandler.Retrieve)
+			major.PUT("/update", majorHandler.Update)
+			major.DELETE("/delete", majorHandler.Delete)
+			major.GET("/list", majorHandler.List)
+			major.GET("/drop-down", majorHandler.DropDown)
+		}
+
+		studyProgram := v1.Group("/study-program")
+		studyProgram.Use(c.middleware.ADMIN())
+		{
+			studyProgram.POST("/create", studyProgramHandler.Create)
+			studyProgram.GET("/retrieve", studyProgramHandler.Retrieve)
+			studyProgram.PUT("/update", studyProgramHandler.Update)
+			studyProgram.DELETE("/delete", studyProgramHandler.Delete)
+			studyProgram.GET("/list", studyProgramHandler.List)
+			studyProgram.GET("/drop-down", studyProgramHandler.DropDown)
 		}
 
 		schedule := v1.Group("/schedule")
