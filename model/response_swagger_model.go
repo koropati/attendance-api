@@ -65,6 +65,19 @@ type DailyScheduleResponseList struct {
 	Message string              `json:"message"`
 }
 
+type FacultyResponseData struct {
+	Code    int         `json:"code"`
+	Data    FacultyForm `json:"data"`
+	Message string      `json:"message"`
+}
+
+type FacultyResponseList struct {
+	Code    int           `json:"code"`
+	Data    []FacultyForm `json:"data"`
+	Meta    Meta          `json:"meta"`
+	Message string        `json:"message"`
+}
+
 type MajorResponseData struct {
 	Code    int       `json:"code"`
 	Data    MajorForm `json:"data"`

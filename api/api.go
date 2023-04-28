@@ -55,6 +55,7 @@ func (c server) v1() {
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	profileHandler := v1.NewProfileHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
+	facultyHandler := v1.NewFacultyHandler(c.service.FacultyService(), c.infra, c.middleware)
 	majorHandler := v1.NewMajorHandler(c.service.MajorService(), c.infra, c.middleware)
 	studyProgramHandler := v1.NewStudyProgramHandler(c.service.StudyProgramService(), c.infra, c.middleware)
 	scheduleHandler := v1.NewScheduleHandler(
@@ -141,6 +142,17 @@ func (c server) v1() {
 			subject.DELETE("/delete", subjectHandler.Delete)
 			subject.GET("/list", subjectHandler.List)
 			subject.GET("/drop-down", subjectHandler.DropDown)
+		}
+
+		faculty := v1.Group("/faculty")
+		faculty.Use(c.middleware.SUPERADMIN())
+		{
+			faculty.POST("/create", facultyHandler.Create)
+			faculty.GET("/retrieve", facultyHandler.Retrieve)
+			faculty.PUT("/update", facultyHandler.Update)
+			faculty.DELETE("/delete", facultyHandler.Delete)
+			faculty.GET("/list", facultyHandler.List)
+			faculty.GET("/drop-down", facultyHandler.DropDown)
 		}
 
 		major := v1.Group("/major")

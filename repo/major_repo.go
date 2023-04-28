@@ -32,7 +32,15 @@ func NewMajorRepo(db *gorm.DB) MajorRepo {
 }
 
 func (r majorRepo) CreateMajor(major model.Major) (model.Major, error) {
-	if err := r.db.Table("majors").Create(&major).Error; err != nil {
+	query := r.db.Table("majors")
+	query = PreloadMajor(query)
+	if err := query.Create(&major).Error; err != nil {
+		return model.Major{}, err
+	}
+
+	query2 := r.db.Table("majors")
+	query2 = PreloadMajor(query2)
+	if err := query2.Where("id = ?", major.ID).First(&major).Error; err != nil {
 		return model.Major{}, err
 	}
 
@@ -41,7 +49,9 @@ func (r majorRepo) CreateMajor(major model.Major) (model.Major, error) {
 
 func (r majorRepo) RetrieveMajor(id int) (model.Major, error) {
 	var major model.Major
-	if err := r.db.First(&major, id).Error; err != nil {
+	query := r.db.Table("majors")
+	query = PreloadMajor(query)
+	if err := query.Where("id = ?", id).First(&major).Error; err != nil {
 		return model.Major{}, err
 	}
 	return major, nil
@@ -49,21 +59,39 @@ func (r majorRepo) RetrieveMajor(id int) (model.Major, error) {
 
 func (r majorRepo) RetrieveMajorByOwner(id int, ownerID int) (model.Major, error) {
 	var major model.Major
-	if err := r.db.Model(&model.Major{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&major).Error; err != nil {
+	query := r.db.Table("majors")
+	query = PreloadMajor(query)
+	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).First(&major).Error; err != nil {
 		return model.Major{}, err
 	}
 	return major, nil
 }
 
 func (r majorRepo) UpdateMajor(id int, major model.Major) (model.Major, error) {
-	if err := r.db.Model(&model.Major{}).Where("id = ?", id).Updates(&major).Error; err != nil {
+	query := r.db.Table("majors")
+	query = PreloadMajor(query)
+	if err := query.Where("id = ?", id).Updates(&major).Error; err != nil {
+		return model.Major{}, err
+	}
+
+	query2 := r.db.Table("majors")
+	query2 = PreloadMajor(query2)
+	if err := query2.Where("id = ?", id).First(&major).Error; err != nil {
 		return model.Major{}, err
 	}
 	return major, nil
 }
 
 func (r majorRepo) UpdateMajorByOwner(id int, ownerID int, major model.Major) (model.Major, error) {
-	if err := r.db.Model(&model.Major{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&major).Error; err != nil {
+	query := r.db.Table("majors")
+	query = PreloadMajor(query)
+	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).Updates(&major).Error; err != nil {
+		return model.Major{}, err
+	}
+
+	query2 := r.db.Table("majors")
+	query2 = PreloadMajor(query2)
+	if err := query2.Where("id = ? AND owner_id = ?", id, ownerID).First(&major).Error; err != nil {
 		return model.Major{}, err
 	}
 	return major, nil
@@ -88,6 +116,7 @@ func (r majorRepo) ListMajor(major model.Major, pagination model.Pagination) ([]
 	offset := (pagination.Page - 1) * pagination.Limit
 
 	query := r.db.Table("majors").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = PreloadMajor(query)
 	query = FilterMajor(query, major)
 	query = SearchMajor(query, pagination.Search)
 	query = query.Find(&majors)
@@ -137,6 +166,7 @@ func (r majorRepo) ListMajorMeta(major model.Major, pagination model.Pagination)
 func (r majorRepo) DropDownMajor(major model.Major) ([]model.Major, error) {
 	var majors []model.Major
 	query := r.db.Table("majors")
+	query = PreloadMajor(query)
 	query = FilterMajor(query, major)
 	query = query.Find(&majors)
 	if err := query.Error; err != nil {
@@ -183,5 +213,10 @@ func SearchMajor(query *gorm.DB, search string) *gorm.DB {
 	if search != "" {
 		query = query.Where("name LIKE ? OR code LIKE ? OR summary LIKE ? ", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
+	return query
+}
+
+func PreloadMajor(query *gorm.DB) *gorm.DB {
+	query = query.Preload("Faculty")
 	return query
 }

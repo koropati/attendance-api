@@ -328,7 +328,7 @@ func SearchUser(query *gorm.DB, search string) *gorm.DB {
 }
 
 func PreloadUser(query *gorm.DB) *gorm.DB {
-	query = query.Preload("Major")
-	query = query.Preload("StudyProgram")
+	// query = query.Preload("Major")
+	// query = query.Preload("StudyProgram")
 	return query
 }

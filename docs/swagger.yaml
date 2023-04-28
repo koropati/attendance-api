@@ -222,6 +222,51 @@ definitions:
       meta:
         $ref: '#/definitions/model.Meta'
     type: object
+  model.FacultyForm:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      owner_id:
+        type: integer
+      summary:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  model.FacultyResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.FacultyForm'
+      message:
+        type: string
+    type: object
+  model.FacultyResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.FacultyForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
   model.Login:
     properties:
       password:
@@ -238,6 +283,10 @@ definitions:
       created_by:
         type: integer
       deleted_by:
+        type: integer
+      faculty:
+        $ref: '#/definitions/model.FacultyForm'
+      faculty_id:
         type: integer
       id:
         type: integer
@@ -515,14 +564,10 @@ definitions:
         type: string
       last_name:
         type: string
-      major_id:
-        type: integer
       password:
         type: string
       profile:
         type: string
-      study_program_id:
-        type: integer
       username:
         type: string
     type: object
@@ -1494,6 +1539,187 @@ paths:
       summary: Update Single Daily Schedule
       tags:
       - Daily Schedule
+  /faculty/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Faculty
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.FacultyForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.FacultyResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Faculty
+      tags:
+      - Faculty
+  /faculty/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Single Faculty
+      parameters:
+      - description: id faculty
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.FacultyResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Faculty
+      tags:
+      - Faculty
+  /faculty/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown all Faculty
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.FacultyResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown all Faculty
+      tags:
+      - Faculty
+  /faculty/list:
+    get:
+      consumes:
+      - application/json
+      description: List all Faculty
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.FacultyResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List all Faculty
+      tags:
+      - Faculty
+  /faculty/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Single Faculty
+      parameters:
+      - description: id faculty
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.FacultyResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Faculty
+      tags:
+      - Faculty
+  /faculty/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Single Faculty
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.FacultyForm'
+      - description: id faculty
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.FacultyResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Faculty
+      tags:
+      - Faculty
   /major/create:
     post:
       consumes:

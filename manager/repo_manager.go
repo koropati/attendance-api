@@ -18,6 +18,7 @@ type RepoManager interface {
 	UserScheduleRepo() repo.UserScheduleRepo
 	AttendanceLogRepo() repo.AttendanceLogRepo
 	AttendanceRepo() repo.AttendanceRepo
+	FacultyRepo() repo.FacultyRepo
 	MajorRepo() repo.MajorRepo
 	StudyProgramRepo() repo.StudyProgramRepo
 }
@@ -31,6 +32,7 @@ func NewRepoManager(infra infra.Infra) RepoManager {
 }
 
 var (
+	facultyRepoOnce            sync.Once
 	majorRepoOnce              sync.Once
 	studyProgramRepoOnce       sync.Once
 	authRepoOnce               sync.Once
@@ -43,6 +45,7 @@ var (
 	userScheduleRepoOnce       sync.Once
 	attendanceLogRepoOnce      sync.Once
 	attendanceRepoOnce         sync.Once
+	facultyRepo                repo.FacultyRepo
 	majorRepo                  repo.MajorRepo
 	studyProgramRepo           repo.StudyProgramRepo
 	authRepo                   repo.AuthRepo
@@ -56,6 +59,13 @@ var (
 	attendanceLogRepo          repo.AttendanceLogRepo
 	attendanceRepo             repo.AttendanceRepo
 )
+
+func (rm *repoManager) FacultyRepo() repo.FacultyRepo {
+	facultyRepoOnce.Do(func() {
+		facultyRepo = repo.NewFacultyRepo(rm.infra.GormDB())
+	})
+	return facultyRepo
+}
 
 func (rm *repoManager) MajorRepo() repo.MajorRepo {
 	majorRepoOnce.Do(func() {

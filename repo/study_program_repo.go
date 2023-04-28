@@ -88,6 +88,11 @@ func (r studyProgramRepo) UpdateStudyProgramByOwner(id int, ownerID int, studyPr
 	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).Updates(&studyProgram).Error; err != nil {
 		return model.StudyProgram{}, err
 	}
+	query2 := r.db.Table("study_programs")
+	query2 = PreloadStudyProgram(query2)
+	if err := query2.Where("id = ? AND owner_id = ?", id, ownerID).First(&studyProgram).Error; err != nil {
+		return model.StudyProgram{}, err
+	}
 	return studyProgram, nil
 }
 

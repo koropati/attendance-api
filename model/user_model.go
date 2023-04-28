@@ -17,23 +17,19 @@ type GormCustom struct {
 
 type User struct {
 	GormCustom
-	Username       string       `json:"username" gorm:"unique"`
-	Password       string       `json:"password"`
-	FirstName      string       `json:"first_name"`
-	LastName       string       `json:"last_name"`
-	Handphone      string       `json:"handphone" gorm:"unique"`
-	Email          string       `json:"email" gorm:"unique"`
-	Intro          string       `json:"intro" gorm:"type:varchar(255)"`
-	Profile        string       `json:"profile" gorm:"type:varchar(255)"`
-	IsActive       bool         `json:"is_active"`
-	IsSuperAdmin   bool         `json:"is_super_admin"`
-	IsAdmin        bool         `json:"is_admin"`
-	IsUser         bool         `json:"is_user"`
-	MajorID        uint         `json:"major_id"`
-	Major          Major        `json:"major"`
-	StudyProgramID uint         `json:"study_program_id"`
-	StudyProgram   StudyProgram `json:"study_program"`
-	LastLogin      time.Time    `json:"last_login"`
+	Username     string    `json:"username" gorm:"unique"`
+	Password     string    `json:"password"`
+	FirstName    string    `json:"first_name"`
+	LastName     string    `json:"last_name"`
+	Handphone    string    `json:"handphone" gorm:"unique"`
+	Email        string    `json:"email" gorm:"unique"`
+	Intro        string    `json:"intro" gorm:"type:varchar(255)"`
+	Profile      string    `json:"profile" gorm:"type:varchar(255)"`
+	IsActive     bool      `json:"is_active"`
+	IsSuperAdmin bool      `json:"is_super_admin"`
+	IsAdmin      bool      `json:"is_admin"`
+	IsUser       bool      `json:"is_user"`
+	LastLogin    time.Time `json:"last_login"`
 }
 
 type UserDropDown struct {

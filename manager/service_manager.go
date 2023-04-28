@@ -8,6 +8,7 @@ import (
 )
 
 type ServiceManager interface {
+	FacultyService() service.FacultyService
 	MajorService() service.MajorService
 	StudyProgramService() service.StudyProgramService
 	AuthService() service.AuthService
@@ -35,6 +36,7 @@ func NewServiceManager(infra infra.Infra) ServiceManager {
 }
 
 var (
+	facultyServiceOnce            sync.Once
 	majorServiceOnce              sync.Once
 	studyProgramServiceOnce       sync.Once
 	authServiceOnce               sync.Once
@@ -47,6 +49,7 @@ var (
 	userScheduleServiceOnce       sync.Once
 	attendanceLogServiceOnce      sync.Once
 	attendanceServiceOnce         sync.Once
+	facultyService                service.FacultyService
 	majorService                  service.MajorService
 	studyProgramService           service.StudyProgramService
 	authService                   service.AuthService
@@ -60,6 +63,13 @@ var (
 	attendanceLogService          service.AttendanceLogService
 	attendanceService             service.AttendanceService
 )
+
+func (sm *serviceManager) FacultyService() service.FacultyService {
+	facultyServiceOnce.Do(func() {
+		facultyService = sm.repo.FacultyRepo()
+	})
+	return facultyService
+}
 
 func (sm *serviceManager) MajorService() service.MajorService {
 	majorServiceOnce.Do(func() {

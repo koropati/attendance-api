@@ -85,7 +85,7 @@ type DailyScheduleForm struct {
 	OwnerID    int       `json:"owner_id" gorm:"not null"`
 }
 
-type MajorForm struct {
+type FacultyForm struct {
 	ID        uint      `json:"id" gorm:"primary_key"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -98,16 +98,19 @@ type MajorForm struct {
 	OwnerID   int       `json:"owner_id" gorm:"not null"`
 }
 
-type PasswordResetTokenForm struct {
-	ID        uint      `json:"id" gorm:"primary_key"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedBy int       `json:"created_by"`
-	UpdatedBy int       `json:"updated_by"`
-	DeletedBy int       `json:"deleted_by"`
-	UserID    uint      `json:"user_id"`
-	Token     string    `json:"token" gorm:"type:varchar(64);unique"`
-	Valid     time.Time `json:"valid"`
+type MajorForm struct {
+	ID        uint        `json:"id" gorm:"primary_key"`
+	CreatedAt time.Time   `json:"created_at"`
+	UpdatedAt time.Time   `json:"updated_at"`
+	CreatedBy int         `json:"created_by"`
+	UpdatedBy int         `json:"updated_by"`
+	DeletedBy int         `json:"deleted_by"`
+	Name      string      `json:"name" gorm:"type:varchar(100)"`
+	Code      string      `json:"code" gorm:"unique;type:varchar(25)"`
+	Summary   string      `json:"summary" gorm:"type:text"`
+	FacultyID uint        `json:"faculty_id"`
+	Faculty   FacultyForm `json:"faculty"`
+	OwnerID   int         `json:"owner_id" gorm:"not null"`
 }
 
 type StudyProgramForm struct {
@@ -123,6 +126,18 @@ type StudyProgramForm struct {
 	MajorID   uint      `json:"major_id"`
 	Major     MajorForm `json:"major"`
 	OwnerID   int       `json:"owner_id" gorm:"not null"`
+}
+
+type PasswordResetTokenForm struct {
+	ID        uint      `json:"id" gorm:"primary_key"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedBy int       `json:"created_by"`
+	UpdatedBy int       `json:"updated_by"`
+	DeletedBy int       `json:"deleted_by"`
+	UserID    uint      `json:"user_id"`
+	Token     string    `json:"token" gorm:"type:varchar(64);unique"`
+	Valid     time.Time `json:"valid"`
 }
 
 type SubjectForm struct {
@@ -162,16 +177,14 @@ type ScheduleForm struct {
 }
 
 type UserForm struct {
-	Username       string `json:"username"`
-	Password       string `json:"password"`
-	FirstName      string `json:"first_name"`
-	LastName       string `json:"last_name"`
-	Handphone      string `json:"handphone"`
-	Email          string `json:"email"`
-	Intro          string `json:"intro"`
-	Profile        string `json:"profile"`
-	MajorID        uint   `json:"major_id"`
-	StudyProgramID uint   `json:"study_program_id"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Handphone string `json:"handphone"`
+	Email     string `json:"email"`
+	Intro     string `json:"intro"`
+	Profile   string `json:"profile"`
 }
 
 type UserForgotPasswordForm struct {
