@@ -41,6 +41,17 @@ func NewDailyScheduleHandler(dailyScheduleService service.DailyScheduleService, 
 	}
 }
 
+// Create ... Create Daily Schedule
+// @Summary Create New Daily Schedule
+// @Description Create Daily Schedule
+// @Tags Daily Schedule
+// @Accept       json
+// @Produce      json
+// @Param data body model.DailyScheduleForm true "data"
+// @Success 200 {object} model.DailyScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /daily-schedule/create [post]
+// @Security BearerTokenAuth
 func (h dailyScheduleHandler) Create(c *gin.Context) {
 	var data model.DailySchedule
 	c.BindJSON(&data)
@@ -69,6 +80,17 @@ func (h dailyScheduleHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve Daily Schedule
+// @Summary Retrieve Single Daily Schedule
+// @Description Retrieve Single Daily Schedule
+// @Tags Daily Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.DailyScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /daily-schedule/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id daily schedule"
 func (h dailyScheduleHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -99,6 +121,18 @@ func (h dailyScheduleHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Daily Schedule
+// @Summary Update Single Daily Schedule
+// @Description Update Single Daily Schedule
+// @Tags Daily Schedule
+// @Accept       json
+// @Produce      json
+// @Param data body model.DailyScheduleForm true "data"
+// @Success 200 {object} model.DailyScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /daily-schedule/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id daily schedule"
 func (h dailyScheduleHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -137,6 +171,17 @@ func (h dailyScheduleHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete Daily Schedule
+// @Summary Delete Single Daily Schedule
+// @Description Delete Single Daily Schedule
+// @Tags Daily Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.DailyScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /daily-schedule/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id daily schedule"
 func (h dailyScheduleHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -165,6 +210,16 @@ func (h dailyScheduleHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List Daily Schedule
+// @Summary List All Daily Schedule
+// @Description List All Daily Schedule
+// @Tags Daily Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.DailyScheduleResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /daily-schedule/list [get]
+// @Security BearerTokenAuth
 func (h dailyScheduleHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.DailySchedule
@@ -193,6 +248,16 @@ func (h dailyScheduleHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown Daily Schedule
+// @Summary Dropdown All Daily Schedule
+// @Description Dropdown All Daily Schedule
+// @Tags Daily Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.DailyScheduleResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /daily-schedule/drop-down [get]
+// @Security BearerTokenAuth
 func (h dailyScheduleHandler) DropDown(c *gin.Context) {
 	var data model.DailySchedule
 	c.BindQuery(&data)

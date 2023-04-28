@@ -54,6 +54,17 @@ func NewScheduleHandler(
 	}
 }
 
+// Create ... Create Schedule
+// @Summary Create New Schedule
+// @Description Create Schedule
+// @Tags Schedule
+// @Accept       json
+// @Produce      json
+// @Param data body model.ScheduleForm true "data"
+// @Success 200 {object} model.ScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /schedule/create [post]
+// @Security BearerTokenAuth
 func (h scheduleHandler) Create(c *gin.Context) {
 	var data model.Schedule
 	c.BindJSON(&data)
@@ -115,6 +126,17 @@ func (h scheduleHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve Schedule
+// @Summary Retrieve Single Schedule
+// @Description Retrieve Schedule
+// @Tags Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.ScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /schedule/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id schedule"
 func (h scheduleHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -147,6 +169,18 @@ func (h scheduleHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Schedule
+// @Summary Update Single Schedule
+// @Description Update Schedule
+// @Tags Schedule
+// @Accept       json
+// @Produce      json
+// @Param data body model.ScheduleForm true "data"
+// @Success 200 {object} model.ScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /schedule/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id schedule"
 func (h scheduleHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -223,6 +257,17 @@ func (h scheduleHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Update QR Code ... Update QR Code
+// @Summary Update QR Code
+// @Description Update QR Code
+// @Tags Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.ScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /schedule/update-qr-code [put]
+// @Security BearerTokenAuth
+// @param id query string true "id schedule"
 func (h scheduleHandler) UpdateQRcode(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -263,6 +308,17 @@ func (h scheduleHandler) UpdateQRcode(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success update qr code data", result)
 }
 
+// Delete ... Delete Schedule
+// @Summary Delete Schedule
+// @Description Delete Schedule
+// @Tags Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /schedule/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id schedule"
 func (h scheduleHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -291,6 +347,16 @@ func (h scheduleHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List Schedule
+// @Summary List Schedule
+// @Description List Schedule
+// @Tags Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.ScheduleResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /schedule/list [get]
+// @Security BearerTokenAuth
 func (h scheduleHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.Schedule
@@ -323,6 +389,16 @@ func (h scheduleHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataLists, metaLists)
 }
 
+// Dropdown ... Dropdown Schedule
+// @Summary Dropdown Schedule
+// @Description Dropdown Schedule
+// @Tags Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.ScheduleResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /schedule/drop-down [get]
+// @Security BearerTokenAuth
 func (h scheduleHandler) DropDown(c *gin.Context) {
 	var data model.Schedule
 	c.BindQuery(&data)

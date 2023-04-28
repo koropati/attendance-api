@@ -39,6 +39,17 @@ func NewUserScheduleHandler(userScheduleService service.UserScheduleService, inf
 	}
 }
 
+// Create ... Create User Schedule
+// @Summary Create New User Schedule
+// @Description Create User Schedule
+// @Tags User Schedule
+// @Accept       json
+// @Produce      json
+// @Param data body model.UserScheduleForm true "data"
+// @Success 200 {object} model.UserScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /user-schedule/create [post]
+// @Security BearerTokenAuth
 func (h userScheduleHandler) Create(c *gin.Context) {
 	var data model.UserSchedule
 	c.BindJSON(&data)
@@ -62,6 +73,17 @@ func (h userScheduleHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve User Schedule
+// @Summary Retrieve User Schedule
+// @Description Retrieve User Schedule
+// @Tags User Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /user-schedule/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id user schedule"
 func (h userScheduleHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -92,6 +114,18 @@ func (h userScheduleHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update User Schedule
+// @Summary Update User Schedule
+// @Description Update User Schedule
+// @Tags User Schedule
+// @Accept       json
+// @Produce      json
+// @Param data body model.UserScheduleForm true "data"
+// @Success 200 {object} model.UserScheduleResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /user-schedule/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id user schedule"
 func (h userScheduleHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -125,6 +159,17 @@ func (h userScheduleHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete User Schedule
+// @Summary Delete User Schedule
+// @Description Delete User Schedule
+// @Tags User Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /user-schedule/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id user schedule"
 func (h userScheduleHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -153,6 +198,16 @@ func (h userScheduleHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List All User Schedule
+// @Summary List All User Schedule
+// @Description List All User Schedule
+// @Tags User Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserScheduleResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /user-schedule/list [get]
+// @Security BearerTokenAuth
 func (h userScheduleHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.UserSchedule
@@ -181,6 +236,16 @@ func (h userScheduleHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown All User Schedule
+// @Summary Dropdown All User Schedule
+// @Description Dropdown All User Schedule
+// @Tags User Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserScheduleResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /user-schedule/drop-down [get]
+// @Security BearerTokenAuth
 func (h userScheduleHandler) DropDown(c *gin.Context) {
 	var data model.UserSchedule
 	c.BindQuery(&data)

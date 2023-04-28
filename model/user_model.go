@@ -36,33 +36,6 @@ type User struct {
 	LastLogin      time.Time    `json:"last_login"`
 }
 
-type UserForm struct {
-	Username       string `json:"username"`
-	Password       string `json:"password"`
-	FirstName      string `json:"first_name"`
-	LastName       string `json:"last_name"`
-	Handphone      string `json:"handphone"`
-	Email          string `json:"email"`
-	Intro          string `json:"intro"`
-	Profile        string `json:"profile"`
-	MajorID        uint   `json:"major_id"`
-	StudyProgramID uint   `json:"study_program_id"`
-}
-
-type UserForgotPasswordForm struct {
-	Email           string `json:"email"`
-	Activation      string `json:"activation"`
-	Password        string `json:"password"`
-	ConfirmPassword string `json:"confirm_password"`
-}
-
-type UserUpdatePasswordForm struct {
-	ID              uint   `json:"id" query:"id"`
-	CurrentPassword string `json:"current_password" query:"current_password"`
-	NewPassword     string `json:"new_password" query:"new_password"`
-	ConfirmPassword string `json:"confirm_password" query:"confirm_password"`
-}
-
 type UserDropDown struct {
 	ID        uint   `json:"id"`
 	Username  string `json:"username"`

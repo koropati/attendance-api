@@ -40,6 +40,17 @@ func NewMajorHandler(majorService service.MajorService, infra infra.Infra, middl
 	}
 }
 
+// Create ... Create Major
+// @Summary Create New Major
+// @Description Create Major
+// @Tags Major
+// @Accept       json
+// @Produce      json
+// @Param data body model.MajorForm true "data"
+// @Success 200 {object} model.MajorResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /major/create [post]
+// @Security BearerTokenAuth
 func (h majorHandler) Create(c *gin.Context) {
 	var data model.Major
 	c.BindJSON(&data)
@@ -79,6 +90,17 @@ func (h majorHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve Major
+// @Summary Retrieve Single Major
+// @Description Retrieve Single Major
+// @Tags Major
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.MajorResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /major/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id major"
 func (h majorHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -109,6 +131,18 @@ func (h majorHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Major
+// @Summary Update Single Major
+// @Description Update Single Major
+// @Tags Major
+// @Accept       json
+// @Produce      json
+// @Param data body model.MajorForm true "data"
+// @Success 200 {object} model.MajorResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /major/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id major"
 func (h majorHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -159,6 +193,17 @@ func (h majorHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete Major
+// @Summary Delete Single Major
+// @Description Delete Single Major
+// @Tags Major
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.MajorResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /major/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id major"
 func (h majorHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -187,6 +232,16 @@ func (h majorHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List all Major
+// @Summary List all Major
+// @Description List all Major
+// @Tags Major
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.MajorResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /major/list [get]
+// @Security BearerTokenAuth
 func (h majorHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.Major
@@ -215,6 +270,16 @@ func (h majorHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown all Major
+// @Summary Dropdown all Major
+// @Description Dropdown all Major
+// @Tags Major
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.MajorResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /major/drop-down [get]
+// @Security BearerTokenAuth
 func (h majorHandler) DropDown(c *gin.Context) {
 	var data model.Major
 	c.BindQuery(&data)

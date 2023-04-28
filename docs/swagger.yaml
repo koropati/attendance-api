@@ -1,11 +1,332 @@
-basePath: /v1
 definitions:
+  model.ActivationTokenForm:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      token:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      user_id:
+        type: integer
+      valid:
+        type: string
+    type: object
+  model.ActivationTokenResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.ActivationTokenForm'
+      message:
+        type: string
+    type: object
+  model.ActivationTokenResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.ActivationTokenForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
+  model.AttendanceForm:
+    properties:
+      clock_in:
+        type: integer
+      clock_out:
+        type: integer
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      date:
+        type: string
+      deleted_by:
+        type: integer
+      early_out:
+        type: string
+      id:
+        type: integer
+      late_in:
+        type: string
+      latitude_in:
+        type: number
+      latitude_out:
+        type: number
+      location_in:
+        type: string
+      location_out:
+        type: string
+      longitude_in:
+        type: number
+      longitude_out:
+        type: number
+      schedule_id:
+        type: integer
+      status:
+        type: string
+      status_presence:
+        type: string
+      time_zone_in:
+        type: integer
+      time_zone_out:
+        type: integer
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  model.AttendanceLogForm:
+    properties:
+      attendance_id:
+        type: integer
+      check_in:
+        type: integer
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      id:
+        type: integer
+      latitude:
+        type: number
+      location:
+        type: string
+      log_type:
+        type: string
+      longitude:
+        type: number
+      status:
+        type: string
+      time_zone:
+        type: integer
+      updated_by:
+        type: integer
+    type: object
+  model.AttendanceLogResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.AttendanceLogForm'
+      message:
+        type: string
+    type: object
+  model.AttendanceLogResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.AttendanceLogForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
+  model.AttendanceResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.AttendanceForm'
+      message:
+        type: string
+    type: object
+  model.AttendanceResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.AttendanceForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
+  model.CheckInData:
+    properties:
+      latitude:
+        type: number
+      location:
+        type: string
+      longitude:
+        type: number
+      qr_code:
+        type: string
+      time_zone:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  model.DailyScheduleForm:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      end_time:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      owner_id:
+        type: integer
+      schedule_id:
+        type: integer
+      start_time:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  model.DailyScheduleResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.DailyScheduleForm'
+      message:
+        type: string
+    type: object
+  model.DailyScheduleResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.DailyScheduleForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
   model.Login:
     properties:
       password:
         type: string
       username:
         type: string
+    type: object
+  model.MajorForm:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      owner_id:
+        type: integer
+      summary:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  model.MajorResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.MajorForm'
+      message:
+        type: string
+    type: object
+  model.MajorResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.MajorForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
+  model.Meta:
+    properties:
+      current_page:
+        type: integer
+      current_record:
+        type: integer
+      total_page:
+        type: integer
+      total_record:
+        type: integer
+    type: object
+  model.PasswordResetTokenForm:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      id:
+        type: integer
+      token:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      user_id:
+        type: integer
+      valid:
+        type: string
+    type: object
+  model.PasswordResetTokenResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.PasswordResetTokenForm'
+      message:
+        type: string
+    type: object
+  model.PasswordResetTokenResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.PasswordResetTokenForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
     type: object
   model.Refresh:
     properties:
@@ -19,7 +340,168 @@ definitions:
       message:
         type: string
     type: object
-  model.User:
+  model.ScheduleForm:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      daily_schedule:
+        items:
+          $ref: '#/definitions/model.DailyScheduleForm'
+        type: array
+      deleted_by:
+        type: integer
+      end_date:
+        type: string
+      id:
+        type: integer
+      late_duration:
+        description: in minute
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      owner_id:
+        type: integer
+      qr_code:
+        type: string
+      radius:
+        description: in metter
+        type: integer
+      start_date:
+        type: string
+      subject:
+        $ref: '#/definitions/model.SubjectForm'
+      subject_id:
+        type: integer
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      user_in_rule:
+        type: integer
+    type: object
+  model.ScheduleResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.ScheduleForm'
+      message:
+        type: string
+    type: object
+  model.ScheduleResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.ScheduleForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
+  model.StudyProgramForm:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      id:
+        type: integer
+      major:
+        $ref: '#/definitions/model.MajorForm'
+      major_id:
+        type: integer
+      name:
+        type: string
+      owner_id:
+        type: integer
+      summary:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  model.StudyProgramResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.StudyProgramForm'
+      message:
+        type: string
+    type: object
+  model.StudyProgramResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.StudyProgramForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
+  model.SubjectForm:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      owner_id:
+        type: integer
+      summary:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  model.SubjectResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.SubjectForm'
+      message:
+        type: string
+    type: object
+  model.SubjectResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.SubjectForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
     type: object
   model.UserForm:
     properties:
@@ -33,19 +515,98 @@ definitions:
         type: string
       last_name:
         type: string
+      major_id:
+        type: integer
       password:
         type: string
       profile:
         type: string
+      study_program_id:
+        type: integer
       username:
         type: string
     type: object
-host: localhost:3000
+  model.UserResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.UserForm'
+      message:
+        type: string
+    type: object
+  model.UserResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.UserForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
+  model.UserScheduleForm:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      id:
+        type: integer
+      owner_id:
+        type: integer
+      schedule:
+        $ref: '#/definitions/model.ScheduleForm'
+      schedule_id:
+        type: integer
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      user:
+        $ref: '#/definitions/model.UserForm'
+      user_id:
+        type: integer
+    type: object
+  model.UserScheduleResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.UserScheduleForm'
+      message:
+        type: string
+    type: object
+  model.UserScheduleResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.UserScheduleForm'
+      message:
+        type: string
+    type: object
+  model.UserUpdatePasswordForm:
+    properties:
+      confirm_password:
+        type: string
+      current_password:
+        type: string
+      id:
+        type: integer
+      new_password:
+        type: string
+    type: object
 info:
   contact:
-    email: dewa.ketut.satriawan@gmail.com
-    name: Dewok satria
-    url: https://twitter.com/dewok_satria
+    email: wokdev@gmail.com
+    name: Admin CS
+    url: https://attendance.wokdev.com
   description: A Attendance management service API in Go using Gin framework.
   license:
     name: Apache 2.0
@@ -54,6 +615,620 @@ info:
   title: Attendance API
   version: "1.0"
 paths:
+  /activation-token/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Activation Token
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ActivationTokenForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ActivationTokenResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create Activation Token
+      tags:
+      - Activation Token
+  /activation-token/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Single Activation Token
+      parameters:
+      - description: id activation token
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Activation Token
+      tags:
+      - Activation Token
+  /activation-token/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown All Activation Token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ActivationTokenResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown All Activation Token
+      tags:
+      - Activation Token
+  /activation-token/list:
+    get:
+      consumes:
+      - application/json
+      description: List All Activation Token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ActivationTokenResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All Activation Token
+      tags:
+      - Activation Token
+  /activation-token/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Single Activation Token
+      parameters:
+      - description: id activation token
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ActivationTokenResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Activation Token
+      tags:
+      - Activation Token
+  /activation-token/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Single Activation Token
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ActivationTokenForm'
+      - description: id activation token
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ActivationTokenResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Activation Token
+      tags:
+      - Activation Token
+  /attendance-log/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Attendance Log
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.AttendanceLogForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceLogResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Attendance Log
+      tags:
+      - Attendance Log
+  /attendance-log/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Single Attendance Log
+      parameters:
+      - description: id attendance log
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Attendance Log
+      tags:
+      - Attendance Log
+  /attendance-log/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown All Attendance Log
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceLogResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown All Attendance Log
+      tags:
+      - Attendance Log
+  /attendance-log/list:
+    get:
+      consumes:
+      - application/json
+      description: List All Attendance Log
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceLogResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All Attendance Log
+      tags:
+      - Attendance Log
+  /attendance-log/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retreive Single Attendance Log
+      parameters:
+      - description: id attendance log
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceLogResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retreive Single Attendance Log
+      tags:
+      - Attendance Log
+  /attendance-log/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Single Attendance Log
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.AttendanceLogForm'
+      - description: id attendance log
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceLogResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Attendance Log
+      tags:
+      - Attendance Log
+  /attendance/clock-in:
+    post:
+      consumes:
+      - application/json
+      description: Clock In Attendance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CheckInData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Clock In Attendance
+      tags:
+      - Attendance
+  /attendance/clock-out:
+    post:
+      consumes:
+      - application/json
+      description: Clock Out Attendance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CheckInData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Clock Out Attendance
+      tags:
+      - Attendance
+  /attendance/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Attendance
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.AttendanceForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Attendance
+      tags:
+      - Attendance
+  /attendance/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Attendance
+      parameters:
+      - description: id attendance
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Attendance
+      tags:
+      - Attendance
+  /attendance/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown All Attendance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown All Attendance
+      tags:
+      - Attendance
+  /attendance/list:
+    get:
+      consumes:
+      - application/json
+      description: List All Attendance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All Attendance
+      tags:
+      - Attendance
+  /attendance/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Attendance
+      parameters:
+      - description: id attendance
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Attendance
+      tags:
+      - Attendance
+  /attendance/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Attendance
+      parameters:
+      - description: id attendance
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Attendance
+      tags:
+      - Attendance
+  /auth/activation:
+    get:
+      consumes:
+      - application/json
+      description: Set Active By Click This URL
+      parameters:
+      - description: token data
+        in: query
+        name: token
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: Set Active By Click This URL
+      tags:
+      - Auth
   /auth/login:
     post:
       consumes:
@@ -138,18 +1313,620 @@ paths:
       summary: Create new user based on paramters
       tags:
       - Auth
-  /user/create:
+  /daily-schedule/create:
     post:
       consumes:
       - application/json
-      description: Create user
+      description: Create Daily Schedule
       parameters:
       - description: data
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/model.User'
+          $ref: '#/definitions/model.DailyScheduleForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DailyScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Daily Schedule
+      tags:
+      - Daily Schedule
+  /daily-schedule/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Single Daily Schedule
+      parameters:
+      - description: id daily schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DailyScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Daily Schedule
+      tags:
+      - Daily Schedule
+  /daily-schedule/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown All Daily Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DailyScheduleResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown All Daily Schedule
+      tags:
+      - Daily Schedule
+  /daily-schedule/list:
+    get:
+      consumes:
+      - application/json
+      description: List All Daily Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DailyScheduleResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All Daily Schedule
+      tags:
+      - Daily Schedule
+  /daily-schedule/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Single Daily Schedule
+      parameters:
+      - description: id daily schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DailyScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Daily Schedule
+      tags:
+      - Daily Schedule
+  /daily-schedule/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Single Daily Schedule
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.DailyScheduleForm'
+      - description: id daily schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DailyScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Daily Schedule
+      tags:
+      - Daily Schedule
+  /major/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Major
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.MajorForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MajorResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Major
+      tags:
+      - Major
+  /major/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Single Major
+      parameters:
+      - description: id major
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MajorResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Major
+      tags:
+      - Major
+  /major/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown all Major
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MajorResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown all Major
+      tags:
+      - Major
+  /major/list:
+    get:
+      consumes:
+      - application/json
+      description: List all Major
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MajorResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List all Major
+      tags:
+      - Major
+  /major/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Single Major
+      parameters:
+      - description: id major
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MajorResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Major
+      tags:
+      - Major
+  /major/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Single Major
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.MajorForm'
+      - description: id major
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MajorResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Major
+      tags:
+      - Major
+  /password-reset-token/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Password Reset Token
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.PasswordResetTokenForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PasswordResetTokenResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Password Reset Token
+      tags:
+      - Password Reset Token
+  /password-reset-token/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Password Reset Token
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PasswordResetTokenResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Password Reset Token
+      tags:
+      - Password Reset Token
+  /password-reset-token/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown all Password Reset Token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PasswordResetTokenResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown all Password Reset Token
+      tags:
+      - Password Reset Token
+  /password-reset-token/list:
+    get:
+      consumes:
+      - application/json
+      description: List all Password Reset Token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PasswordResetTokenResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List all Password Reset Token
+      tags:
+      - Password Reset Token
+  /password-reset-token/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Password Reset Token
+      parameters:
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PasswordResetTokenResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Password Reset Token
+      tags:
+      - Password Reset Token
+  /password-reset-token/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Password Reset Token
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.PasswordResetTokenForm'
+      - description: id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PasswordResetTokenResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Password Reset Token
+      tags:
+      - Password Reset Token
+  /profile/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Profile
+      tags:
+      - Profile
+  /profile/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Profile
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Profile
+      tags:
+      - Profile
+  /profile/update-password:
+    put:
+      consumes:
+      - application/json
+      description: Update Password
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdatePasswordForm'
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
@@ -163,7 +1940,1012 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Password
+      tags:
+      - Profile
+  /schedule/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Schedule
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ScheduleForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Schedule
+      tags:
+      - Schedule
+  /schedule/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Schedule
+      parameters:
+      - description: id schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Schedule
+      tags:
+      - Schedule
+  /schedule/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ScheduleResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown Schedule
+      tags:
+      - Schedule
+  /schedule/list:
+    get:
+      consumes:
+      - application/json
+      description: List Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ScheduleResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List Schedule
+      tags:
+      - Schedule
+  /schedule/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Schedule
+      parameters:
+      - description: id schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Schedule
+      tags:
+      - Schedule
+  /schedule/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Schedule
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.ScheduleForm'
+      - description: id schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Schedule
+      tags:
+      - Schedule
+  /schedule/update-qr-code:
+    put:
+      consumes:
+      - application/json
+      description: Update QR Code
+      parameters:
+      - description: id schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update QR Code
+      tags:
+      - Schedule
+  /study-program/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Study Program
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.StudyProgramForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudyProgramResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Study Program
+      tags:
+      - Study Program
+  /study-program/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Study Program
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.StudyProgramForm'
+      - description: id study program
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudyProgramResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete single Study Program
+      tags:
+      - Study Program
+  /study-program/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown Study Program
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudyProgramResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown All Study Program
+      tags:
+      - Study Program
+  /study-program/list:
+    get:
+      consumes:
+      - application/json
+      description: List Study Program
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudyProgramResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All Study Program
+      tags:
+      - Study Program
+  /study-program/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Study Program
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudyProgramResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve New Study Program
+      tags:
+      - Study Program
+  /study-program/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Study Program
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.StudyProgramForm'
+      - description: id study program
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudyProgramResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update single Study Program
+      tags:
+      - Study Program
+  /subject/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Subject
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.SubjectForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SubjectResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Subject
+      tags:
+      - Subject
+  /subject/delete:
+    put:
+      consumes:
+      - application/json
+      description: Delete Subject
+      parameters:
+      - description: id subject
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Subject
+      tags:
+      - Subject
+  /subject/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown Subject
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SubjectResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown All Subject
+      tags:
+      - Subject
+  /subject/list:
+    get:
+      consumes:
+      - application/json
+      description: List Subject
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SubjectResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All Subject
+      tags:
+      - Subject
+  /subject/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Subject
+      parameters:
+      - description: id subejct
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SubjectResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Subject
+      tags:
+      - Subject
+  /subject/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Subject
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.SubjectForm'
+      - description: id subject
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SubjectResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Subject
+      tags:
+      - Subject
+  /user-schedule/create:
+    post:
+      consumes:
+      - application/json
+      description: Create User Schedule
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserScheduleForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New User Schedule
+      tags:
+      - User Schedule
+  /user-schedule/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete User Schedule
+      parameters:
+      - description: id user schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete User Schedule
+      tags:
+      - User Schedule
+  /user-schedule/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown All User Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserScheduleResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown All User Schedule
+      tags:
+      - User Schedule
+  /user-schedule/list:
+    get:
+      consumes:
+      - application/json
+      description: List All User Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserScheduleResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All User Schedule
+      tags:
+      - User Schedule
+  /user-schedule/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve User Schedule
+      parameters:
+      - description: id user schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve User Schedule
+      tags:
+      - User Schedule
+  /user-schedule/update:
+    put:
+      consumes:
+      - application/json
+      description: Update User Schedule
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserScheduleForm'
+      - description: id user schedule
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserScheduleResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update User Schedule
+      tags:
+      - User Schedule
+  /user/active:
+    patch:
+      consumes:
+      - application/json
+      description: Set Active Data User
+      parameters:
+      - description: id user
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Set Active Data User
+      tags:
+      - User
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create user
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
       summary: Create New User
       tags:
       - User
+  /user/deactive:
+    patch:
+      consumes:
+      - application/json
+      description: Set Deactive Data User
+      parameters:
+      - description: id user
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Set Deactive Data User
+      tags:
+      - User
+  /user/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Single User
+      parameters:
+      - description: id user
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single User
+      tags:
+      - User
+  /user/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: List Data User
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List Data User
+      tags:
+      - User
+  /user/list:
+    get:
+      consumes:
+      - application/json
+      description: List Data User
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List Data User
+      tags:
+      - User
+  /user/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retreive Single User
+      parameters:
+      - description: id user
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retreive Single User
+      tags:
+      - User
+  /user/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Single User
+      parameters:
+      - description: id user
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.UserResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single User
+      tags:
+      - User
+securityDefinitions:
+  BearerTokenAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

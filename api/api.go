@@ -86,7 +86,7 @@ func (c server) v1() {
 			auth.POST("/login", authHandler.Login)
 			auth.POST("/refresh", authHandler.Refresh)
 			auth.GET("/activation", authHandler.Activation)
-			auth.Use(c.middleware.AUTH()).PUT("/update-password", userHandler.UpdatePassword)
+			// auth.Use(c.middleware.AUTH()).PUT("/update-password", userHandler.UpdatePassword)
 		}
 
 		user := v1.Group("/user")

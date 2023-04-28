@@ -56,11 +56,13 @@ func NewUserHandler(userService service.UserService, activationTokenService serv
 // @Summary Create New User
 // @Description Create user
 // @Tags User
-// @Accept json
+// @Accept       json
+// @Produce      json
 // @Param data body model.UserForm true "data"
 // @Success 200 {object} model.Response
 // @Failure 400,500 {object} model.Response
 // @Router /user/create [post]
+// @Security BearerTokenAuth
 func (h userHandler) Create(c *gin.Context) {
 	var data model.User
 	c.BindJSON(&data)
@@ -147,6 +149,17 @@ func (h userHandler) Create(c *gin.Context) {
 	}
 }
 
+// Retrieve ... Retrieve User
+// @Summary Retreive Single User
+// @Description Retreive Single User
+// @Tags User
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /user/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id user"
 func (h userHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -162,6 +175,18 @@ func (h userHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update User
+// @Summary Update Single User
+// @Description Update Single User
+// @Tags User
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /user/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id user"
+// @Param data body model.UserForm true "data"
 func (h userHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -233,6 +258,17 @@ func (h userHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete User
+// @Summary Delete Single User
+// @Description Delete Single User
+// @Tags User
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /user/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id user"
 func (h userHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -248,6 +284,16 @@ func (h userHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List User
+// @Summary List Data User
+// @Description List Data User
+// @Tags User
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /user/list [get]
+// @Security BearerTokenAuth
 func (h userHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var user model.User
@@ -266,6 +312,16 @@ func (h userHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list user", userList, metaList)
 }
 
+// Dropdown ... Dropdown User
+// @Summary List Data User
+// @Description List Data User
+// @Tags User
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /user/drop-down [get]
+// @Security BearerTokenAuth
 func (h userHandler) DropDown(c *gin.Context) {
 	var data model.User
 	c.BindQuery(&data)
@@ -278,6 +334,17 @@ func (h userHandler) DropDown(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
 }
 
+// Set Active ... Set Active User
+// @Summary Set Active Data User
+// @Description Set Active Data User
+// @Tags User
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /user/active [patch]
+// @Security BearerTokenAuth
+// @param id query string true "id user"
 func (h userHandler) SetActive(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -292,6 +359,17 @@ func (h userHandler) SetActive(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success set active data", result)
 }
 
+// Set Deactive ... Set Deactive User
+// @Summary Set Deactive Data User
+// @Description Set Deactive Data User
+// @Tags User
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /user/deactive [patch]
+// @Security BearerTokenAuth
+// @param id query string true "id user"
 func (h userHandler) SetDeactive(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {

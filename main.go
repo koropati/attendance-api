@@ -12,13 +12,15 @@ import (
 // @description     A Attendance management service API in Go using Gin framework.
 // @termsOfService  https://wokdev.com
 
-// @contact.name   Dewok satria
-// @contact.url    https://twitter.com/dewok_satria
-// @contact.email  dewa.ketut.satriawan@gmail.com
+// @contact.name   Admin CS
+// @contact.url    https://attendance.wokdev.com
+// @contact.email  wokdev@gmail.com
 
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-
+// @securityDefinitions.apikey BearerTokenAuth
+// @in header
+// @name Authorization
 // @host      localhost:3000
 // @BasePath  /v1
 

@@ -40,6 +40,17 @@ func NewSubjectHandler(subjectService service.SubjectService, infra infra.Infra,
 	}
 }
 
+// Create ... Create Subject
+// @Summary Create New Subject
+// @Description Create Subject
+// @Tags Subject
+// @Accept       json
+// @Produce      json
+// @Param data body model.SubjectForm true "data"
+// @Success 200 {object} model.SubjectResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /subject/create [post]
+// @Security BearerTokenAuth
 func (h subjectHandler) Create(c *gin.Context) {
 	var data model.Subject
 	c.BindJSON(&data)
@@ -66,6 +77,17 @@ func (h subjectHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve Subject
+// @Summary Retrieve Single Subject
+// @Description Retrieve Subject
+// @Tags Subject
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.SubjectResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /subject/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id subejct"
 func (h subjectHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -96,6 +118,18 @@ func (h subjectHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Subject
+// @Summary Update Single Subject
+// @Description Update Subject
+// @Tags Subject
+// @Accept       json
+// @Produce      json
+// @Param data body model.SubjectForm true "data"
+// @Success 200 {object} model.SubjectResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /subject/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id subject"
 func (h subjectHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -134,6 +168,17 @@ func (h subjectHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete Subject
+// @Summary Delete Single Subject
+// @Description Delete Subject
+// @Tags Subject
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /subject/delete [put]
+// @Security BearerTokenAuth
+// @param id query string true "id subject"
 func (h subjectHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -162,6 +207,16 @@ func (h subjectHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List Subject
+// @Summary List All Subject
+// @Description List Subject
+// @Tags Subject
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.SubjectResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /subject/list [get]
+// @Security BearerTokenAuth
 func (h subjectHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.Subject
@@ -190,6 +245,16 @@ func (h subjectHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown Subject
+// @Summary Dropdown All Subject
+// @Description Dropdown Subject
+// @Tags Subject
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.SubjectResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /subject/drop-down [get]
+// @Security BearerTokenAuth
 func (h subjectHandler) DropDown(c *gin.Context) {
 	var data model.Subject
 	c.BindQuery(&data)

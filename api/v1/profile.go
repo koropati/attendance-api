@@ -41,6 +41,16 @@ func NewProfileHandler(userService service.UserService, activationTokenService s
 	}
 }
 
+// Retrieve ... Retrieve Profile
+// @Summary Retrieve Profile
+// @Description Retrieve Profile
+// @Tags Profile
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.UserResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /profile/ [get]
+// @Security BearerTokenAuth
 func (h profileHandler) Retrieve(c *gin.Context) {
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
@@ -56,6 +66,17 @@ func (h profileHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Profile
+// @Summary Update Profile
+// @Description Update Profile
+// @Tags Profile
+// @Accept       json
+// @Produce      json
+// @Param data body model.UserForm true "data"
+// @Success 200 {object} model.UserResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /profile/update [put]
+// @Security BearerTokenAuth
 func (h profileHandler) Update(c *gin.Context) {
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
@@ -121,6 +142,17 @@ func (h profileHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Update Password ... Update Password
+// @Summary Update Password
+// @Description Update Password
+// @Tags Profile
+// @Accept       json
+// @Produce      json
+// @Param data body model.UserUpdatePasswordForm true "data"
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /profile/update-password [put]
+// @Security BearerTokenAuth
 func (h profileHandler) UpdatePassword(c *gin.Context) {
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {

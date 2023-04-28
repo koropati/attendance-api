@@ -41,6 +41,17 @@ func NewPasswordResetTokenHandler(passwordResetTokenService service.PasswordRese
 	}
 }
 
+// Create ... Create Password Reset Token
+// @Summary Create New Password Reset Token
+// @Description Create Password Reset Token
+// @Tags Password Reset Token
+// @Accept       json
+// @Produce      json
+// @Param data body model.PasswordResetTokenForm true "data"
+// @Success 200 {object} model.PasswordResetTokenResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /password-reset-token/create [post]
+// @Security BearerTokenAuth
 func (h passwordResetTokenHandler) Create(c *gin.Context) {
 	var data model.PasswordResetToken
 	c.BindJSON(&data)
@@ -72,6 +83,17 @@ func (h passwordResetTokenHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve Password Reset Token
+// @Summary Retrieve Single Password Reset Token
+// @Description Retrieve Password Reset Token
+// @Tags Password Reset Token
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.PasswordResetTokenResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /password-reset-token/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id"
 func (h passwordResetTokenHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -88,6 +110,18 @@ func (h passwordResetTokenHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Password Reset Token
+// @Summary Update Single Password Reset Token
+// @Description Update Password Reset Token
+// @Tags Password Reset Token
+// @Accept       json
+// @Produce      json
+// @Param data body model.PasswordResetTokenForm true "data"
+// @Success 200 {object} model.PasswordResetTokenResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /password-reset-token/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id"
 func (h passwordResetTokenHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -126,6 +160,17 @@ func (h passwordResetTokenHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete Password Reset Token
+// @Summary Delete Single Password Reset Token
+// @Description Delete Password Reset Token
+// @Tags Password Reset Token
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.PasswordResetTokenResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /password-reset-token/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id"
 func (h passwordResetTokenHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -141,6 +186,16 @@ func (h passwordResetTokenHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List Password Reset Token
+// @Summary List all Password Reset Token
+// @Description List all Password Reset Token
+// @Tags Password Reset Token
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.PasswordResetTokenResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /password-reset-token/list [get]
+// @Security BearerTokenAuth
 func (h passwordResetTokenHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.PasswordResetToken
@@ -159,6 +214,16 @@ func (h passwordResetTokenHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown Password Reset Token
+// @Summary Dropdown all Password Reset Token
+// @Description Dropdown all Password Reset Token
+// @Tags Password Reset Token
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.PasswordResetTokenResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /password-reset-token/drop-down [get]
+// @Security BearerTokenAuth
 func (h passwordResetTokenHandler) DropDown(c *gin.Context) {
 	var data model.PasswordResetToken
 	c.BindQuery(&data)

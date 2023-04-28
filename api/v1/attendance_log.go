@@ -38,6 +38,17 @@ func NewAttendanceLogHandler(attendancelogService service.AttendanceLogService, 
 	}
 }
 
+// Create ... Create Attendance Log
+// @Summary Create New Attendance Log
+// @Description Create Attendance Log
+// @Tags Attendance Log
+// @Accept       json
+// @Produce      json
+// @Param data body model.AttendanceLogForm true "data"
+// @Success 200 {object} model.AttendanceLogResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance-log/create [post]
+// @Security BearerTokenAuth
 func (h attendancelogHandler) Create(c *gin.Context) {
 	var data model.AttendanceLog
 	c.BindJSON(&data)
@@ -50,6 +61,17 @@ func (h attendancelogHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retreive Attendance Log
+// @Summary Retreive Single Attendance Log
+// @Description Retreive Single Attendance Log
+// @Tags Attendance Log
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceLogResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance-log/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id attendance log"
 func (h attendancelogHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -66,6 +88,18 @@ func (h attendancelogHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Attendance Log
+// @Summary Update Single Attendance Log
+// @Description Update Single Attendance Log
+// @Tags Attendance Log
+// @Accept       json
+// @Produce      json
+// @Param data body model.AttendanceLogForm true "data"
+// @Success 200 {object} model.AttendanceLogResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance-log/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id attendance log"
 func (h attendancelogHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -94,6 +128,17 @@ func (h attendancelogHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete Attendance Log
+// @Summary Delete Single Attendance Log
+// @Description Delete Single Attendance Log
+// @Tags Attendance Log
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /attendance-log/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id attendance log"
 func (h attendancelogHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -109,6 +154,16 @@ func (h attendancelogHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List All Attendance Log
+// @Summary List All Attendance Log
+// @Description List All Attendance Log
+// @Tags Attendance Log
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceLogResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance-log/list [get]
+// @Security BearerTokenAuth
 func (h attendancelogHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.AttendanceLog
@@ -127,6 +182,16 @@ func (h attendancelogHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown All Attendance Log
+// @Summary Dropdown All Attendance Log
+// @Description Dropdown All Attendance Log
+// @Tags Attendance Log
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceLogResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /attendance-log/drop-down [get]
+// @Security BearerTokenAuth
 func (h attendancelogHandler) DropDown(c *gin.Context) {
 	var data model.AttendanceLog
 	c.BindQuery(&data)

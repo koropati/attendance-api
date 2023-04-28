@@ -41,6 +41,17 @@ func NewActivationTokenHandler(activationTokenService service.ActivationTokenSer
 	}
 }
 
+// Create ... Create Activation Token
+// @Summary Create Activation Token
+// @Description Create Activation Token
+// @Tags Activation Token
+// @Accept       json
+// @Produce      json
+// @Param data body model.ActivationTokenForm true "data"
+// @Success 200 {object} model.ActivationTokenResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /activation-token/create [post]
+// @Security BearerTokenAuth
 func (h activationTokenHandler) Create(c *gin.Context) {
 	var data model.ActivationToken
 	c.BindJSON(&data)
@@ -72,6 +83,17 @@ func (h activationTokenHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve Activation Token
+// @Summary Retrieve Single Activation Token
+// @Description Retrieve Single Activation Token
+// @Tags Activation Token
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.ActivationTokenResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /activation-token/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id activation token"
 func (h activationTokenHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -88,6 +110,18 @@ func (h activationTokenHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Activation Token
+// @Summary Update Single Activation Token
+// @Description Update Single Activation Token
+// @Tags Activation Token
+// @Accept       json
+// @Produce      json
+// @Param data body model.ActivationTokenForm true "data"
+// @Success 200 {object} model.ActivationTokenResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /activation-token/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id activation token"
 func (h activationTokenHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -126,6 +160,17 @@ func (h activationTokenHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete Activation Token
+// @Summary Delete Single Activation Token
+// @Description Delete Single Activation Token
+// @Tags Activation Token
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /activation-token/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id activation token"
 func (h activationTokenHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -141,6 +186,16 @@ func (h activationTokenHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List All Activation Token
+// @Summary List All Activation Token
+// @Description List All Activation Token
+// @Tags Activation Token
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.ActivationTokenResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /activation-token/list [get]
+// @Security BearerTokenAuth
 func (h activationTokenHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.ActivationToken
@@ -159,6 +214,16 @@ func (h activationTokenHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown All Activation Token
+// @Summary Dropdown All Activation Token
+// @Description Dropdown All Activation Token
+// @Tags Activation Token
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.ActivationTokenResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /activation-token/drop-down [get]
+// @Security BearerTokenAuth
 func (h activationTokenHandler) DropDown(c *gin.Context) {
 	var data model.ActivationToken
 	c.BindQuery(&data)

@@ -274,6 +274,15 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 	response.New(c).Data(200, "success refresh", dataOutput)
 }
 
+// Activation ... Activation Account URL
+// @Summary Set Active By Click This URL
+// @Description Set Active By Click This URL
+// @Tags Auth
+// @Accept json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /auth/activation [get]
+// @param token query string true "token data"
 func (h authUserHandler) Activation(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {

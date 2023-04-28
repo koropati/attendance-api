@@ -40,6 +40,17 @@ func NewStudyProgramHandler(studyProgramService service.StudyProgramService, inf
 	}
 }
 
+// Create ... Create Study Program
+// @Summary Create New Study Program
+// @Description Create Study Program
+// @Tags Study Program
+// @Accept       json
+// @Produce      json
+// @Param data body model.StudyProgramForm true "data"
+// @Success 200 {object} model.StudyProgramResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /study-program/create [post]
+// @Security BearerTokenAuth
 func (h studyProgramHandler) Create(c *gin.Context) {
 	var data model.StudyProgram
 	c.BindJSON(&data)
@@ -84,6 +95,16 @@ func (h studyProgramHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve Study Program
+// @Summary Retrieve New Study Program
+// @Description Retrieve Study Program
+// @Tags Study Program
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.StudyProgramResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /study-program/retrieve [get]
+// @Security BearerTokenAuth
 func (h studyProgramHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -114,6 +135,18 @@ func (h studyProgramHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Study Program
+// @Summary Update single Study Program
+// @Description Update Study Program
+// @Tags Study Program
+// @Accept       json
+// @Produce      json
+// @Param data body model.StudyProgramForm true "data"
+// @Success 200 {object} model.StudyProgramResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /study-program/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id study program"
 func (h studyProgramHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -169,6 +202,18 @@ func (h studyProgramHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete Study Program
+// @Summary Delete single Study Program
+// @Description Delete Study Program
+// @Tags Study Program
+// @Accept       json
+// @Produce      json
+// @Param data body model.StudyProgramForm true "data"
+// @Success 200 {object} model.StudyProgramResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /study-program/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id study program"
 func (h studyProgramHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -197,6 +242,16 @@ func (h studyProgramHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List Study Program
+// @Summary List All Study Program
+// @Description List Study Program
+// @Tags Study Program
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.StudyProgramResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /study-program/list [get]
+// @Security BearerTokenAuth
 func (h studyProgramHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.StudyProgram
@@ -225,6 +280,16 @@ func (h studyProgramHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown Study Program
+// @Summary Dropdown All Study Program
+// @Description Dropdown Study Program
+// @Tags Study Program
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.StudyProgramResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /study-program/drop-down [get]
+// @Security BearerTokenAuth
 func (h studyProgramHandler) DropDown(c *gin.Context) {
 	var data model.StudyProgram
 	c.BindQuery(&data)

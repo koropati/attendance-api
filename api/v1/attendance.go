@@ -61,6 +61,17 @@ func NewAttendanceHandler(
 	}
 }
 
+// Create ... Create Attendance
+// @Summary Create New Attendance
+// @Description Create Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Param data body model.AttendanceForm true "data"
+// @Success 200 {object} model.AttendanceResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/create [post]
+// @Security BearerTokenAuth
 func (h attendanceHandler) Create(c *gin.Context) {
 	var data model.Attendance
 	c.BindJSON(&data)
@@ -104,6 +115,17 @@ func (h attendanceHandler) Create(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success create data", result)
 }
 
+// Retrieve ... Retrieve Attendance
+// @Summary Retrieve Single Attendance
+// @Description Retrieve Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/retrieve [get]
+// @Security BearerTokenAuth
+// @param id query string true "id attendance"
 func (h attendanceHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -134,6 +156,17 @@ func (h attendanceHandler) Retrieve(c *gin.Context) {
 	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
 }
 
+// Update ... Update Attendance
+// @Summary Update Single Attendance
+// @Description Update Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/update [put]
+// @Security BearerTokenAuth
+// @param id query string true "id attendance"
 func (h attendanceHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -187,6 +220,17 @@ func (h attendanceHandler) Update(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success update data", result)
 }
 
+// Delete ... Delete Attendance
+// @Summary Delete Single Attendance
+// @Description Delete Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/delete [delete]
+// @Security BearerTokenAuth
+// @param id query string true "id attendance"
 func (h attendanceHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
@@ -215,6 +259,16 @@ func (h attendanceHandler) Delete(c *gin.Context) {
 	response.New(c).Write(http.StatusOK, "success delete data")
 }
 
+// List ... List All Attendance
+// @Summary List All Attendance
+// @Description List All Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/list [get]
+// @Security BearerTokenAuth
 func (h attendanceHandler) List(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
 	var data model.Attendance
@@ -243,6 +297,16 @@ func (h attendanceHandler) List(c *gin.Context) {
 	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
 }
 
+// Dropdown ... Dropdown All Attendance
+// @Summary Dropdown All Attendance
+// @Description Dropdown All Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/drop-down [get]
+// @Security BearerTokenAuth
 func (h attendanceHandler) DropDown(c *gin.Context) {
 	var data model.Attendance
 	c.BindQuery(&data)
@@ -265,6 +329,16 @@ func (h attendanceHandler) DropDown(c *gin.Context) {
 	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
 }
 
+// Clock In ... Clock In Attendance
+// @Summary Clock In Attendance
+// @Description Clock In Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.CheckInData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/clock-in [post]
+// @Security BearerTokenAuth
 func (h attendanceHandler) ClockIn(c *gin.Context) {
 
 	var dataClockIn model.CheckInData
@@ -421,6 +495,16 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 
 }
 
+// Clock Out ... Clock Out Attendance
+// @Summary Clock Out Attendance
+// @Description Clock Out Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.CheckInData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/clock-out [post]
+// @Security BearerTokenAuth
 func (h attendanceHandler) ClockOut(c *gin.Context) {
 
 	var dataClockOut model.CheckInData
