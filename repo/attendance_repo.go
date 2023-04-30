@@ -20,6 +20,7 @@ type AttendanceRepo interface {
 	DropDownAttendance(attendance model.Attendance) ([]model.Attendance, error)
 	CheckIsExist(id int) (isExist bool, err error)
 	CheckIsExistByDate(userID int, scheduleID int, date string) bool
+	CountAttendanceByStatus(userID int, statusAttendance string, startDate string, endDate string) (result int)
 }
 
 type attendanceRepo struct {
@@ -162,6 +163,13 @@ func (r attendanceRepo) CheckIsExist(id int) (isExist bool, err error) {
 func (r attendanceRepo) CheckIsExistByDate(userID int, scheduleID int, date string) (isExist bool) {
 	if err := r.db.Table("attendances").Select("count(*) > 0").Where("user_id = ? AND schedule_id = ? AND DATE(date) = ?", userID, scheduleID, date).Find(&isExist).Error; err != nil {
 		return false
+	}
+	return
+}
+
+func (r attendanceRepo) CountAttendanceByStatus(userID int, statusAttendance string, startDate string, endDate string) (result int) {
+	if err := r.db.Table("attendances").Select("count(*)").Where("user_id = ? AND status_presence = ? AND DATE(date) BETWEEN ? AND ?", userID, statusAttendance, startDate, endDate).Find(&result).Error; err != nil {
+		return 0
 	}
 	return
 }

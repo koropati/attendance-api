@@ -34,6 +34,14 @@ type CheckInData struct {
 	Location  string  `json:"location" query:"location"`
 }
 
+// 'presence','not_presence','sick','leave_attendance'
+type AttendanceSummary struct {
+	Presence        int `json:"presence"`
+	NotPresence     int `json:"not_presence"`
+	Sick            int `json:"sick"`
+	LeaveAttendance int `json:"leave_attendance"`
+}
+
 func (data Attendance) GenerateStatusPresence() (statusPresence string) {
 	if data.StatusPresence == "" {
 		if data.ClockIn > 0 || data.ClockOut > 0 {

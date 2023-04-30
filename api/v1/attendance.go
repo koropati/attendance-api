@@ -30,6 +30,7 @@ type AttendanceHandler interface {
 	DropDown(c *gin.Context)
 	ClockIn(c *gin.Context)
 	ClockOut(c *gin.Context)
+	Summary(s *gin.Context)
 }
 
 type attendanceHandler struct {
@@ -661,4 +662,39 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 		response.New(c).Data(http.StatusCreated, "success clock out", attendance)
 	}
 
+}
+
+// Summary ... Summary Attendance
+// @Summary Summary Attendance
+// @Description Summary Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceSummary
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/summary [get]
+// @Security BearerTokenAuth
+func (h attendanceHandler) Summary(c *gin.Context) {
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	y, m, _ := time.Now().Date()
+
+	first, last := converter.MonthInterval(y, m)
+
+	presence := h.attendanceService.CountAttendanceByStatus(currentUserID, "presence", first.Format("2006-01-02"), last.Format("2006-01-02"))
+	notPresence := h.attendanceService.CountAttendanceByStatus(currentUserID, "not_presence", first.Format("2006-01-02"), last.Format("2006-01-02"))
+	sick := h.attendanceService.CountAttendanceByStatus(currentUserID, "sick", first.Format("2006-01-02"), last.Format("2006-01-02"))
+	leaveAttendance := h.attendanceService.CountAttendanceByStatus(currentUserID, "leave_attendance", first.Format("2006-01-02"), last.Format("2006-01-02"))
+	data := model.AttendanceSummary{
+		Presence:        presence,
+		NotPresence:     notPresence,
+		Sick:            sick,
+		LeaveAttendance: leaveAttendance,
+	}
+
+	response.New(c).Data(http.StatusOK, "success get summary data", data)
 }

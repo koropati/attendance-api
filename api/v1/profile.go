@@ -21,20 +21,33 @@ import (
 
 type ProfileHandler interface {
 	Retrieve(c *gin.Context)
+	Student(c *gin.Context)
+	Teacher(c *gin.Context)
 	Update(c *gin.Context)
 	UpdatePassword(c *gin.Context)
 }
 
 type profileHandler struct {
 	userService            service.UserService
+	studentService         service.StudentService
+	teacherService         service.TeacherService
 	activationTokenService service.ActivationTokenService
 	infra                  infra.Infra
 	middleware             middleware.Middleware
 }
 
-func NewProfileHandler(userService service.UserService, activationTokenService service.ActivationTokenService, infra infra.Infra, middleware middleware.Middleware) ProfileHandler {
+func NewProfileHandler(
+	userService service.UserService,
+	studentService service.StudentService,
+	teacherService service.TeacherService,
+	activationTokenService service.ActivationTokenService,
+	infra infra.Infra,
+	middleware middleware.Middleware,
+) ProfileHandler {
 	return &profileHandler{
 		userService:            userService,
+		studentService:         studentService,
+		teacherService:         teacherService,
 		activationTokenService: activationTokenService,
 		infra:                  infra,
 		middleware:             middleware,
@@ -59,6 +72,56 @@ func (h profileHandler) Retrieve(c *gin.Context) {
 	}
 
 	result, err := h.userService.RetrieveUser(currentUserID)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+}
+
+// Student ... Student Profile
+// @Summary Student Profile
+// @Description Student Profile
+// @Tags Profile
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.StudentResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /profile/student [get]
+// @Security BearerTokenAuth
+func (h profileHandler) Student(c *gin.Context) {
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	result, err := h.studentService.RetrieveStudentByUserID(currentUserID)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+}
+
+// Teacher ... Teacher Profile
+// @Summary Teacher Profile
+// @Description Teacher Profile
+// @Tags Profile
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.TeacherResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /profile/teacher [get]
+// @Security BearerTokenAuth
+func (h profileHandler) Teacher(c *gin.Context) {
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	result, err := h.teacherService.RetrieveTeacherByUserID(currentUserID)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return

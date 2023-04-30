@@ -53,7 +53,13 @@ func (c server) handlers() {
 func (c server) v1() {
 	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
-	profileHandler := v1.NewProfileHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
+	profileHandler := v1.NewProfileHandler(
+		c.service.UserService(),
+		c.service.StudentService(),
+		c.service.TeacherService(),
+		c.service.ActivationTokenService(),
+		c.infra, c.middleware,
+	)
 	subjectHandler := v1.NewSubjectHandler(c.service.SubjectService(), c.infra, c.middleware)
 	facultyHandler := v1.NewFacultyHandler(c.service.FacultyService(), c.infra, c.middleware)
 	majorHandler := v1.NewMajorHandler(c.service.MajorService(), c.infra, c.middleware)
@@ -67,6 +73,7 @@ func (c server) v1() {
 	)
 	dailyScheduleHandler := v1.NewDailyScheduleHandler(c.service.DailyScheduleService(), c.infra, c.middleware)
 	userScheduleHandler := v1.NewUserScheduleHandler(c.service.UserScheduleService(), c.infra, c.middleware)
+	myScheduleHandler := v1.NewMyScheduleHandler(c.service.UserScheduleService(), c.service.AttendanceService(), c.infra, c.middleware)
 	passwordResetTokenHandler := v1.NewPasswordResetTokenHandler(c.service.PasswordResetTokenService(), c.infra, c.middleware)
 	activationTokenHandler := v1.NewActivationTokenHandler(c.service.ActivationTokenService(), c.infra, c.middleware)
 	attendanceHandler := v1.NewAttendanceHandler(
@@ -250,7 +257,8 @@ func (c server) v1() {
 		mySchedule := v1.Group("/my-schedule")
 		mySchedule.Use(c.middleware.AUTH())
 		{
-			mySchedule.GET("/list", userScheduleHandler.MySchedule)
+			mySchedule.GET("/list", myScheduleHandler.List)
+			mySchedule.GET("/today", myScheduleHandler.List)
 		}
 
 		attendance := v1.Group("/attendance")

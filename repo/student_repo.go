@@ -9,6 +9,7 @@ import (
 type StudentRepo interface {
 	CreateStudent(student model.Student) (model.Student, error)
 	RetrieveStudent(id int) (model.Student, error)
+	RetrieveStudentByUserID(userID int) (model.Student, error)
 	RetrieveStudentByOwner(id int, ownerID int) (model.Student, error)
 	UpdateStudent(id int, student model.Student) (model.Student, error)
 	UpdateStudentByOwner(id int, ownerID int, student model.Student) (model.Student, error)
@@ -50,6 +51,16 @@ func (r studentRepo) RetrieveStudent(id int) (model.Student, error) {
 	query := r.db.Table("students")
 	query = PreloadStudent(query)
 	if err := query.Where("id = ?", id).First(&student).Error; err != nil {
+		return model.Student{}, err
+	}
+	return student, nil
+}
+
+func (r studentRepo) RetrieveStudentByUserID(userID int) (model.Student, error) {
+	var student model.Student
+	query := r.db.Table("students")
+	query = PreloadStudent(query)
+	if err := query.Where("user_id = ?", userID).First(&student).Error; err != nil {
 		return model.Student{}, err
 	}
 	return student, nil

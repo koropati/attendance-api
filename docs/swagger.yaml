@@ -160,6 +160,17 @@ definitions:
       meta:
         $ref: '#/definitions/model.Meta'
     type: object
+  model.AttendanceSummary:
+    properties:
+      leave_attendance:
+        type: integer
+      not_presence:
+        type: integer
+      presence:
+        type: integer
+      sick:
+        type: integer
+    type: object
   model.CheckInData:
     properties:
       latitude:
@@ -333,6 +344,44 @@ definitions:
         type: integer
       total_record:
         type: integer
+    type: object
+  model.MySchedule:
+    properties:
+      end_date:
+        type: string
+      late_duration:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      radius:
+        type: integer
+      schedule_code:
+        type: string
+      schedule_id:
+        type: integer
+      schedule_name:
+        type: string
+      start_date:
+        type: string
+      subject_code:
+        type: string
+      subject_id:
+        type: integer
+      subject_name:
+        type: string
+    type: object
+  model.MyScheduleResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.MySchedule'
+        type: array
+      message:
+        type: string
     type: object
   model.PasswordResetTokenForm:
     properties:
@@ -650,6 +699,52 @@ definitions:
       meta:
         $ref: '#/definitions/model.Meta'
     type: object
+  model.TodaySchedule:
+    properties:
+      attendance_id:
+        type: integer
+      clock_in:
+        type: string
+      clock_in_millis:
+        type: integer
+      clock_out:
+        type: string
+      clock_out_millis:
+        type: integer
+      end_time:
+        type: string
+      location_in:
+        type: string
+      location_out:
+        type: string
+      schedule_code:
+        type: string
+      schedule_id:
+        type: integer
+      schedule_name:
+        type: string
+      start_time:
+        type: string
+      subject_id:
+        type: integer
+      subject_name:
+        type: string
+      time_zone_in:
+        type: integer
+      time_zone_out:
+        type: integer
+    type: object
+  model.TodayScheduleResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.TodaySchedule'
+        type: array
+      message:
+        type: string
+    type: object
   model.UserForm:
     properties:
       email:
@@ -730,7 +825,9 @@ definitions:
       code:
         type: integer
       data:
-        $ref: '#/definitions/model.UserScheduleForm'
+        items:
+          $ref: '#/definitions/model.UserScheduleForm'
+        type: array
       message:
         type: string
     type: object
@@ -1312,6 +1409,31 @@ paths:
       security:
       - BearerTokenAuth: []
       summary: Retrieve Single Attendance
+      tags:
+      - Attendance
+  /attendance/summary:
+    get:
+      consumes:
+      - application/json
+      description: Summary Attendance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Summary Attendance
       tags:
       - Attendance
   /attendance/update:
@@ -1999,6 +2121,56 @@ paths:
       summary: Update Single Major
       tags:
       - Major
+  /my-schedule/list:
+    get:
+      consumes:
+      - application/json
+      description: My List Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MyScheduleResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: My List Schedule
+      tags:
+      - My Schedule
+  /my-schedule/today:
+    get:
+      consumes:
+      - application/json
+      description: List Today Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TodayScheduleResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List Today Schedule
+      tags:
+      - My Schedule
   /password-reset-token/create:
     post:
       consumes:
@@ -2203,6 +2375,56 @@ paths:
       security:
       - BearerTokenAuth: []
       summary: Retrieve Profile
+      tags:
+      - Profile
+  /profile/student:
+    get:
+      consumes:
+      - application/json
+      description: Student Profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Student Profile
+      tags:
+      - Profile
+  /profile/teacher:
+    get:
+      consumes:
+      - application/json
+      description: Teacher Profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeacherResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Teacher Profile
       tags:
       - Profile
   /profile/update:

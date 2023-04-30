@@ -13,6 +13,7 @@ type UserScheduleRepo interface {
 	RetrieveUserSchedule(id int) (model.UserSchedule, error)
 	RetrieveUserScheduleByOwner(id int, ownerID int) (model.UserSchedule, error)
 	ListMySchedule(userID int) ([]model.MySchedule, error)
+	ListTodaySchedule(userID int, dayName string) ([]model.TodaySchedule, error)
 	ListUserInRule(scheduleID int, user model.User, pagination model.Pagination) ([]model.User, error)
 	ListUserInRuleMeta(scheduleID int, user model.User, pagination model.Pagination) (model.Meta, error)
 	UpdateUserSchedule(id int, userschedule model.UserSchedule) (model.UserSchedule, error)
@@ -106,6 +107,28 @@ func (r userScheduleRepo) ListMySchedule(userID int) (results []model.MySchedule
 	LEFT JOIN schedules s ON us.schedule_id = s.id 
 	LEFT JOIN subjects sbj ON s.subject_id = sbj.id 
 	WHERE us.user_id = %d AND '%s' BETWEEN DATE(s.start_date) AND DATE(s.end_date) AND us.deleted_at IS NULL`, userID, today)
+	if err := r.db.Raw(query).Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (r userScheduleRepo) ListTodaySchedule(userID int, dayName string) (results []model.TodaySchedule, err error) {
+	today := time.Now().Format("2006-01-02")
+	query := fmt.Sprintf(`
+	SELECT 
+	s.id as schedule_id, 
+	s.name as schedule_name, 
+	s.code as schedule_code, 
+	sbj.id as subject_id, 
+	sbj.name as subject_name, 
+	ds.start_time as start_time, 
+	ds.end_time as end_time 
+	FROM user_schedules us 
+	LEFT JOIN schedules s ON us.schedule_id = s.id 
+	LEFT JOIN subjects sbj ON s.subject_id = sbj.id 
+	LEFT JOIN daily_schedules ds ON us.schedule_id = ds.schedule_id 
+	WHERE us.user_id = %d AND '%s' AND ds.name = '%s' AND BETWEEN DATE(s.start_date) AND DATE(s.end_date) AND us.deleted_at IS NULL`, userID, today, dayName)
 	if err := r.db.Raw(query).Scan(&results).Error; err != nil {
 		return nil, err
 	}

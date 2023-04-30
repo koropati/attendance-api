@@ -907,6 +907,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/attendance/summary": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Summary Attendance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attendance"
+                ],
+                "summary": "Summary Attendance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AttendanceSummary"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/attendance/update": {
             "put": {
                 "security": [
@@ -1987,6 +2027,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/my-schedule/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "My List Schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "My Schedule"
+                ],
+                "summary": "My List Schedule",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MyScheduleResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/my-schedule/today": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "List Today Schedule",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "My Schedule"
+                ],
+                "summary": "List Today Schedule",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.TodayScheduleResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/password-reset-token/create": {
             "post": {
                 "security": [
@@ -2297,6 +2417,86 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.UserResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/student": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Student Profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Student Profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.StudentResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/teacher": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Teacher Profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Teacher Profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.TeacherResponseData"
                         }
                     },
                     "400": {
@@ -4820,6 +5020,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AttendanceSummary": {
+            "type": "object",
+            "properties": {
+                "leave_attendance": {
+                    "type": "integer"
+                },
+                "not_presence": {
+                    "type": "integer"
+                },
+                "presence": {
+                    "type": "integer"
+                },
+                "sick": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.CheckInData": {
             "type": "object",
             "properties": {
@@ -5084,6 +5301,64 @@ const docTemplate = `{
                 },
                 "total_record": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.MySchedule": {
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "late_duration": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "radius": {
+                    "type": "integer"
+                },
+                "schedule_code": {
+                    "type": "string"
+                },
+                "schedule_id": {
+                    "type": "integer"
+                },
+                "schedule_name": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "subject_code": {
+                    "type": "string"
+                },
+                "subject_id": {
+                    "type": "integer"
+                },
+                "subject_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.MyScheduleResponseList": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.MySchedule"
+                    }
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },
@@ -5570,6 +5845,76 @@ const docTemplate = `{
                 }
             }
         },
+        "model.TodaySchedule": {
+            "type": "object",
+            "properties": {
+                "attendance_id": {
+                    "type": "integer"
+                },
+                "clock_in": {
+                    "type": "string"
+                },
+                "clock_in_millis": {
+                    "type": "integer"
+                },
+                "clock_out": {
+                    "type": "string"
+                },
+                "clock_out_millis": {
+                    "type": "integer"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "location_in": {
+                    "type": "string"
+                },
+                "location_out": {
+                    "type": "string"
+                },
+                "schedule_code": {
+                    "type": "string"
+                },
+                "schedule_id": {
+                    "type": "integer"
+                },
+                "schedule_name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "subject_id": {
+                    "type": "integer"
+                },
+                "subject_name": {
+                    "type": "string"
+                },
+                "time_zone_in": {
+                    "type": "integer"
+                },
+                "time_zone_out": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.TodayScheduleResponseList": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TodaySchedule"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UserForm": {
             "type": "object",
             "properties": {
@@ -5692,7 +6037,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "data": {
-                    "$ref": "#/definitions/model.UserScheduleForm"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserScheduleForm"
+                    }
                 },
                 "message": {
                     "type": "string"

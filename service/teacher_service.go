@@ -8,6 +8,7 @@ import (
 type TeacherService interface {
 	CreateTeacher(teacher model.Teacher) (model.Teacher, error)
 	RetrieveTeacher(id int) (model.Teacher, error)
+	RetrieveTeacherByUserID(userID int) (model.Teacher, error)
 	RetrieveTeacherByOwner(id int, ownerID int) (model.Teacher, error)
 	UpdateTeacher(id int, teacher model.Teacher) (model.Teacher, error)
 	UpdateTeacherByOwner(id int, ownerID int, teacher model.Teacher) (model.Teacher, error)
@@ -38,6 +39,14 @@ func (s teacherService) CreateTeacher(teacher model.Teacher) (model.Teacher, err
 
 func (s teacherService) RetrieveTeacher(id int) (model.Teacher, error) {
 	data, err := s.teacherRepo.RetrieveTeacher(id)
+	if err != nil {
+		return model.Teacher{}, err
+	}
+	return data, nil
+}
+
+func (s teacherService) RetrieveTeacherByUserID(userID int) (model.Teacher, error) {
+	data, err := s.teacherRepo.RetrieveTeacherByUserID(userID)
 	if err != nil {
 		return model.Teacher{}, err
 	}

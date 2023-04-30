@@ -19,6 +19,7 @@ type AttendanceService interface {
 	DropDownAttendance(attendance model.Attendance) ([]model.Attendance, error)
 	CheckIsExist(id int) (isExist bool, err error)
 	CheckIsExistByDate(userID int, scheduleID int, date string) bool
+	CountAttendanceByStatus(userID int, statusAttendance string, startDate string, endDate string) (result int)
 }
 
 type attendanceService struct {
@@ -123,4 +124,8 @@ func (s attendanceService) CheckIsExist(id int) (isExist bool, err error) {
 
 func (s attendanceService) CheckIsExistByDate(userID int, scheduleID int, date string) bool {
 	return s.attendanceRepo.CheckIsExistByDate(userID, scheduleID, date)
+}
+
+func (s attendanceService) CountAttendanceByStatus(userID int, statusAttendance string, startDate string, endDate string) (result int) {
+	return s.attendanceRepo.CountAttendanceByStatus(userID, statusAttendance, startDate, endDate)
 }

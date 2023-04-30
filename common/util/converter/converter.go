@@ -47,3 +47,9 @@ func GetDayName(myTime time.Time) (dayName string) {
 
 	return days[int(myTime.Weekday())]
 }
+
+func MonthInterval(y int, m time.Month) (firstDay, lastDay time.Time) {
+	firstDay = time.Date(y, m, 1, 0, 0, 0, 0, time.UTC)
+	lastDay = time.Date(y, m+1, 1, 0, 0, 0, -1, time.UTC)
+	return firstDay, lastDay
+}

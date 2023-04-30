@@ -9,6 +9,7 @@ import (
 type TeacherRepo interface {
 	CreateTeacher(teacher model.Teacher) (model.Teacher, error)
 	RetrieveTeacher(id int) (model.Teacher, error)
+	RetrieveTeacherByUserID(userID int) (model.Teacher, error)
 	RetrieveTeacherByOwner(id int, ownerID int) (model.Teacher, error)
 	UpdateTeacher(id int, teacher model.Teacher) (model.Teacher, error)
 	UpdateTeacherByOwner(id int, ownerID int, teacher model.Teacher) (model.Teacher, error)
@@ -50,6 +51,16 @@ func (r teacherRepo) RetrieveTeacher(id int) (model.Teacher, error) {
 	query := r.db.Table("teachers")
 	query = PreloadTeacher(query)
 	if err := query.Where("id = ?", id).First(&teacher).Error; err != nil {
+		return model.Teacher{}, err
+	}
+	return teacher, nil
+}
+
+func (r teacherRepo) RetrieveTeacherByUserID(userID int) (model.Teacher, error) {
+	var teacher model.Teacher
+	query := r.db.Table("teachers")
+	query = PreloadTeacher(query)
+	if err := query.Where("user_id = ?", userID).First(&teacher).Error; err != nil {
 		return model.Teacher{}, err
 	}
 	return teacher, nil

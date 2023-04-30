@@ -40,6 +40,8 @@ func main() {
 		&model.Schedule{},
 		&model.DailySchedule{},
 		&model.UserSchedule{},
+		&model.Attendance{},
+		&model.AttendanceLog{},
 	)
 
 	api.NewServer(i).Run()

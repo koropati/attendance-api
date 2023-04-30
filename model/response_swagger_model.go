@@ -215,7 +215,31 @@ type UserScheduleResponseData struct {
 }
 
 type UserScheduleResponseList struct {
-	Code    int              `json:"code"`
-	Data    UserScheduleForm `json:"data"`
-	Message string           `json:"message"`
+	Code    int                `json:"code"`
+	Data    []UserScheduleForm `json:"data"`
+	Message string             `json:"message"`
+}
+
+type MyScheduleResponseData struct {
+	Code    int        `json:"code"`
+	Data    MySchedule `json:"data"`
+	Message string     `json:"message"`
+}
+
+type MyScheduleResponseList struct {
+	Code    int          `json:"code"`
+	Data    []MySchedule `json:"data"`
+	Message string       `json:"message"`
+}
+
+type TodayScheduleResponseData struct {
+	Code    int           `json:"code"`
+	Data    TodaySchedule `json:"data"`
+	Message string        `json:"message"`
+}
+
+type TodayScheduleResponseList struct {
+	Code    int             `json:"code"`
+	Data    []TodaySchedule `json:"data"`
+	Message string          `json:"message"`
 }

@@ -8,6 +8,7 @@ import (
 type StudentService interface {
 	CreateStudent(student model.Student) (model.Student, error)
 	RetrieveStudent(id int) (model.Student, error)
+	RetrieveStudentByUserID(userID int) (model.Student, error)
 	RetrieveStudentByOwner(id int, ownerID int) (model.Student, error)
 	UpdateStudent(id int, student model.Student) (model.Student, error)
 	UpdateStudentByOwner(id int, ownerID int, student model.Student) (model.Student, error)
@@ -38,6 +39,14 @@ func (s studentService) CreateStudent(student model.Student) (model.Student, err
 
 func (s studentService) RetrieveStudent(id int) (model.Student, error) {
 	data, err := s.studentRepo.RetrieveStudent(id)
+	if err != nil {
+		return model.Student{}, err
+	}
+	return data, nil
+}
+
+func (s studentService) RetrieveStudentByUserID(userID int) (model.Student, error) {
+	data, err := s.studentRepo.RetrieveStudentByUserID(userID)
 	if err != nil {
 		return model.Student{}, err
 	}

@@ -15,6 +15,7 @@ type UserScheduleService interface {
 	DeleteUserSchedule(id int) error
 	DeleteUserScheduleByOwner(id int, ownerID int) error
 	ListMySchedule(userID int) ([]model.MySchedule, error)
+	ListTodaySchedule(userID int, dayName string) ([]model.TodaySchedule, error)
 	ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error)
 	ListUserScheduleMeta(userschedule model.UserSchedule, pagination model.Pagination) (model.Meta, error)
 	DropDownUserSchedule(userschedule model.UserSchedule) ([]model.UserSchedule, error)
@@ -89,6 +90,10 @@ func (s userScheduleService) DeleteUserScheduleByOwner(id int, ownerID int) erro
 
 func (s userScheduleService) ListMySchedule(userID int) (results []model.MySchedule, err error) {
 	return s.userScheduleRepo.ListMySchedule(userID)
+}
+
+func (s userScheduleService) ListTodaySchedule(userID int, dayName string) (results []model.TodaySchedule, err error) {
+	return s.userScheduleRepo.ListTodaySchedule(userID, dayName)
 }
 
 func (s userScheduleService) ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error) {

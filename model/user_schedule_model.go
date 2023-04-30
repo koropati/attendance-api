@@ -25,11 +25,20 @@ type MySchedule struct {
 }
 
 type TodaySchedule struct {
-	ScheduleID   uint   `json:"schedule_id"`
-	ScheduleName string `json:"schedule_name"`
-	ScheduleCode string `json:"schedule_code"`
-	SubjectID    uint   `json:"subject_id"`
-	SubjectName  string `json:"subject_name"`
-	StartTime    string `json:"start_time"`
-	EndTime      string `json:"end_time"`
+	ScheduleID     uint   `json:"schedule_id"`
+	ScheduleName   string `json:"schedule_name"`
+	ScheduleCode   string `json:"schedule_code"`
+	SubjectID      uint   `json:"subject_id"`
+	SubjectName    string `json:"subject_name"`
+	StartTime      string `json:"start_time"`
+	EndTime        string `json:"end_time"`
+	AttendanceID   uint   `json:"attendance_id"`
+	ClockInMillis  int64  `json:"clock_in_millis"`
+	ClockOutMillis int64  `json:"clock_out_millis"`
+	ClockIn        string `json:"clock_in"`
+	ClockOut       string `json:"clock_out"`
+	TimeZoneIn     int    `json:"time_zone_in"`
+	TimeZoneOut    int    `json:"time_zone_out"`
+	LocationIn     string `json:"location_in"`
+	LocationOut    string `json:"location_out"`
 }
