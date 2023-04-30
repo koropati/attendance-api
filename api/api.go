@@ -78,6 +78,20 @@ func (c server) v1() {
 		c.infra,
 		c.middleware,
 	)
+	studentHandler := v1.NewStudentHandler(
+		c.service.UserService(),
+		c.service.StudentService(),
+		c.service.ActivationTokenService(),
+		c.infra,
+		c.middleware,
+	)
+	teacherHandler := v1.NewTeacherHandler(
+		c.service.UserService(),
+		c.service.TeacherService(),
+		c.service.ActivationTokenService(),
+		c.infra,
+		c.middleware,
+	)
 
 	v1 := c.gin.Group("v1")
 	{
@@ -101,6 +115,28 @@ func (c server) v1() {
 			user.GET("/drop-down", userHandler.DropDown)
 			user.PATCH("/active", userHandler.SetActive)
 			user.PATCH("/deactive", userHandler.SetDeactive)
+		}
+
+		student := v1.Group("/student")
+		student.Use(c.middleware.SUPERADMIN())
+		{
+			student.POST("/create", studentHandler.Create)
+			student.GET("/retrieve", studentHandler.Retrieve)
+			student.PUT("/update", studentHandler.Update)
+			student.DELETE("/delete", studentHandler.Delete)
+			student.GET("/list", studentHandler.List)
+			student.GET("/drop-down", studentHandler.DropDown)
+		}
+
+		teacher := v1.Group("/teacher")
+		teacher.Use(c.middleware.SUPERADMIN())
+		{
+			teacher.POST("/create", teacherHandler.Create)
+			teacher.GET("/retrieve", teacherHandler.Retrieve)
+			teacher.PUT("/update", teacherHandler.Update)
+			teacher.DELETE("/delete", teacherHandler.Delete)
+			teacher.GET("/list", teacherHandler.List)
+			teacher.GET("/drop-down", teacherHandler.DropDown)
 		}
 
 		profile := v1.Group("/profile")

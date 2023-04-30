@@ -458,6 +458,55 @@ definitions:
       meta:
         $ref: '#/definitions/model.Meta'
     type: object
+  model.StudentForm:
+    properties:
+      address:
+        type: string
+      dob:
+        type: string
+      faculty:
+        $ref: '#/definitions/model.FacultyForm'
+      faculty_id:
+        type: integer
+      gender:
+        type: string
+      major:
+        $ref: '#/definitions/model.MajorForm'
+      major_id:
+        type: integer
+      nim:
+        type: string
+      study_program:
+        $ref: '#/definitions/model.StudyProgramForm'
+      study_program_id:
+        type: integer
+      user:
+        $ref: '#/definitions/model.UserForm'
+      user_id:
+        type: integer
+    type: object
+  model.StudentResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.StudentForm'
+      message:
+        type: string
+    type: object
+  model.StudentResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.StudentForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
   model.StudyProgramForm:
     properties:
       code:
@@ -546,6 +595,55 @@ definitions:
       data:
         items:
           $ref: '#/definitions/model.SubjectForm'
+        type: array
+      message:
+        type: string
+      meta:
+        $ref: '#/definitions/model.Meta'
+    type: object
+  model.TeacherForm:
+    properties:
+      address:
+        type: string
+      dob:
+        type: string
+      faculty:
+        $ref: '#/definitions/model.FacultyForm'
+      faculty_id:
+        type: integer
+      gender:
+        type: string
+      major:
+        $ref: '#/definitions/model.MajorForm'
+      major_id:
+        type: integer
+      nip:
+        type: string
+      study_program:
+        $ref: '#/definitions/model.StudyProgramForm'
+      study_program_id:
+        type: integer
+      user:
+        $ref: '#/definitions/model.UserForm'
+      user_id:
+        type: integer
+    type: object
+  model.TeacherResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.TeacherForm'
+      message:
+        type: string
+    type: object
+  model.TeacherResponseList:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.TeacherForm'
         type: array
       message:
         type: string
@@ -2383,6 +2481,187 @@ paths:
       summary: Update QR Code
       tags:
       - Schedule
+  /student/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Student
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.StudentForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Student
+      tags:
+      - Student
+  /student/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Single Student
+      parameters:
+      - description: id student
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Student
+      tags:
+      - Student
+  /student/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown all Student
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown all Student
+      tags:
+      - Student
+  /student/list:
+    get:
+      consumes:
+      - application/json
+      description: List all Student
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List all Student
+      tags:
+      - Student
+  /student/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Single Student
+      parameters:
+      - description: id student
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Student
+      tags:
+      - Student
+  /student/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Single Student
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.StudentForm'
+      - description: id student
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Student
+      tags:
+      - Student
   /study-program/create:
     post:
       consumes:
@@ -2745,6 +3024,187 @@ paths:
       summary: Update Single Subject
       tags:
       - Subject
+  /teacher/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Teacher
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.TeacherForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeacherResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create New Teacher
+      tags:
+      - Teacher
+  /teacher/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Single Teacher
+      parameters:
+      - description: id teacher
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeacherResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete Single Teacher
+      tags:
+      - Teacher
+  /teacher/drop-down:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown all Teacher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeacherResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown all Teacher
+      tags:
+      - Teacher
+  /teacher/list:
+    get:
+      consumes:
+      - application/json
+      description: List all Teacher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeacherResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List all Teacher
+      tags:
+      - Teacher
+  /teacher/retrieve:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Single Teacher
+      parameters:
+      - description: id teacher
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeacherResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Single Teacher
+      tags:
+      - Teacher
+  /teacher/update:
+    put:
+      consumes:
+      - application/json
+      description: Update Single Teacher
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.TeacherForm'
+      - description: id teacher
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TeacherResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update Single Teacher
+      tags:
+      - Teacher
   /user-schedule/create:
     post:
       consumes:

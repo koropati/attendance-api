@@ -10,6 +10,8 @@ import (
 type RepoManager interface {
 	AuthRepo() repo.AuthRepo
 	UserRepo() repo.UserRepo
+	StudentRepo() repo.StudentRepo
+	TeacherRepo() repo.TeacherRepo
 	PasswordResetTokenRepo() repo.PasswordResetTokenRepo
 	ActivationTokenRepo() repo.ActivationTokenRepo
 	SubjectRepo() repo.SubjectRepo
@@ -37,6 +39,8 @@ var (
 	studyProgramRepoOnce       sync.Once
 	authRepoOnce               sync.Once
 	userRepoOnce               sync.Once
+	studentRepoOnce            sync.Once
+	teacherRepoOnce            sync.Once
 	passwordResetTokenRepoOnce sync.Once
 	activationTokenRepoOnce    sync.Once
 	subjectRepoOnce            sync.Once
@@ -50,6 +54,8 @@ var (
 	studyProgramRepo           repo.StudyProgramRepo
 	authRepo                   repo.AuthRepo
 	userRepo                   repo.UserRepo
+	studentRepo                repo.StudentRepo
+	teacherRepo                repo.TeacherRepo
 	passwordResetTokenRepo     repo.PasswordResetTokenRepo
 	activationTokenRepo        repo.ActivationTokenRepo
 	subjectRepo                repo.SubjectRepo
@@ -93,6 +99,20 @@ func (rm *repoManager) UserRepo() repo.UserRepo {
 		userRepo = repo.NewUserRepo(rm.infra.GormDB())
 	})
 	return userRepo
+}
+
+func (rm *repoManager) StudentRepo() repo.StudentRepo {
+	studentRepoOnce.Do(func() {
+		studentRepo = repo.NewStudentRepo(rm.infra.GormDB())
+	})
+	return studentRepo
+}
+
+func (rm *repoManager) TeacherRepo() repo.TeacherRepo {
+	teacherRepoOnce.Do(func() {
+		teacherRepo = repo.NewTeacherRepo(rm.infra.GormDB())
+	})
+	return teacherRepo
 }
 
 func (rm *repoManager) PasswordResetTokenRepo() repo.PasswordResetTokenRepo {

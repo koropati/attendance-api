@@ -200,12 +200,20 @@ func (r authRepo) SetActiveUser(id int) (model.User, error) {
 	if err := r.db.Model(&user).Where("id = ?", id).Update("is_active", true).Error; err != nil {
 		return model.User{}, err
 	}
+	query := r.db.Table("users")
+	if err := query.Where("id = ?", id).First(&user).Error; err != nil {
+		return model.User{}, err
+	}
 	return user, nil
 }
 
 func (r authRepo) SetDeactiveUser(id int) (model.User, error) {
 	var user model.User
 	if err := r.db.Model(&user).Where("id = ?", id).Update("is_active", false).Error; err != nil {
+		return model.User{}, err
+	}
+	query := r.db.Table("users")
+	if err := query.Where("id = ?", id).First(&user).Error; err != nil {
 		return model.User{}, err
 	}
 	return user, nil

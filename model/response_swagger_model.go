@@ -156,6 +156,32 @@ type UserResponseList struct {
 	Message string     `json:"message"`
 }
 
+type StudentResponseData struct {
+	Code    int         `json:"code"`
+	Data    StudentForm `json:"data"`
+	Message string      `json:"message"`
+}
+
+type StudentResponseList struct {
+	Code    int           `json:"code"`
+	Data    []StudentForm `json:"data"`
+	Meta    Meta          `json:"meta"`
+	Message string        `json:"message"`
+}
+
+type TeacherResponseData struct {
+	Code    int         `json:"code"`
+	Data    TeacherForm `json:"data"`
+	Message string      `json:"message"`
+}
+
+type TeacherResponseList struct {
+	Code    int           `json:"code"`
+	Data    []TeacherForm `json:"data"`
+	Meta    Meta          `json:"meta"`
+	Message string        `json:"message"`
+}
+
 type UserForgotPasswordResponseData struct {
 	Code    int                    `json:"code"`
 	Data    UserForgotPasswordForm `json:"data"`

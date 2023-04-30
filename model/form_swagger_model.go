@@ -214,3 +214,33 @@ type UserScheduleForm struct {
 	User       UserForm     `json:"user" gorm:"foreignKey:UserID"`
 	OwnerID    int          `json:"owner_id" gorm:"not null"`
 }
+
+type StudentForm struct {
+	UserID         uint             `json:"user_id"`
+	User           UserForm         `json:"user"`
+	NIM            string           `json:"nim" gorm:"type:varchar(20);unique"`
+	DOB            string           `json:"dob" gorm:"type:date"`
+	FacultyID      uint             `json:"faculty_id"`
+	Faculty        FacultyForm      `json:"faculty"`
+	MajorID        uint             `json:"major_id"`
+	Major          MajorForm        `json:"major"`
+	StudyProgramID uint             `json:"study_program_id"`
+	StudyProgram   StudyProgramForm `json:"study_program"`
+	Address        string           `json:"address" gorm:"type:varchar(255)"`
+	Gender         string           `json:"gender" gorm:"type:enum('laki-laki','perempuan');default:'laki-laki'"`
+}
+
+type TeacherForm struct {
+	UserID         uint             `json:"user_id"`
+	User           UserForm         `json:"user"`
+	NIP            string           `json:"nip" gorm:"type:varchar(20);unique"`
+	DOB            string           `json:"dob" gorm:"type:date"`
+	FacultyID      uint             `json:"faculty_id"`
+	Faculty        FacultyForm      `json:"faculty"`
+	MajorID        uint             `json:"major_id"`
+	Major          MajorForm        `json:"major"`
+	StudyProgramID uint             `json:"study_program_id"`
+	StudyProgram   StudyProgramForm `json:"study_program"`
+	Address        string           `json:"address" gorm:"type:varchar(255)"`
+	Gender         string           `json:"gender" gorm:"type:enum('laki-laki','perempuan');default:'laki-laki'"`
+}

@@ -13,6 +13,8 @@ type ServiceManager interface {
 	StudyProgramService() service.StudyProgramService
 	AuthService() service.AuthService
 	UserService() service.UserService
+	StudentService() service.StudentService
+	TeacherService() service.TeacherService
 	PasswordResetTokenService() service.PasswordResetTokenService
 	ActivationTokenService() service.ActivationTokenService
 	SubjectService() service.SubjectService
@@ -41,6 +43,8 @@ var (
 	studyProgramServiceOnce       sync.Once
 	authServiceOnce               sync.Once
 	userServiceOnce               sync.Once
+	studentServiceOnce            sync.Once
+	teacherServiceOnce            sync.Once
 	passwordResetTokenServiceOnce sync.Once
 	activationTokenServiceOnce    sync.Once
 	subjectServiceOnce            sync.Once
@@ -54,6 +58,8 @@ var (
 	studyProgramService           service.StudyProgramService
 	authService                   service.AuthService
 	userService                   service.UserService
+	studentService                service.StudentService
+	teacherService                service.TeacherService
 	passwordResetTokenService     service.PasswordResetTokenService
 	activationTokenService        service.ActivationTokenService
 	subjectService                service.SubjectService
@@ -99,6 +105,20 @@ func (sm *serviceManager) UserService() service.UserService {
 	})
 
 	return userService
+}
+
+func (sm *serviceManager) StudentService() service.StudentService {
+	studentServiceOnce.Do(func() {
+		studentService = sm.repo.StudentRepo()
+	})
+	return studentService
+}
+
+func (sm *serviceManager) TeacherService() service.TeacherService {
+	teacherServiceOnce.Do(func() {
+		teacherService = sm.repo.TeacherRepo()
+	})
+	return teacherService
 }
 
 func (sm *serviceManager) PasswordResetTokenService() service.PasswordResetTokenService {

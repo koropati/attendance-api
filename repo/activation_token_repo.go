@@ -127,7 +127,7 @@ func (r activationTokenRepo) IsValid(token string) (isValid bool, userID uint) {
 		isValid = false
 		userID = 0
 	} else {
-		if data.Valid.After(time.Now()) {
+		if time.Now().After(data.Valid) {
 			isValid = false
 			userID = 0
 		} else {
