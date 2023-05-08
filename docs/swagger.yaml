@@ -171,6 +171,13 @@ definitions:
       sick:
         type: integer
     type: object
+  model.AuthDataResponseData:
+    properties:
+      token_data:
+        $ref: '#/definitions/model.TokenData'
+      user_data:
+        $ref: '#/definitions/model.UserForm'
+    type: object
   model.CheckInData:
     properties:
       latitude:
@@ -743,6 +750,17 @@ definitions:
           $ref: '#/definitions/model.TodaySchedule'
         type: array
       message:
+        type: string
+    type: object
+  model.TokenData:
+    properties:
+      access_token:
+        type: string
+      expired_access_token:
+        type: integer
+      expired_refresh_token:
+        type: integer
+      refresh_token:
         type: string
     type: object
   model.UserForm:
@@ -1510,7 +1528,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Response'
+            $ref: '#/definitions/model.AuthDataResponseData'
         "400":
           description: Bad Request
           schema:
@@ -1520,6 +1538,29 @@ paths:
           schema:
             $ref: '#/definitions/model.Response'
       summary: Login user with username and password
+      tags:
+      - Auth
+  /auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: Logout from system
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Logout from system
       tags:
       - Auth
   /auth/refresh:
@@ -1538,7 +1579,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Response'
+            $ref: '#/definitions/model.AuthDataResponseData'
         "400":
           description: Bad Request
           schema:

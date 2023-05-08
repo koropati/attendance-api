@@ -27,8 +27,8 @@
         "activation_token_expired": 240,
         "reset_token_expired": 240
     },
-    "access_token_expired": 2,
-    "refresh_token_expired": 420,
+    "access_token_expired": 1440,
+    "refresh_token_expired": 10080,
     "general": {
         "company_name": "PT. Mekarsari",
         "company_email": "wokdev@gmail.com",

@@ -3,10 +3,10 @@ package token
 import (
 	"attendance-api/model"
 	"fmt"
-	"strconv"
-	"time"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,6 +15,8 @@ type Token interface {
 	GenerateRefreshToken(data model.UserTokenPayload) (expiredDate int64, tokenData string)
 	ValidateToken(token string) (*jwt.Token, error)
 	ValidateRefreshToken(token string) (*jwt.Token, error)
+	ExtractToken(c *gin.Context) string
+	ExtractTokenAuth(c *gin.Context) (model.Auth, error)
 }
 
 type token struct {
@@ -26,33 +28,24 @@ func NewToken(secretKey string) Token {
 }
 
 type authClaims struct {
-	UserID       uint   `json:"user_id"`
-	Username     string `json:"username"`
-	IsSuperAdmin bool   `json:"is_super_admin"`
-	IsAdmin      bool   `json:"is_admin"`
-	IsUser       bool   `json:"is_user"`
-	Email        string `json:"email"`
-	Expired      string `json:"expired"`
+	UserID   uint   `json:"user_id"`
+	AuthUUID string `json:"auth_uuid"`
+	Expired  int64  `json:"expired"`
 	jwt.StandardClaims
 }
 
 type refreshClaims struct {
 	UserID   uint   `json:"user_id"`
-	Username string `json:"username"`
-	Expired  string `json:"expired"`
+	AuthUUID string `json:"auth_uuid"`
+	Expired  int64  `json:"expired"`
 	jwt.StandardClaims
 }
 
 func (t *token) GenerateToken(data model.UserTokenPayload) (expiredDate int64, tokenData string) {
-	expiredTime := time.Now().Add(time.Minute * time.Duration(data.Expired)).Unix()
 	claims := &authClaims{
 		data.UserID,
-		data.Username,
-		data.IsSuperAdmin,
-		data.IsAdmin,
-		data.IsUser,
-		data.Email,
-		strconv.FormatInt(expiredTime, 10),
+		data.AuthUUID,
+		data.Expired,
 		jwt.StandardClaims{},
 	}
 
@@ -62,7 +55,7 @@ func (t *token) GenerateToken(data model.UserTokenPayload) (expiredDate int64, t
 		logrus.Panic(err)
 	}
 
-	return expiredTime, token
+	return data.Expired, token
 }
 
 func (t *token) ValidateToken(encodedToken string) (*jwt.Token, error) {
@@ -75,11 +68,10 @@ func (t *token) ValidateToken(encodedToken string) (*jwt.Token, error) {
 }
 
 func (t *token) GenerateRefreshToken(data model.UserTokenPayload) (expiredDate int64, tokenData string) {
-	expiredTime := time.Now().Add(time.Minute * time.Duration(data.Expired)).Unix()
 	claims := &refreshClaims{
 		data.UserID,
-		data.Username,
-		strconv.FormatInt(expiredTime, 10),
+		data.AuthUUID,
+		data.Expired,
 		jwt.StandardClaims{},
 	}
 
@@ -89,7 +81,7 @@ func (t *token) GenerateRefreshToken(data model.UserTokenPayload) (expiredDate i
 		logrus.Panic(err)
 	}
 
-	return expiredTime, token
+	return data.Expired, token
 }
 
 func (t *token) ValidateRefreshToken(encodedToken string) (*jwt.Token, error) {
@@ -99,4 +91,36 @@ func (t *token) ValidateRefreshToken(encodedToken string) (*jwt.Token, error) {
 		}
 		return []byte(t.secretKey), nil
 	})
+}
+
+func (t *token) ExtractToken(c *gin.Context) string {
+	authHeader := c.GetHeader("Authorization")
+	authBearer := strings.Split(authHeader, " ")
+	//normally Authorization the_token_xxx
+	return authBearer[1]
+}
+
+func (t *token) ExtractTokenAuth(c *gin.Context) (model.Auth, error) {
+	authHeader := c.GetHeader("Authorization")
+	authBearer := strings.Split(authHeader, " ")
+	if len(authBearer) == 2 {
+		if token, err := t.ValidateToken(authBearer[1]); token.Valid && err == nil {
+			// Validate expired token
+			claims, ok := token.Claims.(jwt.MapClaims)
+			if ok {
+				authData := model.Auth{
+					UserID:   uint(claims["user_id"].(float64)),
+					AuthUUID: claims["auth_uuid"].(string),
+					Expired:  int64(claims["expired"].(float64)),
+				}
+				return authData, nil
+			} else {
+				return model.Auth{}, fmt.Errorf("invalid claim token")
+			}
+		} else {
+			return model.Auth{}, fmt.Errorf("invalid authorization token %v", err)
+		}
+	} else {
+		return model.Auth{}, fmt.Errorf("invalid authorization token")
+	}
 }

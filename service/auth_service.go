@@ -20,10 +20,14 @@ type AuthService interface {
 	Login(username string) (string, error)
 	GetByUsername(username string) (user model.User, err error)
 	GetByEmail(email string) (user model.User, err error)
+	GetByID(id uint) (user model.User, err error)
 	Create(user model.User) error
 	Delete(id int) error
 	SetActiveUser(id int) (model.User, error)
 	SetDeactiveUser(id int) (model.User, error)
+	FetchAuth(userID uint, authUUID string) (model.Auth, error)
+	DeleteAuth(userID uint, authUUID string) error
+	CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error)
 }
 
 type authService struct {
@@ -127,6 +131,14 @@ func (s authService) GetByEmail(email string) (user model.User, err error) {
 	return userData, nil
 }
 
+func (s authService) GetByID(id uint) (user model.User, err error) {
+	userData, err := s.authRepo.GetByID(id)
+	if err != nil {
+		return model.User{}, err
+	}
+	return userData, nil
+}
+
 func (s authService) Create(user model.User) error {
 	if err := s.authRepo.Create(user); err != nil {
 		return err
@@ -157,4 +169,28 @@ func (s authService) SetDeactiveUser(id int) (model.User, error) {
 		return model.User{}, err
 	}
 	return userUpdate, nil
+}
+
+func (s authService) FetchAuth(userID uint, authUUID string) (model.Auth, error) {
+	auth, err := s.authRepo.FetchAuth(userID, authUUID)
+	if err != nil {
+		return model.Auth{}, err
+	}
+	return auth, nil
+}
+
+func (s authService) DeleteAuth(userID uint, authUUID string) error {
+	err := s.authRepo.DeleteAuth(userID, authUUID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s authService) CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error) {
+	auth, err := s.authRepo.CreateAuth(userID, expired, typeAuth)
+	if err != nil {
+		return model.Auth{}, err
+	}
+	return auth, nil
 }

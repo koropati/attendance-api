@@ -243,3 +243,8 @@ type TodayScheduleResponseList struct {
 	Data    []TodaySchedule `json:"data"`
 	Message string          `json:"message"`
 }
+
+type AuthDataResponseData struct {
+	UserData  UserForm  `json:"user_data"`
+	TokenData TokenData `json:"token_data"`
+}

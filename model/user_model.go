@@ -43,15 +43,22 @@ type UserDropDown struct {
 
 // username string, email string, isSuperAdmin bool, isAdmin bool, isUser bool, expired int
 type UserTokenPayload struct {
-	UserID       uint   `json:"user_id"`
-	Username     string `json:"username"`
-	Email        string `json:"email"`
-	IsSuperAdmin bool   `json:"is_super_admin"`
-	IsAdmin      bool   `json:"is_admin"`
-	IsUser       bool   `json:"is_user"`
-	Expired      int    `json:"expired"`
+	UserID   uint   `json:"user_id"`
+	AuthUUID string `json:"auth_uuid"`
+	Expired  int64  `json:"expired"`
 }
 
+type TokenData struct {
+	AccessToken         string `json:"access_token"`
+	ExpiredAccessToken  int64  `json:"expired_access_token"`
+	RefreshToken        string `json:"refresh_token"`
+	ExpiredRefreshToken int64  `json:"expired_refresh_token"`
+}
+
+type AuthData struct {
+	UserData  User      `json:"user_data"`
+	TokenData TokenData `json:"token_data"`
+}
 type Login struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

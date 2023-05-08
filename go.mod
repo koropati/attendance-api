@@ -67,6 +67,7 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3 // indirect
 	github.com/swaggo/http-swagger v1.3.3 // indirect
 	github.com/swaggo/swag v1.8.10 // indirect
+	github.com/twinj/uuid v1.0.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.10 // indirect
 	github.com/urfave/cli/v2 v2.24.4 // indirect

@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
 	"attendance-api/common/http/response"
 	"attendance-api/common/util/token"
+	"attendance-api/service"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -26,14 +26,19 @@ type Middleware interface {
 	IsSuperAdmin(c *gin.Context) bool
 	IsUser(c *gin.Context) bool
 	IsAdmin(c *gin.Context) bool
+	LOGOUT(c *gin.Context) error
 }
 
 type middleware struct {
-	secretKey string
+	secretKey   string
+	authService service.AuthService
 }
 
-func NewMiddleware(secretKey string) Middleware {
-	return &middleware{secretKey: secretKey}
+func NewMiddleware(secretKey string, authService service.AuthService) Middleware {
+	return &middleware{
+		secretKey:   secretKey,
+		authService: authService,
+	}
 }
 
 func (m *middleware) CORS() gin.HandlerFunc {
@@ -41,6 +46,13 @@ func (m *middleware) CORS() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
+		c.Writer.Header().Set("Access-Control-Request-Headers", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		c.Writer.Header().Set("Accept-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Accept-Control-Allow-Methods", "*")
+		c.Writer.Header().Set("Accept-Control-Allow-Headers", "*")
+		c.Writer.Header().Set("Content-Type", "*")
 		c.Next()
 	}
 }
@@ -54,16 +66,20 @@ func ValidateToken(m *middleware, c *gin.Context) (tokenData *jwt.Token, valid b
 			// Validate expired token
 			claims, ok := token.Claims.(jwt.MapClaims)
 			if ok {
-				unixTime, err := strconv.ParseInt(claims["expired"].(string), 10, 64)
 				if err != nil {
 					return nil, false, fmt.Errorf("invalid expiration token e: %v", err)
 				}
 				currentDateTime := time.Now()
-				expiredDateTime := time.Unix(int64(unixTime), 0)
+				expiredDateTime := time.Unix(int64(claims["expired"].(float64)), 0)
 
 				if currentDateTime.After(expiredDateTime) {
 					return nil, false, fmt.Errorf("token is expired")
 				} else {
+					// check in DB
+					_, err := m.authService.FetchAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
+					if err != nil {
+						return nil, false, errors.New("unauthorized access denied")
+					}
 					return token, true, nil
 				}
 
@@ -79,22 +95,35 @@ func ValidateToken(m *middleware, c *gin.Context) (tokenData *jwt.Token, valid b
 	}
 }
 
-func ValidateRole(token *jwt.Token, roles ...string) (valid bool, err error) {
+func ValidateRole(m *middleware, token *jwt.Token, roles ...string) (valid bool, err error) {
+
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		for _, role := range roles {
-			if role == "user" && claims["is_user"].(bool) {
-				valid = true
-				break
+		authUser, err := m.authService.FetchAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
+		if err != nil {
+			valid = false
+		} else {
+			user, err := m.authService.GetByID(authUser.UserID)
+			if err != nil {
+				valid = false
+			} else {
+				for _, role := range roles {
+					if role == "user" && user.IsUser {
+						valid = true
+						break
+					}
+					if role == "admin" && user.IsAdmin {
+						valid = true
+						break
+					}
+					if role == "super_admin" && user.IsSuperAdmin {
+						valid = true
+						break
+					}
+				}
 			}
-			if role == "admin" && claims["is_admin"].(bool) {
-				valid = true
-				break
-			}
-			if role == "super_admin" && claims["is_super_admin"].(bool) {
-				valid = true
-				break
-			}
+
 		}
+
 		if valid {
 			return true, nil
 		} else {
@@ -124,7 +153,7 @@ func (m *middleware) SUPERADMIN() gin.HandlerFunc {
 			response.New(c).Error(http.StatusUnauthorized, err)
 			c.Abort()
 		} else {
-			validRole, err := ValidateRole(token, "super_admin")
+			validRole, err := ValidateRole(m, token, "super_admin")
 			if !validRole && err != nil {
 				response.New(c).Error(http.StatusForbidden, err)
 				c.Abort()
@@ -142,7 +171,7 @@ func (m *middleware) ADMIN() gin.HandlerFunc {
 			response.New(c).Error(http.StatusUnauthorized, err)
 			c.Abort()
 		} else {
-			validRole, err := ValidateRole(token, "admin", "super_admin")
+			validRole, err := ValidateRole(m, token, "admin", "super_admin")
 			if !validRole && err != nil {
 				response.New(c).Error(http.StatusForbidden, err)
 				c.Abort()
@@ -160,7 +189,7 @@ func (m *middleware) EDITOR() gin.HandlerFunc {
 			response.New(c).Error(http.StatusUnauthorized, err)
 			c.Abort()
 		} else {
-			validRole, err := ValidateRole(token, "editor")
+			validRole, err := ValidateRole(m, token, "editor")
 			if !validRole && err != nil {
 				response.New(c).Error(http.StatusForbidden, err)
 				c.Abort()
@@ -178,7 +207,7 @@ func (m *middleware) USER() gin.HandlerFunc {
 			response.New(c).Error(http.StatusUnauthorized, err)
 			c.Abort()
 		} else {
-			validRole, err := ValidateRole(token, "user", "admin", "super_admin")
+			validRole, err := ValidateRole(m, token, "user", "admin", "super_admin")
 			if !validRole && err != nil {
 				response.New(c).Error(http.StatusForbidden, err)
 				c.Abort()
@@ -208,7 +237,15 @@ func (m *middleware) IsSuperAdmin(c *gin.Context) bool {
 		return false
 	} else {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			return claims["is_super_admin"].(bool)
+			authUser, err := m.authService.FetchAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
+			if err != nil {
+				return false
+			}
+			user, err := m.authService.GetByID(authUser.UserID)
+			if err != nil {
+				return false
+			}
+			return user.IsSuperAdmin
 		} else {
 			return false
 		}
@@ -221,7 +258,15 @@ func (m *middleware) IsUser(c *gin.Context) bool {
 		return false
 	} else {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			return claims["is_user"].(bool)
+			authUser, err := m.authService.FetchAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
+			if err != nil {
+				return false
+			}
+			user, err := m.authService.GetByID(authUser.UserID)
+			if err != nil {
+				return false
+			}
+			return user.IsUser
 		} else {
 			return false
 		}
@@ -234,12 +279,21 @@ func (m *middleware) IsAdmin(c *gin.Context) bool {
 		return false
 	} else {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			return claims["is_admin"].(bool)
+			authUser, err := m.authService.FetchAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
+			if err != nil {
+				return false
+			}
+			user, err := m.authService.GetByID(authUser.UserID)
+			if err != nil {
+				return false
+			}
+			return user.IsAdmin
 		} else {
 			return false
 		}
 	}
 }
+
 func (m *middleware) HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, validToken, err := ValidateToken(m, c)
@@ -248,7 +302,18 @@ func (m *middleware) HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc {
 			c.Abort()
 		} else {
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				if claims["is_super_admin"].(bool) {
+				authUser, err := m.authService.FetchAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
+				if err != nil {
+					response.New(c).Error(http.StatusUnauthorized, err)
+					c.Abort()
+				}
+				user, err := m.authService.GetByID(authUser.UserID)
+				if err != nil {
+					response.New(c).Error(http.StatusUnauthorized, err)
+					c.Abort()
+				}
+
+				if user.IsSuperAdmin {
 					c.Next()
 				} else {
 					if claims["user_id"].(int) == ownerID {
@@ -262,6 +327,25 @@ func (m *middleware) HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc {
 				response.New(c).Error(http.StatusUnauthorized, err)
 				c.Abort()
 			}
+		}
+	}
+}
+
+func (m *middleware) LOGOUT(c *gin.Context) error {
+	token, validToken, err := ValidateToken(m, c)
+	if !validToken && err != nil {
+		return fmt.Errorf("invalid token")
+	} else {
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			err := m.authService.DeleteAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
+			if err != nil {
+				return err
+			} else {
+				return nil
+			}
+
+		} else {
+			return fmt.Errorf("invalid token")
 		}
 	}
 }

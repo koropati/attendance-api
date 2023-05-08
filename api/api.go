@@ -29,7 +29,7 @@ func NewServer(infra infra.Infra) Server {
 		infra:      infra,
 		gin:        gin.Default(),
 		service:    manager.NewServiceManager(infra),
-		middleware: middleware.NewMiddleware(infra.Config().GetString("secret.key")),
+		middleware: middleware.NewMiddleware(infra.Config().GetString("secret.key"), manager.NewServiceManager(infra).AuthService()),
 	}
 }
 
@@ -105,7 +105,9 @@ func (c server) v1() {
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/register", authHandler.Register)
+			auth.OPTIONS("/login", authHandler.LoginPreflight)
 			auth.POST("/login", authHandler.Login)
+			auth.GET("/logout", authHandler.Logout)
 			auth.POST("/refresh", authHandler.Refresh)
 			auth.GET("/activation", authHandler.Activation)
 			// auth.Use(c.middleware.AUTH()).PUT("/update-password", userHandler.UpdatePassword)

@@ -4,6 +4,7 @@ import (
 	v1 "attendance-api/api/v1"
 	"attendance-api/common/http/middleware"
 	"attendance-api/infra"
+	"attendance-api/manager"
 	"attendance-api/mocks"
 	"encoding/json"
 	"net/http"
@@ -27,7 +28,7 @@ func TestListUser(t *testing.T) {
 		gin := gin.New()
 		rec := httptest.NewRecorder()
 		infra := infra.New("../../config/config.json")
-		UserHandler := v1.NewUserHandler(userServiceMock, activationTokenServiceMoc, infra, middleware.NewMiddleware(infra.Config().GetString("secret.key")))
+		UserHandler := v1.NewUserHandler(userServiceMock, activationTokenServiceMoc, infra, middleware.NewMiddleware(infra.Config().GetString("secret.key"), manager.NewServiceManager(infra).AuthService()))
 		gin.GET("/user/list", UserHandler.List)
 
 		req := httptest.NewRequest(http.MethodGet, "/user/list", strings.NewReader(""))

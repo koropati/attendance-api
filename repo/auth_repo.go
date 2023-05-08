@@ -4,6 +4,7 @@ import (
 	"attendance-api/model"
 	"time"
 
+	"github.com/twinj/uuid"
 	"gorm.io/gorm"
 )
 
@@ -22,10 +23,14 @@ type AuthRepo interface {
 	Login(username string) (string, error)
 	GetByUsername(username string) (user model.User, err error)
 	GetByEmail(email string) (user model.User, err error)
+	GetByID(id uint) (user model.User, err error)
 	Create(user model.User) error
 	Delete(id int) error
 	SetActiveUser(id int) (model.User, error)
 	SetDeactiveUser(id int) (model.User, error)
+	FetchAuth(userID uint, authUUID string) (model.Auth, error)
+	DeleteAuth(userID uint, authUUID string) error
+	CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error)
 }
 
 type authRepo struct {
@@ -179,6 +184,15 @@ func (r authRepo) GetByEmail(email string) (user model.User, err error) {
 	return userData, nil
 }
 
+func (r authRepo) GetByID(id uint) (user model.User, err error) {
+	var userData model.User
+	if err := r.db.Table("users").Where("id = ?", id).First(&userData).Error; err != nil {
+		return model.User{}, err
+	}
+
+	return userData, nil
+}
+
 func (r authRepo) Create(user model.User) error {
 	if err := r.db.Table("users").Create(&user).Error; err != nil {
 		return err
@@ -217,4 +231,32 @@ func (r authRepo) SetDeactiveUser(id int) (model.User, error) {
 		return model.User{}, err
 	}
 	return user, nil
+}
+
+func (r authRepo) FetchAuth(userID uint, authUUID string) (model.Auth, error) {
+	var auth model.Auth
+	if err := r.db.Table("auths").Where("user_id = ? AND auth_uuid = ?", userID, authUUID).First(&auth).Error; err != nil {
+		return model.Auth{}, err
+	}
+	return auth, nil
+}
+
+func (r authRepo) DeleteAuth(userID uint, authUUID string) error {
+	if err := r.db.Table("auths").Unscoped().Where("user_id = ? AND auth_uuid = ?", userID, authUUID).Delete(&model.Auth{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r authRepo) CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error) {
+	var auth model.Auth
+	auth.UserID = userID
+	auth.AuthUUID = uuid.NewV4().String()
+	auth.Expired = expired
+	auth.TypeAuth = typeAuth
+
+	if err := r.db.Create(&auth).Error; err != nil {
+		return model.Auth{}, err
+	}
+	return auth, nil
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"time"
 
 	"attendance-api/common/http/email"
 	"attendance-api/common/http/response"
@@ -27,7 +28,9 @@ type AuthUserHandler interface {
 	Register(c *gin.Context)
 	Refresh(c *gin.Context)
 	Login(c *gin.Context)
+	LoginPreflight(c *gin.Context)
 	Activation(c *gin.Context)
+	Logout(c *gin.Context)
 }
 
 type authUserHandler struct {
@@ -134,13 +137,17 @@ func (h authUserHandler) Register(c *gin.Context) {
 	response.New(c).Error(http.StatusBadRequest, errors.New("username: already taken"))
 }
 
+func (h authUserHandler) LoginPreflight(c *gin.Context) {
+	response.New(c).Write(200, "success")
+}
+
 // Login ... Login User
 // @Summary Login user with username and password
 // @Description Login User
 // @Tags Auth
 // @Accept json
 // @Param data body model.Login true "Login Data"
-// @Success 200 {object} model.Response
+// @Success 200 {object} model.AuthDataResponseData
 // @Failure 400,500 {object} model.Response
 // @Router /auth/login [post]
 func (h authUserHandler) Login(c *gin.Context) {
@@ -173,47 +180,51 @@ func (h authUserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	isSuper, isAdmin, isUser, err := h.authService.GetRole(data.Username)
-	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("err: %v", err))
-		return
-	}
-
 	userData, err := h.authService.GetByUsername(data.Username)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("err: %v", err))
 		return
 	}
 
-	email, err := h.authService.GetEmail(data.Username)
+	expiredTimeAT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("access_token_expired"))).Unix()
+	authAT, err := h.authService.CreateAuth(userData.ID, expiredTimeAT, "at")
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("email: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("auth: %v", err))
 		return
 	}
 
 	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(
 		model.UserTokenPayload{
-			UserID:       userData.ID,
-			Username:     data.Username,
-			IsSuperAdmin: isSuper,
-			IsAdmin:      isAdmin,
-			IsUser:       isUser,
-			Email:        email,
-			Expired:      h.infra.Config().GetInt("access_token_expired"),
+			UserID:   authAT.UserID,
+			AuthUUID: authAT.AuthUUID,
+			Expired:  authAT.Expired,
 		},
 	)
 
+	expiredTimeRT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("refresh_token_expired"))).Unix()
+	authRT, err := h.authService.CreateAuth(userData.ID, expiredTimeRT, "rt")
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("auth: %v", err))
+		return
+	}
+
 	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(
 		model.UserTokenPayload{
-			Username: data.Username,
-			Expired:  h.infra.Config().GetInt("refresh_token_expired"),
+			UserID:   authRT.UserID,
+			AuthUUID: authRT.AuthUUID,
+			Expired:  authRT.Expired,
 		},
 	)
-	dataOutput := map[string]interface{}{
-		"access_token":          accessToken,
-		"expired_access_token":  expired,
-		"refresh_token":         refreshToken,
-		"expired_refresh_token": refreshExpired,
+
+	tokenData := model.TokenData{
+		AccessToken:         accessToken,
+		ExpiredAccessToken:  expired,
+		RefreshToken:        refreshToken,
+		ExpiredRefreshToken: refreshExpired,
+	}
+	dataOutput := model.AuthData{
+		UserData:  userData,
+		TokenData: tokenData,
 	}
 	response.New(c).Data(200, "success login", dataOutput)
 }
@@ -224,7 +235,7 @@ func (h authUserHandler) Login(c *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Param data body model.Refresh true "Refresh Data"
-// @Success 200 {object} model.Response
+// @Success 200 {object} model.AuthDataResponseData
 // @Failure 400,500 {object} model.Response
 // @Router /auth/refresh [post]
 func (h authUserHandler) Refresh(c *gin.Context) {
@@ -240,36 +251,51 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 		response.New(c).Error(http.StatusUnauthorized, err)
 		return
 	}
-	username := claims["username"].(string)
-	user, err := h.authService.GetByUsername(username)
+	userID := claims["user_id"].(uint)
+
+	user, err := h.authService.GetByID(userID)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	expiredTimeAT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("access_token_expired"))).Unix()
+	authAT, err := h.authService.CreateAuth(user.ID, expiredTimeAT, "at")
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("auth: %v", err))
 		return
 	}
 
 	expired, accessToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateToken(
 		model.UserTokenPayload{
-			UserID:       user.ID,
-			Username:     user.Username,
-			IsSuperAdmin: user.IsSuperAdmin,
-			IsAdmin:      user.IsAdmin,
-			IsUser:       user.IsUser,
-			Email:        user.Email,
-			Expired:      h.infra.Config().GetInt("access_token_expired"),
+			UserID:   authAT.UserID,
+			AuthUUID: authAT.AuthUUID,
+			Expired:  authAT.Expired,
 		},
 	)
+
+	expiredTimeRT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("refresh_token_expired"))).Unix()
+	authRT, err := h.authService.CreateAuth(user.ID, expiredTimeRT, "rt")
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("auth: %v", err))
+		return
+	}
+
 	refreshExpired, refreshToken := token.NewToken(h.infra.Config().GetString("secret.key")).GenerateRefreshToken(
 		model.UserTokenPayload{
-			UserID:   user.ID,
-			Username: user.Username,
-			Expired:  h.infra.Config().GetInt("refresh_token_expired"),
+			UserID:   authRT.UserID,
+			AuthUUID: authRT.AuthUUID,
+			Expired:  authRT.Expired,
 		},
 	)
-	dataOutput := map[string]interface{}{
-		"access_token":          accessToken,
-		"expired_access_token":  expired,
-		"refresh_token":         refreshToken,
-		"expired_refresh_token": refreshExpired,
+	tokenData := model.TokenData{
+		AccessToken:         accessToken,
+		ExpiredAccessToken:  expired,
+		RefreshToken:        refreshToken,
+		ExpiredRefreshToken: refreshExpired,
+	}
+	dataOutput := model.AuthData{
+		UserData:  user,
+		TokenData: tokenData,
 	}
 	response.New(c).Data(200, "success refresh", dataOutput)
 }
@@ -304,4 +330,30 @@ func (h authUserHandler) Activation(c *gin.Context) {
 	}
 
 	response.New(c).Data(200, "success activate user", user)
+}
+
+// Logout ... Logout System
+// @Summary Logout from system
+// @Description Logout from system
+// @Tags Auth
+// @Accept json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /auth/logout [get]
+// @Security BearerTokenAuth
+func (h authUserHandler) Logout(c *gin.Context) {
+
+	token := token.NewToken(h.infra.Config().GetString("secret.key"))
+	auth, err := token.ExtractTokenAuth(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := h.authService.DeleteAuth(auth.UserID, auth.AuthUUID); err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	response.New(c).Write(200, "success log out")
 }

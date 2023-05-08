@@ -151,6 +151,28 @@ func (m AuthServiceMock) GetByEmail(email string) (data model.User, err error) {
 	return data, nil
 }
 
+func (m AuthServiceMock) GetByID(id uint) (data model.User, err error) {
+	if err := m.Called(id).Error(0); err != nil {
+		return model.User{}, err
+	}
+
+	data.ID = 1
+	data.Email = "dewok@gmail.com"
+	data.CreatedAt = time.Now()
+	data.UpdatedAt = time.Now()
+	data.FirstName = "Dewok"
+	data.LastName = "Satria"
+	data.Username = "dewoklucu"
+	data.Handphone = "098121342"
+	data.Password = "password123"
+	data.IsActive = true
+	data.IsSuperAdmin = true
+	data.IsAdmin = false
+	data.IsUser = false
+
+	return data, nil
+}
+
 func (m AuthServiceMock) Create(user model.User) error {
 	if err := m.Called(user).Error(0); err != nil {
 		return err
@@ -231,4 +253,42 @@ func (m AuthServiceMock) SetDeactiveUser(id int) (model.User, error) {
 	}
 
 	return userData, nil
+}
+
+func (m AuthServiceMock) FetchAuth(userID uint, authUUID string) (model.Auth, error) {
+	if err := m.Called(userID, authUUID).Error(0); err != nil {
+		return model.Auth{}, err
+	}
+
+	authData := model.Auth{
+		UserID:   1,
+		AuthUUID: "qwerty123456",
+		Expired:  1234567890,
+		TypeAuth: "at",
+	}
+
+	return authData, nil
+}
+
+func (m AuthServiceMock) DeleteAuth(userID uint, authUUID string) error {
+	if err := m.Called(userID, authUUID).Error(0); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m AuthServiceMock) CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error) {
+	if err := m.Called(userID, expired, typeAuth).Error(0); err != nil {
+		return model.Auth{}, err
+	}
+
+	authData := model.Auth{
+		UserID:   1,
+		AuthUUID: "qwerty123456",
+		Expired:  1234567890,
+		TypeAuth: "at",
+	}
+
+	return authData, nil
 }

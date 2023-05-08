@@ -32,6 +32,7 @@ func main() {
 		&model.Major{},
 		&model.StudyProgram{},
 		&model.User{},
+		&model.Auth{},
 		&model.Student{},
 		&model.Teacher{},
 		&model.PasswordResetToken{},

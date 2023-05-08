@@ -10,9 +10,12 @@ import (
 	"attendance-api/common/http/middleware"
 	"attendance-api/common/http/request"
 	"attendance-api/common/util/token"
+	"attendance-api/repo"
+	"attendance-api/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 var (
@@ -26,7 +29,7 @@ func TestCORS(t *testing.T) {
 		rec := httptest.NewRecorder()
 		h := request.DefaultHandler()
 
-		gin.Use(middleware.NewMiddleware(secretKey).CORS())
+		gin.Use(middleware.NewMiddleware(secretKey, service.NewAuthService(repo.NewAuthRepo(&gorm.DB{}))).CORS())
 		gin.GET("/", h.Index)
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -45,7 +48,7 @@ func TestAUTH(t *testing.T) {
 		rec := httptest.NewRecorder()
 		h := request.DefaultHandler()
 
-		gin.Use(middleware.NewMiddleware(secretKey).AUTH())
+		gin.Use(middleware.NewMiddleware(secretKey, service.NewAuthService(repo.NewAuthRepo(&gorm.DB{}))).AUTH())
 		gin.GET("/", h.Index)
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)

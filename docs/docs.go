@@ -1062,6 +1062,43 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
+                            "$ref": "#/definitions/model.AuthDataResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Logout from system",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout from system",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
                             "$ref": "#/definitions/model.Response"
                         }
                     },
@@ -1105,7 +1142,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Response"
+                            "$ref": "#/definitions/model.AuthDataResponseData"
                         }
                     },
                     "400": {
@@ -5037,6 +5074,17 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AuthDataResponseData": {
+            "type": "object",
+            "properties": {
+                "token_data": {
+                    "$ref": "#/definitions/model.TokenData"
+                },
+                "user_data": {
+                    "$ref": "#/definitions/model.UserForm"
+                }
+            }
+        },
         "model.CheckInData": {
             "type": "object",
             "properties": {
@@ -5911,6 +5959,23 @@ const docTemplate = `{
                     }
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.TokenData": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expired_access_token": {
+                    "type": "integer"
+                },
+                "expired_refresh_token": {
+                    "type": "integer"
+                },
+                "refresh_token": {
                     "type": "string"
                 }
             }
