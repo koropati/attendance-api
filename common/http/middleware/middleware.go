@@ -53,6 +53,11 @@ func (m *middleware) CORS() gin.HandlerFunc {
 		c.Writer.Header().Set("Accept-Control-Allow-Methods", "*")
 		c.Writer.Header().Set("Accept-Control-Allow-Headers", "*")
 		c.Writer.Header().Set("Content-Type", "*")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
 		c.Next()
 	}
 }

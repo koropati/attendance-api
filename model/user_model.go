@@ -17,19 +17,59 @@ type GormCustom struct {
 
 type User struct {
 	GormCustom
-	Username     string    `json:"username" gorm:"unique"`
-	Password     string    `json:"password"`
-	FirstName    string    `json:"first_name"`
-	LastName     string    `json:"last_name"`
-	Handphone    string    `json:"handphone" gorm:"unique"`
-	Email        string    `json:"email" gorm:"unique"`
-	Intro        string    `json:"intro" gorm:"type:varchar(255)"`
-	Profile      string    `json:"profile" gorm:"type:varchar(255)"`
-	IsActive     bool      `json:"is_active"`
-	IsSuperAdmin bool      `json:"is_super_admin"`
-	IsAdmin      bool      `json:"is_admin"`
-	IsUser       bool      `json:"is_user"`
-	LastLogin    time.Time `json:"last_login"`
+	Username      string    `json:"username" gorm:"unique"`
+	Password      string    `json:"password"`
+	FirstName     string    `json:"first_name"`
+	LastName      string    `json:"last_name"`
+	Handphone     string    `json:"handphone" gorm:"unique"`
+	Email         string    `json:"email" gorm:"unique"`
+	Intro         string    `json:"intro" gorm:"type:varchar(255)"`
+	Profile       string    `json:"profile" gorm:"type:varchar(255)"`
+	IsActive      bool      `json:"is_active"`
+	IsSuperAdmin  bool      `json:"is_super_admin"`
+	IsAdmin       bool      `json:"is_admin"`
+	IsUser        bool      `json:"is_user"`
+	LastLogin     time.Time `json:"last_login"`
+	Role          string    `json:"role" gorm:"-"`
+	UserAbilities []Ability `json:"user_abilities" gorm:"-"`
+	Avatar        string    `json:"avatar" gorm:"-"`
+}
+
+func (data User) GetRole() (role string) {
+	if data.IsSuperAdmin {
+		role = "super_admin"
+	} else if data.IsAdmin {
+		role = "admin"
+	} else if data.IsUser {
+		role = "user"
+	} else {
+		role = "-"
+	}
+	return
+}
+
+func (data User) GetAbility() (abilities []Ability) {
+	if data.IsSuperAdmin {
+		return GetSuperAdminAbility()
+	} else if data.IsAdmin {
+		return GetAdminAbility()
+	} else if data.IsUser {
+		return GetUserAbility()
+	} else {
+		return GetDefaultAbility()
+	}
+}
+
+func (data User) GetAvatar() (url string) {
+	if data.IsSuperAdmin {
+		return "https://cdn-icons-png.flaticon.com/512/6024/6024190.png"
+	} else if data.IsAdmin {
+		return "https://cdn-icons-png.flaticon.com/512/1089/1089129.png"
+	} else if data.IsUser {
+		return "https://cdn-icons-png.flaticon.com/512/9408/9408175.png"
+	} else {
+		return "https://cdn-icons-png.flaticon.com/512/2102/2102633.png"
+	}
 }
 
 type UserDropDown struct {

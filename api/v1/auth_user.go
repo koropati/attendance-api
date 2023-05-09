@@ -28,7 +28,6 @@ type AuthUserHandler interface {
 	Register(c *gin.Context)
 	Refresh(c *gin.Context)
 	Login(c *gin.Context)
-	LoginPreflight(c *gin.Context)
 	Activation(c *gin.Context)
 	Logout(c *gin.Context)
 }
@@ -137,10 +136,6 @@ func (h authUserHandler) Register(c *gin.Context) {
 	response.New(c).Error(http.StatusBadRequest, errors.New("username: already taken"))
 }
 
-func (h authUserHandler) LoginPreflight(c *gin.Context) {
-	response.New(c).Write(200, "success")
-}
-
 // Login ... Login User
 // @Summary Login user with username and password
 // @Description Login User
@@ -216,6 +211,10 @@ func (h authUserHandler) Login(c *gin.Context) {
 		},
 	)
 
+	userData.Role = userData.GetRole()
+	userData.UserAbilities = userData.GetAbility()
+	userData.Avatar = userData.GetAvatar()
+
 	tokenData := model.TokenData{
 		AccessToken:         accessToken,
 		ExpiredAccessToken:  expired,
@@ -287,6 +286,11 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 			Expired:  authRT.Expired,
 		},
 	)
+
+	user.Role = user.GetRole()
+	user.UserAbilities = user.GetAbility()
+	user.Avatar = user.GetAvatar()
+
 	tokenData := model.TokenData{
 		AccessToken:         accessToken,
 		ExpiredAccessToken:  expired,

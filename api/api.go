@@ -105,7 +105,6 @@ func (c server) v1() {
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/register", authHandler.Register)
-			auth.OPTIONS("/login", authHandler.LoginPreflight)
 			auth.POST("/login", authHandler.Login)
 			auth.GET("/logout", authHandler.Logout)
 			auth.POST("/refresh", authHandler.Refresh)
