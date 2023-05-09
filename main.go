@@ -5,6 +5,8 @@ import (
 	_ "attendance-api/docs"
 	"attendance-api/infra"
 	"attendance-api/model"
+	"log"
+	"os"
 )
 
 // @title           Attendance API
@@ -25,25 +27,56 @@ import (
 // @BasePath  /v1
 
 func main() {
-	i := infra.New("config/config.json")
-	i.SetMode()
-	i.Migrate(
-		&model.Faculty{},
-		&model.Major{},
-		&model.StudyProgram{},
-		&model.User{},
-		&model.Auth{},
-		&model.Student{},
-		&model.Teacher{},
-		&model.PasswordResetToken{},
-		&model.ActivationToken{},
-		&model.Subject{},
-		&model.Schedule{},
-		&model.DailySchedule{},
-		&model.UserSchedule{},
-		&model.Attendance{},
-		&model.AttendanceLog{},
-	)
+	handleCommand()
+}
 
-	api.NewServer(i).Run()
+func handleCommand() {
+	if len(os.Args) >= 2 {
+		switch command := os.Args[1]; command {
+		case "scheduler":
+			log.Printf("Hello gan \n")
+		case "server":
+			i := infra.New("config/config.json")
+			i.SetMode()
+			api.NewServer(i).Run()
+		case "migrate":
+			log.Printf("Running Auto Migration...\n")
+			i := infra.New("config/config.json")
+			i.SetMode()
+			i.Migrate(
+				&model.Faculty{},
+				&model.Major{},
+				&model.StudyProgram{},
+				&model.User{},
+				&model.Auth{},
+				&model.Student{},
+				&model.Teacher{},
+				&model.PasswordResetToken{},
+				&model.ActivationToken{},
+				&model.Subject{},
+				&model.Schedule{},
+				&model.DailySchedule{},
+				&model.UserSchedule{},
+				&model.Attendance{},
+				&model.AttendanceLog{},
+			)
+			log.Printf("Success Migrate!\n")
+			os.Exit(0)
+		case "help":
+			log.Printf("Available List Command:\n")
+			log.Printf("- go run main.go server    (to start server process)\n")
+			log.Printf("- go run main.go scheduler (to start scheduler process)\n")
+			log.Printf("- go run main.go migrate   (to start migration process)\n")
+		default:
+			log.Printf("It's Working!\n")
+		}
+	} else {
+		log.Printf("Program It's Working!, you must select opration to start a session.\n")
+		log.Printf("List Command:\n")
+		log.Printf("- go run main.go server    (to start server process)\n")
+		log.Printf("- go run main.go scheduler (to start scheduler process)\n")
+		log.Printf("- go run main.go migrate   (to start migration process)\n")
+		log.Printf("- go run main.go help      (to see list of command)\n")
+	}
+
 }
