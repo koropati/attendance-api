@@ -160,7 +160,7 @@ func (h authUserHandler) Login(c *gin.Context) {
 	}
 
 	if isExist := h.authService.CheckUsername(data.Username); !isExist {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna atau password salah"))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna atau kata sandi salah"))
 		return
 	}
 
@@ -176,7 +176,7 @@ func (h authUserHandler) Login(c *gin.Context) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(data.Password)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna atau password salah"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna atau kata sandi salah"))
 		return
 	}
 

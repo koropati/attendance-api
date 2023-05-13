@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"sync"
 	"time"
 
 	"gorm.io/gorm"
@@ -150,6 +151,17 @@ func (r userRepo) ListUser(user model.User, pagination model.Pagination) ([]mode
 	if err := query.Error; err != nil {
 		return nil, err
 	}
+	wg := sync.WaitGroup{}
+	for i, user := range users {
+		wg.Add(1)
+		go func(i int, user model.User) {
+			users[i].Role = user.GetRole()
+			users[i].Avatar = user.GetAvatar()
+			users[i].UserAbilities = user.GetAbility()
+			wg.Done()
+		}(i, user)
+	}
+	wg.Wait()
 
 	return users, nil
 }
@@ -197,6 +209,9 @@ func (r userRepo) CreateUser(user model.User) (model.User, error) {
 	if err := query.Create(&user).Error; err != nil {
 		return model.User{}, err
 	}
+	user.Role = user.GetRole()
+	user.Avatar = user.GetAvatar()
+	user.UserAbilities = user.GetAbility()
 
 	return user, nil
 }
@@ -207,30 +222,37 @@ func (r userRepo) RetrieveUser(id int) (user model.User, err error) {
 	if err := query.Where("id = ?", id).First(&user).Error; err != nil {
 		return model.User{}, err
 	}
+	user.Role = user.GetRole()
+	user.Avatar = user.GetAvatar()
+	user.UserAbilities = user.GetAbility()
 
 	return user, nil
 }
 
 func (r userRepo) RetrieveUserByUsername(username string) (user model.User, err error) {
-	var userData model.User
 	query := r.db.Table("users")
 	query = PreloadUser(query)
-	if err := query.Where("username = ?", username).First(&userData).Error; err != nil {
+	if err := query.Where("username = ?", username).First(&user).Error; err != nil {
 		return model.User{}, err
 	}
+	user.Role = user.GetRole()
+	user.Avatar = user.GetAvatar()
+	user.UserAbilities = user.GetAbility()
 
-	return userData, nil
+	return user, nil
 }
 
 func (r userRepo) RetrieveUserByEmail(email string) (user model.User, err error) {
-	var userData model.User
 	query := r.db.Table("users")
 	query = PreloadUser(query)
-	if err := query.Where("email = ?", email).First(&userData).Error; err != nil {
+	if err := query.Where("email = ?", email).First(&user).Error; err != nil {
 		return model.User{}, err
 	}
+	user.Role = user.GetRole()
+	user.Avatar = user.GetAvatar()
+	user.UserAbilities = user.GetAbility()
 
-	return userData, nil
+	return user, nil
 }
 
 func (r userRepo) UpdateUser(id int, user model.User) (model.User, error) {
@@ -239,6 +261,9 @@ func (r userRepo) UpdateUser(id int, user model.User) (model.User, error) {
 	if err := query.Where("id = ?", id).Updates(&user).Error; err != nil {
 		return model.User{}, err
 	}
+	user.Role = user.GetRole()
+	user.Avatar = user.GetAvatar()
+	user.UserAbilities = user.GetAbility()
 	return user, nil
 }
 
