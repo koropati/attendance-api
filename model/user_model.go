@@ -37,11 +37,11 @@ type User struct {
 
 func (data User) GetRole() (role string) {
 	if data.IsSuperAdmin {
-		role = "super_admin"
+		role = "Super Admin"
 	} else if data.IsAdmin {
-		role = "admin"
+		role = "Dosen"
 	} else if data.IsUser {
-		role = "user"
+		role = "Mahasiswa"
 	} else {
 		role = "-"
 	}
