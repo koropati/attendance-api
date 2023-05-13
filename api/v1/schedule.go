@@ -83,27 +83,27 @@ func (h scheduleHandler) Create(c *gin.Context) {
 	data.Code = strings.ToUpper(data.Code)
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.Code, validation.Required, validation.Length(1, 100)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kode: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.SubjectID, validation.Required); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("subject_id: %v", "subject choice must be filled in"))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id subjek: %v", "pilihan subjek harus terisi"))
 		return
 	}
 
 	if exist := h.scheduleService.CheckCodeIsExist(data.Code, 0); exist {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", "the code is already in use"))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kode: %v", "kode tersebut sudah ada yang menggunakan"))
 		return
 	}
 
 	if isExist := h.subjectService.CheckIsExist(int(data.SubjectID)); !isExist {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("subject_id: %v", "subject id is not exist"))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id subjek: %v", "id subjek tidak tersedia"))
 		return
 	}
 
@@ -140,7 +140,7 @@ func (h scheduleHandler) Create(c *gin.Context) {
 func (h scheduleHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -184,7 +184,7 @@ func (h scheduleHandler) Retrieve(c *gin.Context) {
 func (h scheduleHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -201,27 +201,27 @@ func (h scheduleHandler) Update(c *gin.Context) {
 	data.UpdatedAt = time.Now()
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.Code, validation.Required, validation.Length(1, 100)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kode: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.SubjectID, validation.Required, validation.Min(1), is.Int); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", "subject choice must be filled in"))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id subjek: %v", "pilihan subjek harus terisi"))
 		return
 	}
 
 	if exist := h.scheduleService.CheckCodeIsExist(data.Code, int(data.ID)); exist {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", "the code is already in use"))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kode: %v", "kode tersebut sudah ada yang menggunakan"))
 		return
 	}
 
 	if isExist := h.subjectService.CheckIsExist(int(data.SubjectID)); !isExist {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("subject_id: %v", "subject id is not exist"))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id subjek: %v", "id subjek tidak tersedia"))
 		return
 	}
 
@@ -271,7 +271,7 @@ func (h scheduleHandler) Update(c *gin.Context) {
 func (h scheduleHandler) UpdateQRcode(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -322,7 +322,7 @@ func (h scheduleHandler) UpdateQRcode(c *gin.Context) {
 func (h scheduleHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 

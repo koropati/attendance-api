@@ -72,31 +72,31 @@ func ValidateToken(m *middleware, c *gin.Context) (tokenData *jwt.Token, valid b
 			claims, ok := token.Claims.(jwt.MapClaims)
 			if ok {
 				if err != nil {
-					return nil, false, fmt.Errorf("invalid expiration token e: %v", err)
+					return nil, false, fmt.Errorf("token kedaluarsa tidak valid e: %v", err)
 				}
 				currentDateTime := time.Now()
 				expiredDateTime := time.Unix(int64(claims["expired"].(float64)), 0)
 
 				if currentDateTime.After(expiredDateTime) {
-					return nil, false, fmt.Errorf("token is expired")
+					return nil, false, fmt.Errorf("token sudah kedaluarsa")
 				} else {
 					// check in DB
 					_, err := m.authService.FetchAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
 					if err != nil {
-						return nil, false, errors.New("unauthorized access denied")
+						return nil, false, errors.New("akses tidak sah ditolak")
 					}
 					return token, true, nil
 				}
 
 			} else {
-				return nil, false, fmt.Errorf("invalid claim token")
+				return nil, false, fmt.Errorf("klaim token tidak valid")
 			}
 
 		} else {
-			return nil, false, fmt.Errorf("invalid authorization token %v", err)
+			return nil, false, fmt.Errorf("token otorisasi tidak valid : %v", err)
 		}
 	} else {
-		return nil, false, errors.New("invalid authorization token")
+		return nil, false, errors.New("token otorisasi tidak valid")
 	}
 }
 
@@ -132,10 +132,10 @@ func ValidateRole(m *middleware, token *jwt.Token, roles ...string) (valid bool,
 		if valid {
 			return true, nil
 		} else {
-			return false, errors.New("you can't access this")
+			return false, errors.New("kamu tidak bisa mengakses ini")
 		}
 	} else {
-		return false, errors.New("invalid token")
+		return false, errors.New("token tidak valid")
 	}
 }
 
@@ -231,7 +231,7 @@ func (m *middleware) GetUserID(c *gin.Context) (userId int, err error) {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			return int(claims["user_id"].(float64)), nil
 		} else {
-			return 0, fmt.Errorf("token is invalid")
+			return 0, fmt.Errorf("token tidak valid")
 		}
 	}
 }
@@ -339,7 +339,7 @@ func (m *middleware) HaveAccess(c *gin.Context, ownerID int) gin.HandlerFunc {
 func (m *middleware) LOGOUT(c *gin.Context) error {
 	token, validToken, err := ValidateToken(m, c)
 	if !validToken && err != nil {
-		return fmt.Errorf("invalid token")
+		return fmt.Errorf("token tidak valid")
 	} else {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			err := m.authService.DeleteAuth(uint(claims["user_id"].(float64)), claims["auth_uuid"].(string))
@@ -350,7 +350,7 @@ func (m *middleware) LOGOUT(c *gin.Context) error {
 			}
 
 		} else {
-			return fmt.Errorf("invalid token")
+			return fmt.Errorf("token tidak valid")
 		}
 	}
 }

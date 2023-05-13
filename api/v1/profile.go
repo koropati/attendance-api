@@ -161,7 +161,7 @@ func (h profileHandler) Update(c *gin.Context) {
 	data.GormCustom.UpdatedAt = time.Now()
 
 	if err := validation.Validate(data.Username, validation.Required, validation.Length(4, 30), is.Alphanumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("username: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna: %v", err))
 		return
 	}
 
@@ -171,26 +171,26 @@ func (h profileHandler) Update(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.FirstName, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("first_name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama depan: %v", err))
 		return
 	}
 
 	if !h.userService.CheckUpdateHandphone(currentUserID, data.Handphone) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("handphone: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("no telp sudah digunakan"))
 	}
 
 	if !h.userService.CheckUpdateEmail(currentUserID, data.Email) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("email: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("email sudah digunakan"))
 	}
 
 	if !h.userService.CheckUpdateUsername(currentUserID, data.Username) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("username: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna sudah digunakan"))
 	}
 
 	if data.Password != "" {
 		password, err := bcrypt.GenerateFromPassword([]byte(data.Password), 10)
 		if err != nil {
-			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("password: %v", err))
+			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("kata sandi: %v", err))
 			return
 		}
 		data.Password = string(password)
@@ -226,22 +226,22 @@ func (h profileHandler) UpdatePassword(c *gin.Context) {
 	var data model.UserUpdatePasswordForm
 	c.BindJSON(&data)
 	if err := validation.Validate(data.CurrentPassword, validation.Required); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("current_password: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kata sandi saat ini: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.NewPassword, validation.Required, validation.Length(6, 40)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("new_password: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kata sandi baru: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.ConfirmPassword, validation.Required, validation.Length(6, 40)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("confirm_password: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("konfirmasi kata sandi: %v", err))
 		return
 	}
 
 	if data.NewPassword != data.ConfirmPassword {
-		err := fmt.Errorf("confirm_password: password confirmation not match")
+		err := fmt.Errorf("konfirmasi kata sandi tidak sesuai")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -250,25 +250,25 @@ func (h profileHandler) UpdatePassword(c *gin.Context) {
 	hashPassword, err := h.userService.GetPassword(currentUserID)
 
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("user: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("pengguna: %v", err))
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(data.CurrentPassword)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("password: password not match"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("kata sandi tidak sesuai"))
 		return
 	}
 
 	password, err := bcrypt.GenerateFromPassword([]byte(data.NewPassword), 10)
 	if err != nil {
-		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("password: %v", err))
+		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("kata sandi: %v", err))
 		return
 	}
 
 	data.NewPassword = string(password)
 	err = h.userService.UpdatePassword(data)
 	if err != nil {
-		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("user: %v", err))
+		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("pengguna: %v", err))
 		return
 	}
 	response.New(c).Write(http.StatusOK, "success update password")

@@ -47,11 +47,11 @@ func (a *activation) Valid(inputString string) (userID int, valid bool) {
 	data := strings.Split(inputString, "_")
 	userID, err := strconv.Atoi(data[0])
 	if err != nil {
-		log.Printf("[Error] [Convert UserID to Int] E: %v", err)
+		log.Printf("kesalahan dalam mengkonversi user id menjadi bilangan bulat E: %v", err)
 	}
 	dateTime, err := time.Parse("2006-01-02T15:04:05", data[1])
 	if err != nil {
-		log.Printf("[Error] [Parse DateTime String to Time] E: %v", err)
+		log.Printf("kesalahan dalam mengurai waktu E: %v", err)
 	}
 
 	valid = time.Now().Before(dateTime)

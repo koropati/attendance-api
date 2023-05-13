@@ -69,7 +69,7 @@ func (h passwordResetTokenHandler) Create(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.UserID, validation.Required, is.UTFNumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("user_id: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id pengguna: %v", err))
 		return
 	}
 
@@ -97,7 +97,7 @@ func (h passwordResetTokenHandler) Create(c *gin.Context) {
 func (h passwordResetTokenHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -125,7 +125,7 @@ func (h passwordResetTokenHandler) Retrieve(c *gin.Context) {
 func (h passwordResetTokenHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -147,7 +147,7 @@ func (h passwordResetTokenHandler) Update(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.UserID, validation.Required, is.UTFNumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("user_id: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id pengguna: %v", err))
 		return
 	}
 
@@ -174,7 +174,7 @@ func (h passwordResetTokenHandler) Update(c *gin.Context) {
 func (h passwordResetTokenHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 

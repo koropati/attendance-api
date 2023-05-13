@@ -61,7 +61,7 @@ func (t *token) GenerateToken(data model.UserTokenPayload) (expiredDate int64, t
 func (t *token) ValidateToken(encodedToken string) (*jwt.Token, error) {
 	return jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
 		if _, valid := token.Method.(*jwt.SigningMethodHMAC); !valid {
-			return nil, fmt.Errorf("invalid token %v", token.Header["alg"])
+			return nil, fmt.Errorf("token tidak valid : %v", token.Header["alg"])
 		}
 		return []byte(t.secretKey), nil
 	})
@@ -87,7 +87,7 @@ func (t *token) GenerateRefreshToken(data model.UserTokenPayload) (expiredDate i
 func (t *token) ValidateRefreshToken(encodedToken string) (*jwt.Token, error) {
 	return jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
 		if _, valid := token.Method.(*jwt.SigningMethodHMAC); !valid {
-			return nil, fmt.Errorf("invalid token %v", token.Header["alg"])
+			return nil, fmt.Errorf("token tidak valid : %v", token.Header["alg"])
 		}
 		return []byte(t.secretKey), nil
 	})
@@ -103,6 +103,9 @@ func (t *token) ExtractToken(c *gin.Context) string {
 func (t *token) ExtractTokenAuth(c *gin.Context) (model.Auth, error) {
 	authHeader := c.GetHeader("Authorization")
 	authBearer := strings.Split(authHeader, " ")
+	if authBearer[1] == "" || authBearer[1] == " " {
+		return model.Auth{}, fmt.Errorf("token otorisasi tidak valid")
+	}
 	if len(authBearer) == 2 {
 		if token, err := t.ValidateToken(authBearer[1]); token.Valid && err == nil {
 			// Validate expired token
@@ -115,12 +118,12 @@ func (t *token) ExtractTokenAuth(c *gin.Context) (model.Auth, error) {
 				}
 				return authData, nil
 			} else {
-				return model.Auth{}, fmt.Errorf("invalid claim token")
+				return model.Auth{}, fmt.Errorf("token klaim tidak valid")
 			}
 		} else {
-			return model.Auth{}, fmt.Errorf("invalid authorization token %v", err)
+			return model.Auth{}, fmt.Errorf("token otorisasi tidak valid E: %v", err)
 		}
 	} else {
-		return model.Auth{}, fmt.Errorf("invalid authorization token")
+		return model.Auth{}, fmt.Errorf("token otorisasi tidak valid")
 	}
 }

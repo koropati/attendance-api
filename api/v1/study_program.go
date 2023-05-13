@@ -66,24 +66,24 @@ func (h studyProgramHandler) Create(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.MajorID, validation.Required); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("major_id: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id jurusan: %v", err))
 		return
 	}
 
 	if h.studyProgramService.CheckIsExistByName(data.Name, int(data.MajorID), 0) {
-		err := errors.New("study program name is already exists")
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		err := errors.New("nama program studi sudah ada")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if h.studyProgramService.CheckIsExistByCode(data.Code, 0) {
-		err := errors.New("study program code is already exists")
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
+		err := errors.New("kode program studi sudah ada")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kode: %v", err))
 		return
 	}
 
@@ -108,7 +108,7 @@ func (h studyProgramHandler) Create(c *gin.Context) {
 func (h studyProgramHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -150,7 +150,7 @@ func (h studyProgramHandler) Retrieve(c *gin.Context) {
 func (h studyProgramHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -167,24 +167,24 @@ func (h studyProgramHandler) Update(c *gin.Context) {
 	data.UpdatedAt = time.Now()
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.MajorID, validation.Required); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("major_id: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id jurusan: %v", err))
 		return
 	}
 
 	if h.studyProgramService.CheckIsExistByName(data.Name, int(data.MajorID), id) {
-		err := errors.New("study program name is already exists")
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		err := errors.New("nama program studi sudah ada")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if h.studyProgramService.CheckIsExistByCode(data.Code, id) {
-		err := errors.New("study program code is already exists")
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
+		err := errors.New("kode program studi sudah ada")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kode: %v", err))
 		return
 	}
 
@@ -217,7 +217,7 @@ func (h studyProgramHandler) Update(c *gin.Context) {
 func (h studyProgramHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 

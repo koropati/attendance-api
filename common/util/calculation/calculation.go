@@ -10,12 +10,12 @@ func CalculateLateDuration(scheduleIn string, clockIn int64, timeZoneIn int, lat
 	timeStringIn := converter.MillisToTimeString(clockIn, timeZoneIn)
 	timeIn, err := time.Parse("2006-01-02 15:04", "2006-01-02"+" "+timeStringIn)
 	if err != nil {
-		log.Printf("Err time parse (in): %v\n", err)
+		log.Printf("kesalahan dalam mengurai waktu (masuk) : %v\n", err)
 		return "00:00:00"
 	}
 	timeSchedule, err := time.Parse("2006-01-02 15:04", "2006-01-02"+" "+scheduleIn)
 	if err != nil {
-		log.Printf("Err time parse (schedule) : %v\n", err)
+		log.Printf("kesalahan dalam mengurai waktu (jadwal) : %v\n", err)
 		return "00:00:00"
 	}
 	if lateTolerance > 0 {
@@ -34,12 +34,12 @@ func CalculateEarlyDuration(scheduleOut string, clockOut int64, timeZoneOut int)
 	timeStringOut := converter.MillisToTimeString(clockOut, timeZoneOut)
 	timeOut, err := time.Parse("2006-01-02 15:04", "2006-01-02"+" "+timeStringOut)
 	if err != nil {
-		log.Printf("Err time parse (in): %v\n", err)
+		log.Printf("kesalahan dalam mengurai waktu (masuk): %v\n", err)
 		return "00:00:00"
 	}
 	timeSchedule, err := time.Parse("2006-01-02 15:04", "2006-01-02"+" "+scheduleOut)
 	if err != nil {
-		log.Printf("Err time parse (schedule) : %v\n", err)
+		log.Printf("kesalahan dalam mengurai waktu (jadwal) : %v\n", err)
 		return "00:00:00"
 	}
 	diff := timeSchedule.Sub(timeOut)

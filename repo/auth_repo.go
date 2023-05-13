@@ -54,17 +54,11 @@ func (r authRepo) CheckID(id int) bool {
 	return true
 }
 
-func (r authRepo) CheckUsername(username string) bool {
-	var count int64
-	if err := r.db.Table("users").Where("username = ?", username).Count(&count).Error; err != nil {
+func (r authRepo) CheckUsername(username string) (isExist bool) {
+	if err := r.db.Table("users").Select("count(*) > 0").Where("username = ?", username).Find(&isExist).Error; err != nil {
 		return false
 	}
-
-	if count > 0 {
-		return false
-	}
-
-	return true
+	return
 }
 
 func (r authRepo) CheckEmail(email string) bool {

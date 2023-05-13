@@ -130,7 +130,7 @@ func (h attendanceHandler) Create(c *gin.Context) {
 func (h attendanceHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -171,7 +171,7 @@ func (h attendanceHandler) Retrieve(c *gin.Context) {
 func (h attendanceHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -235,7 +235,7 @@ func (h attendanceHandler) Update(c *gin.Context) {
 func (h attendanceHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -369,7 +369,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 	}
 
 	if !h.middleware.IsUser(c) {
-		err = errors.New("sorry only role user can clock-in")
+		err = errors.New("maaf hanya role user yang bisa melakukan clock-in")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -383,7 +383,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 
 	// Check In Radius
 	if inRadius := schedule.InRange(dataClockIn.Latitude, dataClockIn.Longitude); !inRadius {
-		err = errors.New("sorry you are out of radius")
+		err = errors.New("maaf anda berada di luar radius")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -396,7 +396,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 	}
 
 	if !isExistDailySchedule {
-		err = errors.New("attendance is not possible on this day")
+		err = errors.New("absensi tidak bisa dilakukan pada hari ini")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -409,7 +409,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 
 	// Check Employee dalam schedule kah?
 	if isValid := h.userScheduleService.CheckUserInSchedule(int(schedule.ID), currentUserID); !isValid {
-		err = errors.New("the user is not on this schedule")
+		err = errors.New("user tersebut tidak berada dalam jadwal ini")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -535,7 +535,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 	}
 
 	if !h.middleware.IsUser(c) {
-		err = errors.New("sorry only role user can clock-out")
+		err = errors.New("maaf hanya role user yang bisa melakukan clock out")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -549,7 +549,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 
 	// Check In Radius
 	if inRadius := schedule.InRange(dataClockOut.Latitude, dataClockOut.Longitude); !inRadius {
-		err = errors.New("sorry you are out of radius")
+		err = errors.New("maaf anda berada di luar radius")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -562,7 +562,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 	}
 
 	if !isExistDailySchedule {
-		err = errors.New("attendance is not possible on this day")
+		err = errors.New("absensi tidak bisa dilakukan pada hari ini")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -575,7 +575,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 
 	// Check Employee dalam schedule kah?
 	if isValid := h.userScheduleService.CheckUserInSchedule(int(schedule.ID), currentUserID); !isValid {
-		err = errors.New("the user is not on this schedule")
+		err = errors.New("user tersebut tidak berada dalam jadwal ini")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}

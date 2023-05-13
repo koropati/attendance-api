@@ -25,12 +25,12 @@ func NewSendGrid(c *sendgrid.Client, config *viper.Viper) SendGrid {
 }
 
 func (c *sendGrid) SendActivation(toName string, toEmail string, token string) error {
-	subject := "Activate Your Account"
+	subject := "Aktivasi Akun"
 	if toName == "" {
 		toName = toEmail
 	}
 
-	plainText := "Hello " + toName + ", please activate your account! Token : " + token
+	plainText := "Hello " + toName + ", silahkan aktivasi akun mu! Token : " + token
 	htmlText := ""
 
 	from := mail.NewEmail(c.config.Sub("general").GetString("company_name"), c.config.Sub("general").GetString("company_email"))

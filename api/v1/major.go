@@ -66,19 +66,19 @@ func (h majorHandler) Create(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if h.majorService.CheckIsExistByName(data.Name, 0) {
-		err := errors.New("major name is already exists")
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		err := errors.New("nama jurusan sudah ada")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if h.majorService.CheckIsExistByCode(data.Code, 0) {
-		err := errors.New("major code is already exists")
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
+		err := errors.New("kode jurusan sudah ada")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kode: %v", err))
 		return
 	}
 
@@ -104,7 +104,7 @@ func (h majorHandler) Create(c *gin.Context) {
 func (h majorHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -146,7 +146,7 @@ func (h majorHandler) Retrieve(c *gin.Context) {
 func (h majorHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -163,19 +163,19 @@ func (h majorHandler) Update(c *gin.Context) {
 	data.UpdatedAt = time.Now()
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if h.majorService.CheckIsExistByName(data.Name, id) {
-		err := errors.New("major name is already exists")
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		err := errors.New("nama jurusan sudah ada")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
 	if h.majorService.CheckIsExistByCode(data.Code, id) {
-		err := errors.New("major code is already exists")
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("code: %v", err))
+		err := errors.New("kode jurusan sudah ada")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kode: %v", err))
 		return
 	}
 
@@ -207,7 +207,7 @@ func (h majorHandler) Update(c *gin.Context) {
 func (h majorHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 

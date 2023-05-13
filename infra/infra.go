@@ -70,7 +70,7 @@ func (i *infra) SetMode() string {
 		} else if env == production {
 			mode = gin.ReleaseMode
 		} else {
-			logrus.Fatalf("[infa][SetMode] %v", errors.New("environment not setup"))
+			logrus.Fatalf("[infa][SetMode] %v", errors.New("environment tidak diatur"))
 		}
 
 		gin.SetMode(mode)

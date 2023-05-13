@@ -60,12 +60,12 @@ func (h authUserHandler) Register(c *gin.Context) {
 	c.BindJSON(&data)
 
 	if err := validation.Validate(data.Username, validation.Required, validation.Length(4, 30), is.Alphanumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("username: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.Password, validation.Required, validation.Length(6, 40)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("password: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kata sandi: %v", err))
 		return
 	}
 
@@ -75,22 +75,22 @@ func (h authUserHandler) Register(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.FirstName, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("first_name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama depan: %v", err))
 		return
 	}
 
 	if !h.authService.CheckHandphone(data.Handphone) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("handphone: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("no telp sudah digunakan"))
 	}
 
 	if !h.authService.CheckEmail(data.Email) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("email: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("email sudah digunakan"))
 	}
 
 	if h.authService.CheckUsername(data.Username) {
 		password, err := bcrypt.GenerateFromPassword([]byte(data.Password), 10)
 		if err != nil {
-			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("password: %v", err))
+			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("kata sandi: %v", err))
 			return
 		}
 
@@ -133,7 +133,7 @@ func (h authUserHandler) Register(c *gin.Context) {
 		return
 	}
 
-	response.New(c).Error(http.StatusBadRequest, errors.New("username: already taken"))
+	response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna sudah digunakan"))
 }
 
 // Login ... Login User
@@ -150,41 +150,46 @@ func (h authUserHandler) Login(c *gin.Context) {
 	c.BindJSON(&data)
 
 	if err := validation.Validate(data.Username, validation.Required); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("username: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.Password, validation.Required); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("password: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kata sandi: %v", err))
+		return
+	}
+
+	if isExist := h.authService.CheckUsername(data.Username); !isExist {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna atau password salah"))
 		return
 	}
 
 	if isActive := h.authService.CheckIsActive(data.Username); !isActive {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("account is not activated"))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("akun tidak aktif"))
 		return
 	}
 
 	hashedPassword, err := h.authService.Login(data.Username)
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("username: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna: %v", err))
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(data.Password)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("username or password not match"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna atau password salah"))
 		return
 	}
 
 	userData, err := h.authService.GetByUsername(data.Username)
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("err: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("maaf ada error : %v", err))
 		return
 	}
 
 	expiredTimeAT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("access_token_expired"))).Unix()
 	authAT, err := h.authService.CreateAuth(userData.ID, expiredTimeAT, "at")
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("auth: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("error autentikasi: %v", err))
 		return
 	}
 
@@ -199,7 +204,7 @@ func (h authUserHandler) Login(c *gin.Context) {
 	expiredTimeRT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("refresh_token_expired"))).Unix()
 	authRT, err := h.authService.CreateAuth(userData.ID, expiredTimeRT, "rt")
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("auth: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("error autentikasi: %v", err))
 		return
 	}
 
@@ -260,7 +265,7 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 	expiredTimeAT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("access_token_expired"))).Unix()
 	authAT, err := h.authService.CreateAuth(user.ID, expiredTimeAT, "at")
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("auth: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("error autentikasi: %v", err))
 		return
 	}
 
@@ -275,7 +280,7 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 	expiredTimeRT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("refresh_token_expired"))).Unix()
 	authRT, err := h.authService.CreateAuth(user.ID, expiredTimeRT, "rt")
 	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("auth: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("error autentikasi: %v", err))
 		return
 	}
 
@@ -316,24 +321,24 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 func (h authUserHandler) Activation(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
-		err := fmt.Errorf("invalid activation token")
+		err := fmt.Errorf("aktivasi token tidak valid")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
 	isValid, userID := h.activationTokenService.IsValid(token)
 	if userID == 0 && !isValid {
-		err := fmt.Errorf("activation token is expired when validating token")
+		err := fmt.Errorf("ketika memvalidasi token aktivasi token sudah kedaluarsa")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
 	user, err := h.authService.SetActiveUser(int(userID))
 	if err != nil {
-		err := fmt.Errorf("activation token is expired when activate user")
+		err := fmt.Errorf("ketika sedang mengaktifkan pengguna aktivasi token sudah kedaluarsa")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
 
-	response.New(c).Data(200, "success activate user", user)
+	response.New(c).Data(200, "berhasil mengaktifkan pengguna", user)
 }
 
 // Logout ... Logout System

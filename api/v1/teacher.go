@@ -79,13 +79,13 @@ func (h teacherHandler) Create(c *gin.Context) {
 	}
 
 	if h.teacherService.CheckIsExistByNIP(data.NIP, 0) {
-		err := errors.New("teacher nip is already exists")
+		err := errors.New("nip dosen sudah ada yang menggunakan")
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nip: %v", err))
 		return
 	}
 
 	if err := validation.Validate(data.User.Username, validation.Required, validation.Length(4, 30), is.Alphanumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("username: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna: %v", err))
 		return
 	}
 
@@ -95,23 +95,23 @@ func (h teacherHandler) Create(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.User.FirstName, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("first_name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama depan: %v", err))
 		return
 	}
 
 	if !h.userService.CheckHandphone(data.User.Handphone) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("handphone: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("no telp sudah digunakan"))
 	}
 
 	if !h.userService.CheckEmail(data.User.Email) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("email: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("email sudah digunakan"))
 	}
 
 	if h.userService.CheckUsername(data.User.Username) {
 
 		password, err := bcrypt.GenerateFromPassword([]byte(data.GeneratePassword()), 10)
 		if err != nil {
-			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("password: %v", err))
+			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("kata sandi: %v", err))
 			return
 		}
 
@@ -172,7 +172,7 @@ func (h teacherHandler) Create(c *gin.Context) {
 func (h teacherHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -214,7 +214,7 @@ func (h teacherHandler) Retrieve(c *gin.Context) {
 func (h teacherHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -236,7 +236,7 @@ func (h teacherHandler) Update(c *gin.Context) {
 	}
 
 	if h.teacherService.CheckIsExistByNIP(data.NIP, id) {
-		err := errors.New("teacher nip is already exists")
+		err := errors.New("nip dosen sudah ada yang menggunakan")
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nip: %v", err))
 		return
 	}
@@ -245,7 +245,7 @@ func (h teacherHandler) Update(c *gin.Context) {
 	data.GormCustom.UpdatedAt = time.Now()
 
 	if err := validation.Validate(data.User.Username, validation.Required, validation.Length(4, 30)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("username: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama pengguna: %v", err))
 		return
 	}
 
@@ -255,26 +255,26 @@ func (h teacherHandler) Update(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.User.FirstName, validation.Required, validation.Match(regexp.MustCompile(regex.NAME))); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("first_name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama depan: %v", err))
 		return
 	}
 
 	if !h.userService.CheckUpdateHandphone(id, data.User.Handphone) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("handphone: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("no telp sudah digunakan"))
 	}
 
 	if !h.userService.CheckUpdateEmail(id, data.User.Email) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("email: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("email sudah digunakan"))
 	}
 
 	if !h.userService.CheckUpdateUsername(id, data.User.Username) {
-		response.New(c).Error(http.StatusBadRequest, errors.New("username: already taken"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna sudah digunakan"))
 	}
 
 	if data.User.Password != "" {
 		password, err := bcrypt.GenerateFromPassword([]byte(data.User.Password), 10)
 		if err != nil {
-			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("password: %v", err))
+			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("kata sandi: %v", err))
 			return
 		}
 		data.User.Password = string(password)
@@ -308,7 +308,7 @@ func (h teacherHandler) Update(c *gin.Context) {
 func (h teacherHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 

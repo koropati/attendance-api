@@ -23,9 +23,9 @@ func DefaultHandler() Handler {
 }
 
 func (h *handler) NoRoute(c *gin.Context) {
-	response.New(c).Error(http.StatusNotFound, errors.New("route not found"))
+	response.New(c).Error(http.StatusNotFound, errors.New("rute tidak di temukan"))
 }
 
 func (h *handler) Index(c *gin.Context) {
-	response.New(c).Write(http.StatusOK, "application running")
+	response.New(c).Write(http.StatusOK, "aplikasi berjalan")
 }

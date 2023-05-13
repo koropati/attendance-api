@@ -68,7 +68,7 @@ func (h dailyScheduleHandler) Create(c *gin.Context) {
 	}
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
@@ -94,7 +94,7 @@ func (h dailyScheduleHandler) Create(c *gin.Context) {
 func (h dailyScheduleHandler) Retrieve(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -136,7 +136,7 @@ func (h dailyScheduleHandler) Retrieve(c *gin.Context) {
 func (h dailyScheduleHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
@@ -153,7 +153,7 @@ func (h dailyScheduleHandler) Update(c *gin.Context) {
 	data.UpdatedAt = time.Now()
 
 	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
-		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("name: %v", err))
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
 
@@ -185,7 +185,7 @@ func (h dailyScheduleHandler) Update(c *gin.Context) {
 func (h dailyScheduleHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id must be filled and valid number"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
 		return
 	}
 
