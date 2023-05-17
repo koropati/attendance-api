@@ -144,7 +144,7 @@ func (h userHandler) Create(c *gin.Context) {
 			}
 		}(user)
 
-		response.New(c).Write(http.StatusCreated, "success: user registered")
+		response.New(c).Write(http.StatusCreated, "berhasil registrasi pengguna")
 		return
 	}
 }
@@ -172,7 +172,7 @@ func (h userHandler) Retrieve(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+	response.New(c).Data(http.StatusCreated, "sukses mengambil data", result)
 }
 
 // Update ... Update User
@@ -255,7 +255,7 @@ func (h userHandler) Update(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusOK, "success update data", result)
+	response.New(c).Data(http.StatusOK, "sukses memperbaharui data", result)
 }
 
 // Delete ... Delete User
@@ -281,7 +281,7 @@ func (h userHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	response.New(c).Write(http.StatusOK, "success delete data")
+	response.New(c).Write(http.StatusOK, "sukses menghapus data")
 }
 
 // List ... List User
@@ -309,7 +309,7 @@ func (h userHandler) List(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).List(http.StatusOK, "success get list user", userList, metaList)
+	response.New(c).List(http.StatusOK, "sukses mendapatkan list pengguna", userList, metaList)
 }
 
 // Dropdown ... Dropdown User
@@ -331,7 +331,7 @@ func (h userHandler) DropDown(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
+	response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down", dataList)
 }
 
 // Set Active ... Set Active User
@@ -356,7 +356,7 @@ func (h userHandler) SetActive(c *gin.Context) {
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
-	response.New(c).Data(http.StatusOK, "success set active data", result)
+	response.New(c).Data(http.StatusOK, "sukses mengatur data menjadi aktif", result)
 }
 
 // Set Deactive ... Set Deactive User
@@ -381,7 +381,7 @@ func (h userHandler) SetDeactive(c *gin.Context) {
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
-	response.New(c).Data(http.StatusOK, "success set deactive data", result)
+	response.New(c).Data(http.StatusOK, "sukses mengatur data menjadi tidak aktif", result)
 }
 
 func (h userHandler) UpdatePassword(c *gin.Context) {
@@ -439,5 +439,5 @@ func (h userHandler) UpdatePassword(c *gin.Context) {
 		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("pengguna: %v", err))
 		return
 	}
-	response.New(c).Write(http.StatusOK, "success update password")
+	response.New(c).Write(http.StatusOK, "sukses memperbaharui kata sandi")
 }

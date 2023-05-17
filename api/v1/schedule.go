@@ -123,7 +123,7 @@ func (h scheduleHandler) Create(c *gin.Context) {
 
 	result.UserInRule = h.userScheduleService.CountByScheduleID(int(result.ID))
 
-	response.New(c).Data(http.StatusCreated, "success create data", result)
+	response.New(c).Data(http.StatusCreated, "sukses membuat data", result)
 }
 
 // Retrieve ... Retrieve Schedule
@@ -166,7 +166,7 @@ func (h scheduleHandler) Retrieve(c *gin.Context) {
 			return
 		}
 	}
-	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+	response.New(c).Data(http.StatusCreated, "sukses mengambil data", result)
 }
 
 // Update ... Update Schedule
@@ -254,7 +254,7 @@ func (h scheduleHandler) Update(c *gin.Context) {
 		}
 	}
 
-	response.New(c).Data(http.StatusOK, "success update data", result)
+	response.New(c).Data(http.StatusOK, "sukses memperbaharui data", result)
 }
 
 // Update QR Code ... Update QR Code
@@ -305,7 +305,7 @@ func (h scheduleHandler) UpdateQRcode(c *gin.Context) {
 			return
 		}
 	}
-	response.New(c).Data(http.StatusCreated, "success update qr code data", result)
+	response.New(c).Data(http.StatusCreated, "berhasil memperbaharui kode qr", result)
 }
 
 // Delete ... Delete Schedule
@@ -344,7 +344,7 @@ func (h scheduleHandler) Delete(c *gin.Context) {
 		}
 	}
 
-	response.New(c).Write(http.StatusOK, "success delete data")
+	response.New(c).Write(http.StatusOK, "sukses menghapus data")
 }
 
 // List ... List Schedule
@@ -386,7 +386,7 @@ func (h scheduleHandler) List(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).List(http.StatusOK, "success get list data", dataLists, metaLists)
+	response.New(c).List(http.StatusOK, "sukses mengambil list data", dataLists, metaLists)
 }
 
 // Dropdown ... Dropdown Schedule
@@ -418,5 +418,5 @@ func (h scheduleHandler) DropDown(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
+	response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down", dataList)
 }

@@ -113,7 +113,7 @@ func (h attendanceHandler) Create(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusCreated, "success create data", result)
+	response.New(c).Data(http.StatusCreated, "sukses membuat data", result)
 }
 
 // Retrieve ... Retrieve Attendance
@@ -154,7 +154,7 @@ func (h attendanceHandler) Retrieve(c *gin.Context) {
 			return
 		}
 	}
-	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+	response.New(c).Data(http.StatusCreated, "sukses mengambil data", result)
 }
 
 // Update ... Update Attendance
@@ -218,7 +218,7 @@ func (h attendanceHandler) Update(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusOK, "success update data", result)
+	response.New(c).Data(http.StatusOK, "sukses memperbaharui data", result)
 }
 
 // Delete ... Delete Attendance
@@ -257,7 +257,7 @@ func (h attendanceHandler) Delete(c *gin.Context) {
 		}
 	}
 
-	response.New(c).Write(http.StatusOK, "success delete data")
+	response.New(c).Write(http.StatusOK, "sukses menghapus data")
 }
 
 // List ... List All Attendance
@@ -295,7 +295,7 @@ func (h attendanceHandler) List(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
+	response.New(c).List(http.StatusOK, "sukses mengambil list data", dataList, metaList)
 }
 
 // Dropdown ... Dropdown All Attendance
@@ -327,7 +327,7 @@ func (h attendanceHandler) DropDown(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
+	response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down", dataList)
 }
 
 // Clock In ... Clock In Attendance
@@ -451,7 +451,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 			Location:     dataClockIn.Location,
 		})
 
-		response.New(c).Data(http.StatusCreated, "success clock in", attendance)
+		response.New(c).Data(http.StatusCreated, "berhasil absen masuk", attendance)
 
 	} else {
 
@@ -491,7 +491,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 			Location:     attendance.LocationIn,
 		})
 
-		response.New(c).Data(http.StatusCreated, "success clock in", attendance)
+		response.New(c).Data(http.StatusCreated, "berhasil absen masuk", attendance)
 	}
 
 }
@@ -619,7 +619,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 			Location:     dataClockOut.Location,
 		})
 
-		response.New(c).Data(http.StatusCreated, "success clock out", attendance)
+		response.New(c).Data(http.StatusCreated, "berhasil absen keluar", attendance)
 
 	} else {
 
@@ -659,7 +659,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 			Location:     attendance.LocationOut,
 		})
 
-		response.New(c).Data(http.StatusCreated, "success clock out", attendance)
+		response.New(c).Data(http.StatusCreated, "berhasil absen keluar", attendance)
 	}
 
 }
@@ -696,5 +696,5 @@ func (h attendanceHandler) Summary(c *gin.Context) {
 		LeaveAttendance: leaveAttendance,
 	}
 
-	response.New(c).Data(http.StatusOK, "success get summary data", data)
+	response.New(c).Data(http.StatusOK, "sukses mendapatkan rangkuman data", data)
 }

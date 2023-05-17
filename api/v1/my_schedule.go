@@ -56,7 +56,7 @@ func (h myScheduleHandler) List(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).Data(http.StatusOK, "success list data my schedule", results)
+	response.New(c).Data(http.StatusOK, "sukses mengambil data jadwal", results)
 }
 
 // Today ... List Today Schedule
@@ -111,5 +111,5 @@ func (h myScheduleHandler) Today(c *gin.Context) {
 
 	}
 
-	response.New(c).Data(http.StatusOK, "success list data my schedule", results)
+	response.New(c).Data(http.StatusOK, "sukses mengambil data jadwal", results)
 }

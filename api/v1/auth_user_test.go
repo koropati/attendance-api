@@ -49,7 +49,7 @@ func TestRegister(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/register", strings.NewReader(string(body)))
 		gin.ServeHTTP(rec, req)
 
-		exp := `{"code":201,"message":"success: user registered"}`
+		exp := `{"code":201,"message":"berhasil menambah data"}`
 
 		t.Run("test status code and response body", func(t *testing.T) {
 			assert.Equal(t, http.StatusCreated, rec.Code)

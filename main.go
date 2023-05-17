@@ -60,7 +60,7 @@ func handleCommand() {
 				&model.Attendance{},
 				&model.AttendanceLog{},
 			)
-			log.Printf("Success Migrate!\n")
+			log.Printf("Berhasil Melakukan Migrasi Database!\n")
 			os.Exit(0)
 		case "help":
 			log.Printf("Available List Command:\n")

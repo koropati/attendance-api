@@ -87,7 +87,7 @@ func (h facultyHandler) Create(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusCreated, "success create data", result)
+	response.New(c).Data(http.StatusCreated, "sukses membuat data", result)
 }
 
 // Retrieve ... Retrieve Faculty
@@ -128,7 +128,7 @@ func (h facultyHandler) Retrieve(c *gin.Context) {
 			return
 		}
 	}
-	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+	response.New(c).Data(http.StatusCreated, "sukses mengambil data", result)
 }
 
 // Update ... Update Faculty
@@ -190,7 +190,7 @@ func (h facultyHandler) Update(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusOK, "success update data", result)
+	response.New(c).Data(http.StatusOK, "sukses memperbaharui data", result)
 }
 
 // Delete ... Delete Faculty
@@ -229,7 +229,7 @@ func (h facultyHandler) Delete(c *gin.Context) {
 		}
 	}
 
-	response.New(c).Write(http.StatusOK, "success delete data")
+	response.New(c).Write(http.StatusOK, "sukses menghapus data")
 }
 
 // List ... List all Faculty
@@ -267,7 +267,7 @@ func (h facultyHandler) List(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).List(http.StatusOK, "success get list data", dataList, metaList)
+	response.New(c).List(http.StatusOK, "sukses mengambil list data", dataList, metaList)
 }
 
 // Dropdown ... Dropdown all Faculty
@@ -299,5 +299,5 @@ func (h facultyHandler) DropDown(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	response.New(c).Data(http.StatusOK, "success get drop down data", dataList)
+	response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down", dataList)
 }

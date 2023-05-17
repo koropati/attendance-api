@@ -129,7 +129,7 @@ func (h authUserHandler) Register(c *gin.Context) {
 			}
 		}(user)
 
-		response.New(c).Write(http.StatusCreated, "success: user registered")
+		response.New(c).Write(http.StatusCreated, "berhasil registrasi pengguna")
 		return
 	}
 
@@ -230,7 +230,7 @@ func (h authUserHandler) Login(c *gin.Context) {
 		UserData:  userData,
 		TokenData: tokenData,
 	}
-	response.New(c).Data(200, "success login", dataOutput)
+	response.New(c).Data(200, "berhasil masuk ke dalam sistem", dataOutput)
 }
 
 // Refresh ... Refresh Token
@@ -306,7 +306,7 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 		UserData:  user,
 		TokenData: tokenData,
 	}
-	response.New(c).Data(200, "success refresh", dataOutput)
+	response.New(c).Data(200, "sukses menyegarkan data", dataOutput)
 }
 
 // Activation ... Activation Account URL
@@ -364,5 +364,5 @@ func (h authUserHandler) Logout(c *gin.Context) {
 		return
 	}
 
-	response.New(c).Write(200, "success log out")
+	response.New(c).Write(200, "berhasil keluar sistem")
 }

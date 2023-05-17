@@ -76,7 +76,7 @@ func (h profileHandler) Retrieve(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+	response.New(c).Data(http.StatusCreated, "sukses mengambil data", result)
 }
 
 // Student ... Student Profile
@@ -101,7 +101,7 @@ func (h profileHandler) Student(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+	response.New(c).Data(http.StatusCreated, "sukses mengambil data", result)
 }
 
 // Teacher ... Teacher Profile
@@ -126,7 +126,7 @@ func (h profileHandler) Teacher(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusCreated, "success retrieve data", result)
+	response.New(c).Data(http.StatusCreated, "sukses mengambil data", result)
 }
 
 // Update ... Update Profile
@@ -202,7 +202,7 @@ func (h profileHandler) Update(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	response.New(c).Data(http.StatusOK, "success update data", result)
+	response.New(c).Data(http.StatusOK, "sukses memperbaharui data", result)
 }
 
 // Update Password ... Update Password
@@ -271,5 +271,5 @@ func (h profileHandler) UpdatePassword(c *gin.Context) {
 		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("pengguna: %v", err))
 		return
 	}
-	response.New(c).Write(http.StatusOK, "success update password")
+	response.New(c).Write(http.StatusOK, "berhasil memperbaharui kata sandi")
 }
