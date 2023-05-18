@@ -170,7 +170,7 @@ func (r scheduleRepo) ListScheduleMeta(schedule model.Schedule, pagination model
 
 func (r scheduleRepo) DropDownSchedule(schedule model.Schedule) ([]model.Schedule, error) {
 	var schedules []model.Schedule
-	query := r.db.Table("schedules")
+	query := r.db.Table("schedules").Order("id desc")
 	query = PreloadSchedule(query)
 	query = FilterSchedule(query, schedule)
 	query = query.Find(&schedules)

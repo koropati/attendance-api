@@ -143,7 +143,7 @@ func (r dailyScheduleRepo) ListDailyScheduleMeta(dailyschedule model.DailySchedu
 
 func (r dailyScheduleRepo) DropDownDailySchedule(dailyschedule model.DailySchedule) ([]model.DailySchedule, error) {
 	var dailyschedules []model.DailySchedule
-	query := r.db.Table("daily_schedules")
+	query := r.db.Table("daily_schedules").Order("id desc")
 	query = FilterDailySchedule(query, dailyschedule)
 	query = query.Find(&dailyschedules)
 	if err := query.Error; err != nil {

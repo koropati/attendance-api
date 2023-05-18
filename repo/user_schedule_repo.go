@@ -251,7 +251,7 @@ func (r userScheduleRepo) ListUserInRuleMeta(scheduleID int, user model.User, pa
 
 func (r userScheduleRepo) DropDownUserSchedule(userschedule model.UserSchedule) ([]model.UserSchedule, error) {
 	var userschedules []model.UserSchedule
-	query := r.db.Table("user_schedules")
+	query := r.db.Table("user_schedules").Order("id desc")
 	query = FilterUserSchedule(query, userschedule)
 	query = query.Find(&userschedules)
 	if err := query.Error; err != nil {

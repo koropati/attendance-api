@@ -111,7 +111,7 @@ func (r activationTokenRepo) ListActivationTokenMeta(subject model.ActivationTok
 
 func (r activationTokenRepo) DropDownActivationToken(subject model.ActivationToken) ([]model.ActivationToken, error) {
 	var activationTokens []model.ActivationToken
-	query := r.db.Table("activation_tokens")
+	query := r.db.Table("activation_tokens").Order("id desc")
 	query = FilterActivationToken(query, subject)
 	query = query.Find(&activationTokens)
 	if err := query.Error; err != nil {

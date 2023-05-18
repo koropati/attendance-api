@@ -174,7 +174,7 @@ func (r studentRepo) ListStudentMeta(student model.Student, pagination model.Pag
 
 func (r studentRepo) DropDownStudent(student model.Student) ([]model.Student, error) {
 	var students []model.Student
-	query := r.db.Table("students")
+	query := r.db.Table("students").Order("id desc")
 	query = PreloadStudent(query)
 	query = FilterStudent(query, student)
 	query = query.Find(&students)

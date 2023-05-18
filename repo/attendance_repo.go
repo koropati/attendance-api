@@ -144,7 +144,7 @@ func (r attendanceRepo) ListAttendanceMeta(attendance model.Attendance, paginati
 
 func (r attendanceRepo) DropDownAttendance(attendance model.Attendance) ([]model.Attendance, error) {
 	var attendances []model.Attendance
-	query := r.db.Table("attendances")
+	query := r.db.Table("attendances").Order("id desc")
 	query = FilterAttendance(query, attendance)
 	query = query.Find(&attendances)
 	if err := query.Error; err != nil {

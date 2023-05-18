@@ -133,7 +133,7 @@ func (r subjectRepo) ListSubjectMeta(subject model.Subject, pagination model.Pag
 
 func (r subjectRepo) DropDownSubject(subject model.Subject) ([]model.Subject, error) {
 	var subjects []model.Subject
-	query := r.db.Table("subjects")
+	query := r.db.Table("subjects").Order("id desc")
 	query = FilterSubject(query, subject)
 	query = query.Find(&subjects)
 	if err := query.Error; err != nil {

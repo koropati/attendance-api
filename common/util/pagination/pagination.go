@@ -10,7 +10,7 @@ import (
 func GeneratePaginationFromRequest(c *gin.Context) model.Pagination {
 	limit := 2
 	page := 1
-	sort := "created_at asc"
+	sort := "id desc"
 	search := ""
 	query := c.Request.URL.Query()
 	for key, value := range query {

@@ -136,7 +136,7 @@ func (r facultyRepo) ListFacultyMeta(faculty model.Faculty, pagination model.Pag
 
 func (r facultyRepo) DropDownFaculty(faculty model.Faculty) ([]model.Faculty, error) {
 	var faculties []model.Faculty
-	query := r.db.Table("faculties")
+	query := r.db.Table("faculties").Order("id desc")
 	query = FilterFaculty(query, faculty)
 	query = query.Find(&faculties)
 	if err := query.Error; err != nil {

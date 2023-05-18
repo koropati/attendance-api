@@ -108,7 +108,7 @@ func (r attendanceLogRepo) ListAttendanceLogMeta(attendancelog model.AttendanceL
 
 func (r attendanceLogRepo) DropDownAttendanceLog(attendancelog model.AttendanceLog) ([]model.AttendanceLog, error) {
 	var attendanceLogs []model.AttendanceLog
-	query := r.db.Table("attendance_logs")
+	query := r.db.Table("attendance_logs").Order("id desc")
 	query = FilterAttendanceLog(query, attendancelog)
 	query = query.Find(&attendanceLogs)
 	if err := query.Error; err != nil {

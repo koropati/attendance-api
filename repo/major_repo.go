@@ -165,7 +165,7 @@ func (r majorRepo) ListMajorMeta(major model.Major, pagination model.Pagination)
 
 func (r majorRepo) DropDownMajor(major model.Major) ([]model.Major, error) {
 	var majors []model.Major
-	query := r.db.Table("majors")
+	query := r.db.Table("majors").Order("id desc")
 	query = PreloadMajor(query)
 	query = FilterMajor(query, major)
 	query = query.Find(&majors)

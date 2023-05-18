@@ -295,7 +295,7 @@ func (r userRepo) SetDeactiveUser(id int) (model.User, error) {
 }
 
 func (r userRepo) DropDownUser(user model.User) (results []model.UserDropDown, err error) {
-	query := r.db.Table("users")
+	query := r.db.Table("users").Order("id desc")
 	query = PreloadUser(query)
 	query = FilterUser(query, user)
 	query = query.Find(&results)

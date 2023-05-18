@@ -164,7 +164,7 @@ func (r studyProgramRepo) ListStudyProgramMeta(studyProgram model.StudyProgram, 
 
 func (r studyProgramRepo) DropDownStudyProgram(studyProgram model.StudyProgram) ([]model.StudyProgram, error) {
 	var studyPrograms []model.StudyProgram
-	query := r.db.Table("study_programs")
+	query := r.db.Table("study_programs").Order("id desc")
 	query = PreloadStudyProgram(query)
 	query = FilterStudyProgram(query, studyProgram)
 	query = query.Find(&studyPrograms)

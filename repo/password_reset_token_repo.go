@@ -108,7 +108,7 @@ func (r passwordResetTokenRepo) ListPasswordResetTokenMeta(subject model.Passwor
 
 func (r passwordResetTokenRepo) DropDownPasswordResetToken(subject model.PasswordResetToken) ([]model.PasswordResetToken, error) {
 	var passwordResetTokens []model.PasswordResetToken
-	query := r.db.Table("password_reset_tokens")
+	query := r.db.Table("password_reset_tokens").Order("id desc")
 	query = FilterPasswordResetToken(query, subject)
 	query = query.Find(&passwordResetTokens)
 	if err := query.Error; err != nil {

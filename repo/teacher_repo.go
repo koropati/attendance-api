@@ -174,7 +174,7 @@ func (r teacherRepo) ListTeacherMeta(teacher model.Teacher, pagination model.Pag
 
 func (r teacherRepo) DropDownTeacher(teacher model.Teacher) ([]model.Teacher, error) {
 	var teachers []model.Teacher
-	query := r.db.Table("teachers")
+	query := r.db.Table("teachers").Order("id desc")
 	query = PreloadTeacher(query)
 	query = FilterTeacher(query, teacher)
 	query = query.Find(&teachers)
