@@ -36,41 +36,48 @@ func NewUserScheduleRepo(db *gorm.DB) UserScheduleRepo {
 	return userScheduleRepo{db: db}
 }
 
-func (r userScheduleRepo) CreateUserSchedule(userschedule model.UserSchedule) (model.UserSchedule, error) {
+func (r userScheduleRepo) CreateUserSchedule(userschedule model.UserSchedule) (result model.UserSchedule, err error) {
 	if err := r.db.Table("user_schedules").Create(&userschedule).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
-	return userschedule, nil
-}
-
-func (r userScheduleRepo) RetrieveUserSchedule(id int) (model.UserSchedule, error) {
-	var userschedule model.UserSchedule
-	if err := r.db.First(&userschedule, id).Error; err != nil {
+	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ?", userschedule.ID).First(&result).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
-	return userschedule, nil
+	return
 }
 
-func (r userScheduleRepo) RetrieveUserScheduleByOwner(id int, ownerID int) (model.UserSchedule, error) {
-	var userschedule model.UserSchedule
-	if err := r.db.Model(&model.UserSchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).First(&userschedule).Error; err != nil {
+func (r userScheduleRepo) RetrieveUserSchedule(id int) (result model.UserSchedule, err error) {
+	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ?", id).First(&result).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
-	return userschedule, nil
+	return
 }
 
-func (r userScheduleRepo) UpdateUserSchedule(id int, userschedule model.UserSchedule) (model.UserSchedule, error) {
+func (r userScheduleRepo) RetrieveUserScheduleByOwner(id int, ownerID int) (result model.UserSchedule, err error) {
+	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ? AND owner_id = ?", id, ownerID).First(&result).Error; err != nil {
+		return model.UserSchedule{}, err
+	}
+	return
+}
+
+func (r userScheduleRepo) UpdateUserSchedule(id int, userschedule model.UserSchedule) (result model.UserSchedule, err error) {
 	if err := r.db.Model(&model.UserSchedule{}).Where("id = ?", id).Updates(&userschedule).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
-	return userschedule, nil
-}
-
-func (r userScheduleRepo) UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (model.UserSchedule, error) {
-	if err := r.db.Model(&model.UserSchedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&userschedule).Error; err != nil {
+	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ?", id).First(&result).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
-	return userschedule, nil
+	return
+}
+
+func (r userScheduleRepo) UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (result model.UserSchedule, err error) {
+	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&userschedule).Error; err != nil {
+		return model.UserSchedule{}, err
+	}
+	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ?", id).First(&result).Error; err != nil {
+		return model.UserSchedule{}, err
+	}
+	return
 }
 
 func (r userScheduleRepo) DeleteUserSchedule(id int) error {
@@ -138,7 +145,7 @@ func (r userScheduleRepo) ListTodaySchedule(userID int, dayName string) (results
 func (r userScheduleRepo) ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error) {
 	var userschedules []model.UserSchedule
 	offset := (pagination.Page - 1) * pagination.Limit
-	query := r.db.Table("user_schedules").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query := PreloadUserSchedule(r.db.Table("user_schedules")).Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterUserSchedule(query, userschedule)
 	query = SearchUserSchedule(query, pagination.Search)
 	query = query.Find(&userschedules)
@@ -151,7 +158,7 @@ func (r userScheduleRepo) ListUserSchedule(userschedule model.UserSchedule, pagi
 
 func (r userScheduleRepo) ListUserInRule(scheduleID int, user model.User, pagination model.Pagination) ([]model.User, error) {
 	var userID []int
-	if err := r.db.Table("user_schedules").Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
+	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
 		return nil, err
 	}
 	var users []model.User
@@ -251,7 +258,7 @@ func (r userScheduleRepo) ListUserInRuleMeta(scheduleID int, user model.User, pa
 
 func (r userScheduleRepo) DropDownUserSchedule(userschedule model.UserSchedule) ([]model.UserSchedule, error) {
 	var userschedules []model.UserSchedule
-	query := r.db.Table("user_schedules").Order("id desc")
+	query := PreloadUserSchedule(r.db.Table("user_schedules")).Order("id desc")
 	query = FilterUserSchedule(query, userschedule)
 	query = query.Find(&userschedules)
 	if err := query.Error; err != nil {
@@ -309,5 +316,11 @@ func SearchUserSchedule(query *gorm.DB, search string) *gorm.DB {
 	if search != "" {
 		query = query.Where("user_id LIKE ? OR schedule_id LIKE ? OR owner_id LIKE ? ", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
+	return query
+}
+
+func PreloadUserSchedule(query *gorm.DB) *gorm.DB {
+	query = query.Preload("User")
+	query = query.Preload("Schedule")
 	return query
 }

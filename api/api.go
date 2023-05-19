@@ -151,6 +151,8 @@ func (c server) v1() {
 		profile.Use(c.middleware.AUTH())
 		{
 			profile.GET("/", profileHandler.Retrieve)
+			profile.GET("/student", profileHandler.Student)
+			profile.GET("/teacher", profileHandler.Teacher)
 			profile.PUT("/update", profileHandler.Update)
 			profile.PUT("/update-password", profileHandler.UpdatePassword)
 		}

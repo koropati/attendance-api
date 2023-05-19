@@ -1,4 +1,11 @@
 definitions:
+  model.Ability:
+    properties:
+      action:
+        type: string
+      subject:
+        type: string
+    type: object
   model.ActivationTokenForm:
     properties:
       created_at:
@@ -764,23 +771,6 @@ definitions:
         type: string
     type: object
   model.UserForm:
-    properties:
-      email:
-        type: string
-      first_name:
-        type: string
-      handphone:
-        type: string
-      intro:
-        type: string
-      last_name:
-        type: string
-      password:
-        type: string
-      profile:
-        type: string
-      username:
-        type: string
     type: object
   model.UserResponseData:
     properties:

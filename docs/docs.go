@@ -4811,6 +4811,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.Ability": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "subject": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ActivationTokenForm": {
             "type": "object",
             "properties": {
@@ -5981,33 +5992,7 @@ const docTemplate = `{
             }
         },
         "model.UserForm": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "handphone": {
-                    "type": "string"
-                },
-                "intro": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "profile": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "model.UserResponseData": {
             "type": "object",

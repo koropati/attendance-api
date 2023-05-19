@@ -60,7 +60,7 @@ func NewProfileHandler(
 // @Tags Profile
 // @Accept       json
 // @Produce      json
-// @Success 200 {object} model.UserResponseData
+// @Success 200 {object} model.AuthDataResponseData
 // @Failure 400,500 {object} model.Response
 // @Router /profile/ [get]
 // @Security BearerTokenAuth
