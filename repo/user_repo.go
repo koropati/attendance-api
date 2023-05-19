@@ -29,6 +29,7 @@ type UserRepo interface {
 	SetDeactiveUser(id int) (model.User, error)
 	DropDownUser(user model.User) ([]model.UserDropDown, error)
 	GetPassword(id int) (hashPassword string, err error)
+	UpdateProfile(id int, user model.User) (model.User, error)
 	UpdatePassword(updatePasswordData model.UserUpdatePasswordForm) error
 }
 
@@ -265,6 +266,31 @@ func (r userRepo) UpdateUser(id int, user model.User) (model.User, error) {
 	user.Avatar = user.GetAvatar()
 	user.UserAbilities = user.GetAbility()
 	return user, nil
+}
+
+func (r userRepo) UpdateProfile(id int, user model.User) (result model.User, err error) {
+
+	if err := r.db.Table("users").Where("id = ?", id).Updates(map[string]interface{}{
+		"first_name": user.FirstName,
+		"last_name":  user.LastName,
+		"handphone":  user.Handphone,
+		"email":      user.Email,
+		"username":   user.Username,
+		"intro":      user.Intro,
+		"profile":    user.Profile,
+	}).Error; err != nil {
+		return model.User{}, err
+	}
+
+	query := r.db.Table("users")
+	query = PreloadUser(query)
+	if err := query.Where("id = ?", id).First(&result).Error; err != nil {
+		return model.User{}, err
+	}
+	result.Role = result.GetRole()
+	result.Avatar = result.GetAvatar()
+	result.UserAbilities = result.GetAbility()
+	return result, nil
 }
 
 func (r userRepo) DeleteUser(id int) error {

@@ -26,6 +26,7 @@ type UserService interface {
 	SetDeactiveUser(id int) (model.User, error)
 	DropDownUser(user model.User) ([]model.UserDropDown, error)
 	GetPassword(id int) (hashPassword string, err error)
+	UpdateProfile(id int, user model.User) (model.User, error)
 	UpdatePassword(userPasswordData model.UserUpdatePasswordForm) error
 }
 
@@ -119,6 +120,14 @@ func (s userService) RetrieveUserByEmail(email string) (user model.User, err err
 
 func (s userService) UpdateUser(id int, user model.User) (model.User, error) {
 	userUpdate, err := s.userRepo.UpdateUser(id, user)
+	if err != nil {
+		return model.User{}, err
+	}
+	return userUpdate, nil
+}
+
+func (s userService) UpdateProfile(id int, user model.User) (model.User, error) {
+	userUpdate, err := s.userRepo.UpdateProfile(id, user)
 	if err != nil {
 		return model.User{}, err
 	}

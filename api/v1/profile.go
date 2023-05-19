@@ -187,16 +187,16 @@ func (h profileHandler) Update(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna sudah digunakan"))
 	}
 
-	if data.Password != "" {
-		password, err := bcrypt.GenerateFromPassword([]byte(data.Password), 10)
-		if err != nil {
-			response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("kata sandi: %v", err))
-			return
-		}
-		data.Password = string(password)
-	}
+	// if data.Password != "" {
+	// 	password, err := bcrypt.GenerateFromPassword([]byte(data.Password), 10)
+	// 	if err != nil {
+	// 		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("kata sandi: %v", err))
+	// 		return
+	// 	}
+	// 	data.Password = string(password)
+	// }
 
-	result, err := h.userService.UpdateUser(currentUserID, data)
+	result, err := h.userService.UpdateProfile(currentUserID, data)
 
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -255,7 +255,7 @@ func (h profileHandler) UpdatePassword(c *gin.Context) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(data.CurrentPassword)); err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("kata sandi tidak sesuai"))
+		response.New(c).Error(http.StatusBadRequest, errors.New("kata sandi lama tidak sesuai"))
 		return
 	}
 
