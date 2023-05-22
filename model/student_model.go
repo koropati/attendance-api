@@ -45,6 +45,7 @@ func (data Student) GeneratePassword() (passwordGenrate string) {
 	firstName = strings.Replace(firstName, " ", "_", -1)
 	dob := strings.Replace(data.DOB, "-", "", -1)
 	passwordGenrate = firstName + "@" + dob
+	// dewa_ketut@19970621
 	return
 }
 
