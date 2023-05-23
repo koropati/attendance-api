@@ -6,7 +6,7 @@ type Teacher struct {
 	GormCustom
 	UserID         uint         `json:"user_id"`
 	User           User         `json:"user"`
-	NIP            string       `json:"nip" gorm:"type:varchar(20);unique"`
+	Nip            string       `json:"nip" gorm:"type:varchar(20);unique"`
 	DOB            string       `json:"dob" gorm:"type:date"`
 	FacultyID      uint         `json:"faculty_id"`
 	Faculty        Faculty      `json:"faculty"`
@@ -28,7 +28,7 @@ type UserTeacher struct {
 	Intro          string       `json:"intro" gorm:"type:varchar(255)"`
 	Profile        string       `json:"profile" gorm:"type:varchar(255)"`
 	UserID         uint         `json:"user_id"`
-	NIP            string       `json:"nip" gorm:"type:varchar(20);unique"`
+	Nip            string       `json:"nip" gorm:"type:varchar(20);unique"`
 	DOB            string       `json:"dob" gorm:"type:date"`
 	FacultyID      uint         `json:"faculty_id"`
 	Faculty        Faculty      `json:"faculty"`
@@ -63,7 +63,7 @@ func (data UserTeacher) GetUser() (user User) {
 func (data UserTeacher) GetTeacher() (teacher Teacher) {
 	return Teacher{
 		UserID:         data.UserID,
-		NIP:            data.NIP,
+		Nip:            data.Nip,
 		DOB:            data.DOB,
 		FacultyID:      data.FacultyID,
 		Faculty:        data.Faculty,

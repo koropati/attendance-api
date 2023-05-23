@@ -248,7 +248,7 @@ type StudentForm struct {
 type TeacherForm struct {
 	UserID         uint             `json:"user_id"`
 	User           UserForm         `json:"user"`
-	NIP            string           `json:"nip" gorm:"type:varchar(20);unique"`
+	Nip            string           `json:"nip" gorm:"type:varchar(20);unique"`
 	DOB            string           `json:"dob" gorm:"type:date"`
 	FacultyID      uint             `json:"faculty_id"`
 	Faculty        FacultyForm      `json:"faculty"`

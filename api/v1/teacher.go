@@ -73,12 +73,12 @@ func (h teacherHandler) Create(c *gin.Context) {
 	}
 	data.GormCustom.CreatedBy = currentUserID
 
-	if err := validation.Validate(data.NIP, validation.Required, validation.Length(1, 20)); err != nil {
+	if err := validation.Validate(data.Nip, validation.Required, validation.Length(1, 20)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nip: %v", err))
 		return
 	}
 
-	if h.teacherService.CheckIsExistByNIP(data.NIP, 0) {
+	if h.teacherService.CheckIsExistByNip(data.Nip, 0) {
 		err := errors.New("nip dosen sudah ada yang menggunakan")
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nip: %v", err))
 		return
@@ -117,6 +117,8 @@ func (h teacherHandler) Create(c *gin.Context) {
 
 		data.User.Password = string(password)
 		data.User.IsAdmin = true
+		loginDate, _ := time.Parse("2006-01-02 15:04:05", "0001-01-01 00:00:00")
+		data.User.LastLogin = loginDate
 
 		result, err := h.teacherService.CreateTeacher(data)
 		if err != nil {
@@ -230,12 +232,12 @@ func (h teacherHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.NIP, validation.Required, validation.Length(1, 20)); err != nil {
+	if err := validation.Validate(data.Nip, validation.Required, validation.Length(1, 20)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nip: %v", err))
 		return
 	}
 
-	if h.teacherService.CheckIsExistByNIP(data.NIP, id) {
+	if h.teacherService.CheckIsExistByNip(data.Nip, id) {
 		err := errors.New("nip dosen sudah ada yang menggunakan")
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nip: %v", err))
 		return

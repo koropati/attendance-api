@@ -19,7 +19,7 @@ type TeacherRepo interface {
 	ListTeacherMeta(teacher model.Teacher, pagination model.Pagination) (model.Meta, error)
 	DropDownTeacher(teacher model.Teacher) ([]model.Teacher, error)
 	CheckIsExist(id int) (isExist bool)
-	CheckIsExistByNIP(nip string, exceptID int) (isExist bool)
+	CheckIsExistByNip(nip string, exceptID int) (isExist bool)
 }
 
 type teacherRepo struct {
@@ -191,7 +191,7 @@ func (r teacherRepo) CheckIsExist(id int) (isExist bool) {
 	return
 }
 
-func (r teacherRepo) CheckIsExistByNIP(nip string, exceptID int) (isExist bool) {
+func (r teacherRepo) CheckIsExistByNip(nip string, exceptID int) (isExist bool) {
 	if err := r.db.Table("teachers").Select("count(*) > 0").Where("nip = ? AND id != ?", nip, exceptID).Find(&isExist).Error; err != nil {
 		return false
 	}
@@ -199,8 +199,8 @@ func (r teacherRepo) CheckIsExistByNIP(nip string, exceptID int) (isExist bool) 
 }
 
 func FilterTeacher(query *gorm.DB, teacher model.Teacher) *gorm.DB {
-	if teacher.NIP != "" {
-		query = query.Where("nip LIKE ?", "%"+teacher.NIP+"%")
+	if teacher.Nip != "" {
+		query = query.Where("nip LIKE ?", "%"+teacher.Nip+"%")
 	}
 	if teacher.Gender != "" {
 		query = query.Where("gender LIKE ?", "%"+teacher.Gender+"%")

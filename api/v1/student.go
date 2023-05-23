@@ -117,7 +117,9 @@ func (h studentHandler) Create(c *gin.Context) {
 
 		data.User.Password = string(password)
 		data.User.IsUser = true
-
+		loginDate, _ := time.Parse("2006-01-02 15:04:05", "0001-01-01 00:00:00")
+		data.User.LastLogin = loginDate
+		
 		result, err := h.studentService.CreateStudent(data)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)

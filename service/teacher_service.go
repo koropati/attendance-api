@@ -18,7 +18,7 @@ type TeacherService interface {
 	ListTeacherMeta(teacher model.Teacher, pagination model.Pagination) (model.Meta, error)
 	DropDownTeacher(teacher model.Teacher) ([]model.Teacher, error)
 	CheckIsExist(id int) (isExist bool)
-	CheckIsExistByNIP(nip string, exceptID int) (isExist bool)
+	CheckIsExistByNip(nip string, exceptID int) (isExist bool)
 }
 
 type teacherService struct {
@@ -121,6 +121,6 @@ func (s teacherService) CheckIsExist(id int) (isExist bool) {
 	return s.teacherRepo.CheckIsExist(id)
 }
 
-func (s teacherService) CheckIsExistByNIP(nip string, exceptID int) (isExist bool) {
-	return s.teacherRepo.CheckIsExistByNIP(nip, exceptID)
+func (s teacherService) CheckIsExistByNip(nip string, exceptID int) (isExist bool) {
+	return s.teacherRepo.CheckIsExistByNip(nip, exceptID)
 }
