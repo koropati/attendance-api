@@ -29,7 +29,7 @@ type User struct {
 	IsSuperAdmin  bool      `json:"is_super_admin"`
 	IsAdmin       bool      `json:"is_admin"`
 	IsUser        bool      `json:"is_user"`
-	LastLogin     time.Time `json:"last_login"`
+	LastLogin     time.Time `json:"last_login" gorm:"default:'0001-01-01 11:11:11.111'"`
 	Role          string    `json:"role" gorm:"-"`
 	UserAbilities []Ability `json:"user_abilities" gorm:"-"`
 	Avatar        string    `json:"avatar" gorm:"-"`
