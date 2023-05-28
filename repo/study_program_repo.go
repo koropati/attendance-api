@@ -18,6 +18,7 @@ type StudyProgramRepo interface {
 	ListStudyProgram(studyProgram model.StudyProgram, pagination model.Pagination) ([]model.StudyProgram, error)
 	ListStudyProgramMeta(studyProgram model.StudyProgram, pagination model.Pagination) (model.Meta, error)
 	DropDownStudyProgram(studyProgram model.StudyProgram) ([]model.StudyProgram, error)
+	DropDownByMajor(majorID int) ([]model.StudyProgram, error)
 	CheckIsExist(id int) (isExist bool)
 	CheckIsExistByName(name string, majorID int, exceptID int) (isExist bool)
 	CheckIsExistByCode(code string, exceptID int) (isExist bool)
@@ -167,6 +168,17 @@ func (r studyProgramRepo) DropDownStudyProgram(studyProgram model.StudyProgram) 
 	query := r.db.Table("study_programs").Order("id desc")
 	query = PreloadStudyProgram(query)
 	query = FilterStudyProgram(query, studyProgram)
+	query = query.Find(&studyPrograms)
+	if err := query.Error; err != nil {
+		return nil, err
+	}
+	return studyPrograms, nil
+}
+
+func (r studyProgramRepo) DropDownByMajor(majorID int) ([]model.StudyProgram, error) {
+	var studyPrograms []model.StudyProgram
+	query := r.db.Table("study_programs").Where("major_id = ?", majorID).Order("id desc")
+	query = PreloadStudyProgram(query)
 	query = query.Find(&studyPrograms)
 	if err := query.Error; err != nil {
 		return nil, err

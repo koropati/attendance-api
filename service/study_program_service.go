@@ -16,6 +16,7 @@ type StudyProgramService interface {
 	ListStudyProgram(studyProgram model.StudyProgram, pagination model.Pagination) ([]model.StudyProgram, error)
 	ListStudyProgramMeta(studyProgram model.StudyProgram, pagination model.Pagination) (model.Meta, error)
 	DropDownStudyProgram(studyProgram model.StudyProgram) ([]model.StudyProgram, error)
+	DropDownByMajor(majorID int) ([]model.StudyProgram, error)
 	CheckIsExist(id int) (isExist bool)
 	CheckIsExistByName(name string, majorID int, exceptID int) (isExist bool)
 	CheckIsExistByCode(code string, exceptID int) (isExist bool)
@@ -103,6 +104,14 @@ func (s studyProgramService) ListStudyProgramMeta(studyProgram model.StudyProgra
 
 func (s studyProgramService) DropDownStudyProgram(studyProgram model.StudyProgram) ([]model.StudyProgram, error) {
 	datas, err := s.studyProgramRepo.DropDownStudyProgram(studyProgram)
+	if err != nil {
+		return nil, err
+	}
+	return datas, nil
+}
+
+func (s studyProgramService) DropDownByMajor(majorID int) ([]model.StudyProgram, error) {
+	datas, err := s.studyProgramRepo.DropDownByMajor(majorID)
 	if err != nil {
 		return nil, err
 	}

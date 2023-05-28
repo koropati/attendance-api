@@ -18,6 +18,7 @@ type MajorRepo interface {
 	ListMajor(major model.Major, pagination model.Pagination) ([]model.Major, error)
 	ListMajorMeta(major model.Major, pagination model.Pagination) (model.Meta, error)
 	DropDownMajor(major model.Major) ([]model.Major, error)
+	DropDownByFaculty(facultyID int) ([]model.Major, error)
 	CheckIsExist(id int) (isExist bool)
 	CheckIsExistByName(name string, exceptID int) (isExist bool)
 	CheckIsExistByCode(code string, exceptID int) (isExist bool)
@@ -168,6 +169,17 @@ func (r majorRepo) DropDownMajor(major model.Major) ([]model.Major, error) {
 	query := r.db.Table("majors").Order("id desc")
 	query = PreloadMajor(query)
 	query = FilterMajor(query, major)
+	query = query.Find(&majors)
+	if err := query.Error; err != nil {
+		return nil, err
+	}
+	return majors, nil
+}
+
+func (r majorRepo) DropDownByFaculty(facultyID int) ([]model.Major, error) {
+	var majors []model.Major
+	query := r.db.Table("majors").Where("faculty_id = ?", facultyID).Order("id desc")
+	query = PreloadMajor(query)
 	query = query.Find(&majors)
 	if err := query.Error; err != nil {
 		return nil, err

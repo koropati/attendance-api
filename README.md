@@ -4,6 +4,12 @@
 
 This is an example of implementation clean code architecture in Go with gin-gonic framework with some unit testing on the project.
 
+## Install Swagger Package for API doc
+
+```console
+go get -u github.com/swaggo/swag/cmd/swag
+```
+
 ## Run the project
 
 Run dependency manager

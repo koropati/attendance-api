@@ -24,6 +24,7 @@ type StudyProgramHandler interface {
 	Delete(c *gin.Context)
 	List(c *gin.Context)
 	DropDown(c *gin.Context)
+	DropDownByMajor(c *gin.Context)
 }
 
 type studyProgramHandler struct {
@@ -310,4 +311,31 @@ func (h studyProgramHandler) DropDown(c *gin.Context) {
 	}
 
 	response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down", dataList)
+}
+
+// Dropdown By Major... Dropdown Study Program By Major ID
+// @Summary Dropdown All Study Program By Major ID
+// @Description Dropdown Study Program By Major ID
+// @Tags Study Program
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.StudyProgramResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /study-program/drop-down-by-major [get]
+// @Security BearerTokenAuth
+// @param id query string true "id major"
+func (h studyProgramHandler) DropDownByMajor(c *gin.Context) {
+
+	id, err := strconv.Atoi(c.Query("id"))
+	if id < 1 || err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
+		return
+	}
+
+	dataList, err := h.studyProgramService.DropDownByMajor(id)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+	}
+
+	response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down by major id", dataList)
 }

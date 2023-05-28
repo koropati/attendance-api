@@ -24,6 +24,7 @@ type MajorHandler interface {
 	Delete(c *gin.Context)
 	List(c *gin.Context)
 	DropDown(c *gin.Context)
+	DropDownByFaculty(c *gin.Context)
 }
 
 type majorHandler struct {
@@ -300,4 +301,30 @@ func (h majorHandler) DropDown(c *gin.Context) {
 	}
 
 	response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down", dataList)
+}
+
+// Dropdown ... Dropdown all Major By Faculty ID
+// @Summary Dropdown all Major By Faculty ID
+// @Description Dropdown all Major By Faculty ID
+// @Tags Major
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.MajorResponseList
+// @Failure 400,500 {object} model.Response
+// @Router /major/drop-down-by-faculty [get]
+// @Security BearerTokenAuth
+// @param id query string true "id faculty"
+func (h majorHandler) DropDownByFaculty(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if id < 1 || err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
+		return
+	}
+
+	dataList, err := h.majorService.DropDownByFaculty(id)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+	}
+
+	response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down by faculty id", dataList)
 }

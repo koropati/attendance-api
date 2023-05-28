@@ -210,6 +210,7 @@ func (c server) v1() {
 			major.DELETE("/delete", majorHandler.Delete)
 			major.GET("/list", majorHandler.List)
 			major.GET("/drop-down", majorHandler.DropDown)
+			major.GET("/drop-down-by-faculty", majorHandler.DropDownByFaculty)
 		}
 
 		studyProgram := v1.Group("/study-program")
@@ -221,6 +222,7 @@ func (c server) v1() {
 			studyProgram.DELETE("/delete", studyProgramHandler.Delete)
 			studyProgram.GET("/list", studyProgramHandler.List)
 			studyProgram.GET("/drop-down", studyProgramHandler.DropDown)
+			studyProgram.GET("/drop-down-by-major", studyProgramHandler.DropDownByMajor)
 		}
 
 		schedule := v1.Group("/schedule")
