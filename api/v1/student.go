@@ -294,6 +294,20 @@ func (h studentHandler) Update(c *gin.Context) {
 		return
 	}
 
+	if !data.User.IsActive {
+		_, err = h.userService.SetDeactiveUser(int(oldDataStudent.User.ID))
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+	} else {
+		_, err = h.userService.SetActiveUser(int(oldDataStudent.User.ID))
+		if err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+	}
+
 	var result model.Student
 	if h.middleware.IsSuperAdmin(c) {
 		result, err = h.studentService.UpdateStudent(id, data)
@@ -326,6 +340,12 @@ func (h studentHandler) Delete(c *gin.Context) {
 		return
 	}
 
+	dataStudent, err := h.studentService.RetrieveStudent(id)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("data mahasiswa tidak ditemukan"))
+		return
+	}
+
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -342,6 +362,11 @@ func (h studentHandler) Delete(c *gin.Context) {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
 		}
+	}
+
+	if err := h.userService.DeleteUser(int(dataStudent.UserID)); err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
 	}
 
 	response.New(c).Write(http.StatusOK, "sukses menghapus data")

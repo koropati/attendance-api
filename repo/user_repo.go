@@ -294,7 +294,7 @@ func (r userRepo) UpdateProfile(id int, user model.User) (result model.User, err
 }
 
 func (r userRepo) DeleteUser(id int) error {
-	if err := r.db.Delete(&model.User{}, id).Error; err != nil {
+	if err := r.db.Unscoped().Delete(&model.User{}, id).Error; err != nil {
 		return err
 	}
 	return nil

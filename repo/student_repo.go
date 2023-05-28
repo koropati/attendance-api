@@ -107,14 +107,14 @@ func (r studentRepo) UpdateStudentByOwner(id int, ownerID int, student model.Stu
 }
 
 func (r studentRepo) DeleteStudent(id int) error {
-	if err := r.db.Delete(&model.Student{}, id).Error; err != nil {
+	if err := r.db.Unscoped().Delete(&model.Student{}, id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
 func (r studentRepo) DeleteStudentByOwner(id int, ownerID int) error {
-	if err := r.db.Where("id = ? AND owner_id = ?", id, ownerID).Delete(&model.Student{}).Error; err != nil {
+	if err := r.db.Unscoped().Where("id = ? AND owner_id = ?", id, ownerID).Delete(&model.Student{}).Error; err != nil {
 		return err
 	}
 	return nil
