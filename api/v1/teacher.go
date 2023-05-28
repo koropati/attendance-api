@@ -232,6 +232,12 @@ func (h teacherHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
+	oldDataTeacher, err := h.teacherService.RetrieveTeacher(id)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", "data dosen tidak ditemukan"))
+		return
+	}
+
 	if err := validation.Validate(data.Nip, validation.Required, validation.Length(1, 20)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nip: %v", err))
 		return
@@ -261,15 +267,15 @@ func (h teacherHandler) Update(c *gin.Context) {
 		return
 	}
 
-	if !h.userService.CheckUpdateHandphone(id, data.User.Handphone) {
+	if !h.userService.CheckUpdateHandphone(int(oldDataTeacher.User.ID), data.User.Handphone) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("no telp sudah digunakan"))
 	}
 
-	if !h.userService.CheckUpdateEmail(id, data.User.Email) {
+	if !h.userService.CheckUpdateEmail(int(oldDataTeacher.User.ID), data.User.Email) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("email sudah digunakan"))
 	}
 
-	if !h.userService.CheckUpdateUsername(id, data.User.Username) {
+	if !h.userService.CheckUpdateUsername(int(oldDataTeacher.User.ID), data.User.Username) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna sudah digunakan"))
 	}
 
@@ -280,6 +286,12 @@ func (h teacherHandler) Update(c *gin.Context) {
 			return
 		}
 		data.User.Password = string(password)
+	}
+
+	_, err = h.userService.UpdateUser(int(oldDataTeacher.User.ID), data.User)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
 	}
 
 	var result model.Teacher

@@ -77,7 +77,7 @@ func (r teacherRepo) RetrieveTeacherByOwner(id int, ownerID int) (model.Teacher,
 }
 
 func (r teacherRepo) UpdateTeacher(id int, teacher model.Teacher) (model.Teacher, error) {
-	query := r.db.Table("teachers")
+	query := r.db.Model(&model.Teacher{})
 	query = PreloadTeacher(query)
 	if err := query.Where("id = ?", id).Updates(&teacher).Error; err != nil {
 		return model.Teacher{}, err
@@ -93,7 +93,6 @@ func (r teacherRepo) UpdateTeacher(id int, teacher model.Teacher) (model.Teacher
 
 func (r teacherRepo) UpdateTeacherByOwner(id int, ownerID int, teacher model.Teacher) (model.Teacher, error) {
 	query := r.db.Table("teachers")
-	query = PreloadTeacher(query)
 	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).Updates(&teacher).Error; err != nil {
 		return model.Teacher{}, err
 	}

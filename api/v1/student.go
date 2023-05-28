@@ -119,7 +119,7 @@ func (h studentHandler) Create(c *gin.Context) {
 		data.User.IsUser = true
 		loginDate, _ := time.Parse("2006-01-02 15:04:05", "0001-01-01 00:00:00")
 		data.User.LastLogin = loginDate
-		
+
 		result, err := h.studentService.CreateStudent(data)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
@@ -232,6 +232,12 @@ func (h studentHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
+	oldDataStudent, err := h.studentService.RetrieveStudent(id)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", "data mahasiswa tidak ditemukan"))
+		return
+	}
+
 	if err := validation.Validate(data.NIM, validation.Required, validation.Length(1, 20)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nim: %v", err))
 		return
@@ -261,15 +267,15 @@ func (h studentHandler) Update(c *gin.Context) {
 		return
 	}
 
-	if !h.userService.CheckUpdateHandphone(id, data.User.Handphone) {
+	if !h.userService.CheckUpdateHandphone(int(oldDataStudent.User.ID), data.User.Handphone) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("no telp sudah digunakan"))
 	}
 
-	if !h.userService.CheckUpdateEmail(id, data.User.Email) {
+	if !h.userService.CheckUpdateEmail(int(oldDataStudent.User.ID), data.User.Email) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("email sudah digunakan"))
 	}
 
-	if !h.userService.CheckUpdateUsername(id, data.User.Username) {
+	if !h.userService.CheckUpdateUsername(int(oldDataStudent.User.ID), data.User.Username) {
 		response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna sudah digunakan"))
 	}
 
@@ -280,6 +286,12 @@ func (h studentHandler) Update(c *gin.Context) {
 			return
 		}
 		data.User.Password = string(password)
+	}
+
+	_, err = h.userService.UpdateUser(int(oldDataStudent.User.ID), data.User)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
 	}
 
 	var result model.Student
