@@ -328,8 +328,14 @@ func (h studyProgramHandler) DropDownByMajor(c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
-		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
-		return
+		var result []model.StudyProgram
+		result = append(result, model.StudyProgram{
+			GormCustom: model.GormCustom{
+				ID: 0,
+			},
+			Name: "Pilih Jurusan Terlebih Dahulu",
+		})
+		response.New(c).Data(http.StatusOK, "sukses mendapatkan data drop down by major id", result)
 	}
 
 	dataList, err := h.studyProgramService.DropDownByMajor(id)
