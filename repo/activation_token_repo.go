@@ -27,27 +27,38 @@ func NewActivationTokenRepo(db *gorm.DB) ActivationTokenRepo {
 	return &activationTokenRepo{db: db}
 }
 
-func (r activationTokenRepo) CreateActivationToken(subject model.ActivationToken) (model.ActivationToken, error) {
-	if err := r.db.Table("activation_tokens").Create(&subject).Error; err != nil {
+func (r activationTokenRepo) CreateActivationToken(activationToken model.ActivationToken) (model.ActivationToken, error) {
+
+	if err := r.db.Table("activation_tokens").Create(&activationToken).Error; err != nil {
 		return model.ActivationToken{}, err
 	}
 
-	return subject, nil
+	query := r.db.Table("activation_tokens").Where("id = ?", activationToken.ID)
+	query = PreloadActivationToken(query)
+	query = query.First(&activationToken)
+	if err := query.Error; err != nil {
+		return model.ActivationToken{}, err
+	}
+
+	return activationToken, nil
 }
 
 func (r activationTokenRepo) RetrieveActivationToken(id int) (model.ActivationToken, error) {
-	var subject model.ActivationToken
-	if err := r.db.First(&subject, id).Error; err != nil {
+	var activationToken model.ActivationToken
+	query := r.db.Table("activation_tokens").Where("id = ?", id)
+	query = PreloadActivationToken(query)
+
+	if err := query.First(&activationToken).Error; err != nil {
 		return model.ActivationToken{}, err
 	}
-	return subject, nil
+	return activationToken, nil
 }
 
-func (r activationTokenRepo) UpdateActivationToken(id int, subject model.ActivationToken) (model.ActivationToken, error) {
-	if err := r.db.Model(&model.ActivationToken{}).Where("id = ?", id).Updates(&subject).Error; err != nil {
+func (r activationTokenRepo) UpdateActivationToken(id int, activationToken model.ActivationToken) (model.ActivationToken, error) {
+	if err := r.db.Model(&model.ActivationToken{}).Where("id = ?", id).Updates(&activationToken).Error; err != nil {
 		return model.ActivationToken{}, err
 	}
-	return subject, nil
+	return activationToken, nil
 }
 
 func (r activationTokenRepo) DeleteActivationToken(id int) error {
@@ -57,12 +68,13 @@ func (r activationTokenRepo) DeleteActivationToken(id int) error {
 	return nil
 }
 
-func (r activationTokenRepo) ListActivationToken(subject model.ActivationToken, pagination model.Pagination) ([]model.ActivationToken, error) {
+func (r activationTokenRepo) ListActivationToken(activationToken model.ActivationToken, pagination model.Pagination) ([]model.ActivationToken, error) {
 	var activationTokens []model.ActivationToken
 	offset := (pagination.Page - 1) * pagination.Limit
 
 	query := r.db.Table("activation_tokens").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-	query = FilterActivationToken(query, subject)
+	query = PreloadActivationToken(query)
+	query = FilterActivationToken(query, activationToken)
 	query = SearchActivationToken(query, pagination.Search)
 	query = query.Find(&activationTokens)
 	if err := query.Error; err != nil {
@@ -72,13 +84,13 @@ func (r activationTokenRepo) ListActivationToken(subject model.ActivationToken, 
 	return activationTokens, nil
 }
 
-func (r activationTokenRepo) ListActivationTokenMeta(subject model.ActivationToken, pagination model.Pagination) (model.Meta, error) {
+func (r activationTokenRepo) ListActivationTokenMeta(activationToken model.ActivationToken, pagination model.Pagination) (model.Meta, error) {
 	var activationTokens []model.ActivationToken
 	var totalRecord int
 	var totalPage int
 
 	queryTotal := r.db.Model(&model.ActivationToken{}).Select("count(*)")
-	queryTotal = FilterActivationToken(queryTotal, subject)
+	queryTotal = FilterActivationToken(queryTotal, activationToken)
 	queryTotal = SearchActivationToken(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
@@ -93,7 +105,7 @@ func (r activationTokenRepo) ListActivationTokenMeta(subject model.ActivationTok
 	offset := (pagination.Page - 1) * pagination.Limit
 
 	query := r.db.Table("activation_tokens").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-	query = FilterActivationToken(query, subject)
+	query = FilterActivationToken(query, activationToken)
 	query = SearchActivationToken(query, pagination.Search)
 	query = query.Find(&activationTokens)
 	if err := query.Error; err != nil {
@@ -109,10 +121,11 @@ func (r activationTokenRepo) ListActivationTokenMeta(subject model.ActivationTok
 	return meta, nil
 }
 
-func (r activationTokenRepo) DropDownActivationToken(subject model.ActivationToken) ([]model.ActivationToken, error) {
+func (r activationTokenRepo) DropDownActivationToken(activationToken model.ActivationToken) ([]model.ActivationToken, error) {
 	var activationTokens []model.ActivationToken
 	query := r.db.Table("activation_tokens").Order("id desc")
-	query = FilterActivationToken(query, subject)
+	query = PreloadActivationToken(query)
+	query = FilterActivationToken(query, activationToken)
 	query = query.Find(&activationTokens)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -138,15 +151,12 @@ func (r activationTokenRepo) IsValid(token string) (isValid bool, userID uint) {
 	return
 }
 
-func FilterActivationToken(query *gorm.DB, subject model.ActivationToken) *gorm.DB {
-	if subject.Token != "" {
-		query = query.Where("token LIKE ?", "%"+subject.Token+"%")
+func FilterActivationToken(query *gorm.DB, activationToken model.ActivationToken) *gorm.DB {
+	if activationToken.Token != "" {
+		query = query.Where("token LIKE ?", "%"+activationToken.Token+"%")
 	}
-	if subject.Valid.String() != "" {
-		query = query.Where("valid LIKE ?", "%"+subject.Valid.Local().Format("2006-01-02")+"%")
-	}
-	if subject.UserID > 0 {
-		query = query.Where("user_id = ?", subject.UserID)
+	if activationToken.UserID > 0 {
+		query = query.Where("user_id = ?", activationToken.UserID)
 	}
 	return query
 }
@@ -155,5 +165,10 @@ func SearchActivationToken(query *gorm.DB, search string) *gorm.DB {
 	if search != "" {
 		query = query.Where("token LIKE ? OR valid LIKE ? OR user_id LIKE ? ", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
+	return query
+}
+
+func PreloadActivationToken(query *gorm.DB) *gorm.DB {
+	query = query.Preload("User")
 	return query
 }

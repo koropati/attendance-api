@@ -6,13 +6,13 @@ import (
 )
 
 type ActivationTokenService interface {
-	CreateActivationToken(subject model.ActivationToken) (model.ActivationToken, error)
+	CreateActivationToken(activationToken model.ActivationToken) (model.ActivationToken, error)
 	RetrieveActivationToken(id int) (model.ActivationToken, error)
-	UpdateActivationToken(id int, subject model.ActivationToken) (model.ActivationToken, error)
+	UpdateActivationToken(id int, activationToken model.ActivationToken) (model.ActivationToken, error)
 	DeleteActivationToken(id int) error
-	ListActivationToken(subject model.ActivationToken, pagination model.Pagination) ([]model.ActivationToken, error)
-	ListActivationTokenMeta(subject model.ActivationToken, pagination model.Pagination) (model.Meta, error)
-	DropDownActivationToken(subject model.ActivationToken) ([]model.ActivationToken, error)
+	ListActivationToken(activationToken model.ActivationToken, pagination model.Pagination) ([]model.ActivationToken, error)
+	ListActivationTokenMeta(activationToken model.ActivationToken, pagination model.Pagination) (model.Meta, error)
+	DropDownActivationToken(activationToken model.ActivationToken) ([]model.ActivationToken, error)
 	IsValid(token string) (isValid bool, userID uint)
 }
 
@@ -24,8 +24,8 @@ func NewActivationTokenService(activationTokenRepo repo.ActivationTokenRepo) Act
 	return &activationTokenService{activationTokenRepo: activationTokenRepo}
 }
 
-func (s activationTokenService) CreateActivationToken(subject model.ActivationToken) (model.ActivationToken, error) {
-	data, err := s.activationTokenRepo.CreateActivationToken(subject)
+func (s activationTokenService) CreateActivationToken(activationToken model.ActivationToken) (model.ActivationToken, error) {
+	data, err := s.activationTokenRepo.CreateActivationToken(activationToken)
 	if err != nil {
 		return model.ActivationToken{}, err
 	}
@@ -40,8 +40,8 @@ func (s activationTokenService) RetrieveActivationToken(id int) (model.Activatio
 	return data, nil
 }
 
-func (s activationTokenService) UpdateActivationToken(id int, subject model.ActivationToken) (model.ActivationToken, error) {
-	data, err := s.activationTokenRepo.UpdateActivationToken(id, subject)
+func (s activationTokenService) UpdateActivationToken(id int, activationToken model.ActivationToken) (model.ActivationToken, error) {
+	data, err := s.activationTokenRepo.UpdateActivationToken(id, activationToken)
 	if err != nil {
 		return model.ActivationToken{}, err
 	}
@@ -56,24 +56,24 @@ func (s activationTokenService) DeleteActivationToken(id int) error {
 	}
 }
 
-func (s activationTokenService) ListActivationToken(subject model.ActivationToken, pagination model.Pagination) ([]model.ActivationToken, error) {
-	datas, err := s.activationTokenRepo.ListActivationToken(subject, pagination)
+func (s activationTokenService) ListActivationToken(activationToken model.ActivationToken, pagination model.Pagination) ([]model.ActivationToken, error) {
+	datas, err := s.activationTokenRepo.ListActivationToken(activationToken, pagination)
 	if err != nil {
 		return nil, err
 	}
 	return datas, nil
 }
 
-func (s activationTokenService) ListActivationTokenMeta(subject model.ActivationToken, pagination model.Pagination) (model.Meta, error) {
-	data, err := s.activationTokenRepo.ListActivationTokenMeta(subject, pagination)
+func (s activationTokenService) ListActivationTokenMeta(activationToken model.ActivationToken, pagination model.Pagination) (model.Meta, error) {
+	data, err := s.activationTokenRepo.ListActivationTokenMeta(activationToken, pagination)
 	if err != nil {
 		return model.Meta{}, err
 	}
 	return data, nil
 }
 
-func (s activationTokenService) DropDownActivationToken(subject model.ActivationToken) ([]model.ActivationToken, error) {
-	datas, err := s.activationTokenRepo.DropDownActivationToken(subject)
+func (s activationTokenService) DropDownActivationToken(activationToken model.ActivationToken) ([]model.ActivationToken, error) {
+	datas, err := s.activationTokenRepo.DropDownActivationToken(activationToken)
 	if err != nil {
 		return nil, err
 	}
