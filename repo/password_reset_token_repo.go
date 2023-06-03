@@ -24,27 +24,46 @@ func NewPasswordResetTokenRepo(db *gorm.DB) PasswordResetTokenRepo {
 	return &passwordResetTokenRepo{db: db}
 }
 
-func (r passwordResetTokenRepo) CreatePasswordResetToken(subject model.PasswordResetToken) (model.PasswordResetToken, error) {
-	if err := r.db.Table("password_reset_tokens").Create(&subject).Error; err != nil {
+func (r passwordResetTokenRepo) CreatePasswordResetToken(passwordResetToken model.PasswordResetToken) (model.PasswordResetToken, error) {
+	if err := r.db.Table("password_reset_tokens").Create(&passwordResetToken).Error; err != nil {
 		return model.PasswordResetToken{}, err
 	}
 
-	return subject, nil
+	query := r.db.Table("password_reset_tokens").Where("id = ?", passwordResetToken.ID)
+	query = PreloadPasswordResetToken(query)
+	query = query.First(&passwordResetToken)
+	if err := query.Error; err != nil {
+		return model.PasswordResetToken{}, err
+	}
+
+	return passwordResetToken, nil
 }
 
 func (r passwordResetTokenRepo) RetrievePasswordResetToken(id int) (model.PasswordResetToken, error) {
-	var subject model.PasswordResetToken
-	if err := r.db.First(&subject, id).Error; err != nil {
+	var passwordResetToken model.PasswordResetToken
+
+	query := r.db.Table("password_reset_tokens").Where("id = ?", id)
+	query = PreloadPasswordResetToken(query)
+
+	if err := query.First(&passwordResetToken).Error; err != nil {
 		return model.PasswordResetToken{}, err
 	}
-	return subject, nil
+
+	return passwordResetToken, nil
 }
 
-func (r passwordResetTokenRepo) UpdatePasswordResetToken(id int, subject model.PasswordResetToken) (model.PasswordResetToken, error) {
-	if err := r.db.Model(&model.PasswordResetToken{}).Where("id = ?", id).Updates(&subject).Error; err != nil {
+func (r passwordResetTokenRepo) UpdatePasswordResetToken(id int, passwordResetToken model.PasswordResetToken) (model.PasswordResetToken, error) {
+	if err := r.db.Model(&model.PasswordResetToken{}).Where("id = ?", id).Updates(&passwordResetToken).Error; err != nil {
 		return model.PasswordResetToken{}, err
 	}
-	return subject, nil
+
+	query := r.db.Table("password_reset_tokens").Where("id = ?", id)
+	query = PreloadPasswordResetToken(query)
+
+	if err := query.First(&passwordResetToken).Error; err != nil {
+		return model.PasswordResetToken{}, err
+	}
+	return passwordResetToken, nil
 }
 
 func (r passwordResetTokenRepo) DeletePasswordResetToken(id int) error {
@@ -54,12 +73,13 @@ func (r passwordResetTokenRepo) DeletePasswordResetToken(id int) error {
 	return nil
 }
 
-func (r passwordResetTokenRepo) ListPasswordResetToken(subject model.PasswordResetToken, pagination model.Pagination) ([]model.PasswordResetToken, error) {
+func (r passwordResetTokenRepo) ListPasswordResetToken(passwordResetToken model.PasswordResetToken, pagination model.Pagination) ([]model.PasswordResetToken, error) {
 	var passwordResetTokens []model.PasswordResetToken
 	offset := (pagination.Page - 1) * pagination.Limit
 
 	query := r.db.Table("password_reset_tokens").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-	query = FilterPasswordResetToken(query, subject)
+	query = PreloadPasswordResetToken(query)
+	query = FilterPasswordResetToken(query, passwordResetToken)
 	query = SearchPasswordResetToken(query, pagination.Search)
 	query = query.Find(&passwordResetTokens)
 	if err := query.Error; err != nil {
@@ -69,13 +89,13 @@ func (r passwordResetTokenRepo) ListPasswordResetToken(subject model.PasswordRes
 	return passwordResetTokens, nil
 }
 
-func (r passwordResetTokenRepo) ListPasswordResetTokenMeta(subject model.PasswordResetToken, pagination model.Pagination) (model.Meta, error) {
+func (r passwordResetTokenRepo) ListPasswordResetTokenMeta(passwordResetToken model.PasswordResetToken, pagination model.Pagination) (model.Meta, error) {
 	var passwordResetTokens []model.PasswordResetToken
 	var totalRecord int
 	var totalPage int
 
 	queryTotal := r.db.Model(&model.PasswordResetToken{}).Select("count(*)")
-	queryTotal = FilterPasswordResetToken(queryTotal, subject)
+	queryTotal = FilterPasswordResetToken(queryTotal, passwordResetToken)
 	queryTotal = SearchPasswordResetToken(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
@@ -90,7 +110,7 @@ func (r passwordResetTokenRepo) ListPasswordResetTokenMeta(subject model.Passwor
 	offset := (pagination.Page - 1) * pagination.Limit
 
 	query := r.db.Table("password_reset_tokens").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-	query = FilterPasswordResetToken(query, subject)
+	query = FilterPasswordResetToken(query, passwordResetToken)
 	query = SearchPasswordResetToken(query, pagination.Search)
 	query = query.Find(&passwordResetTokens)
 	if err := query.Error; err != nil {
@@ -106,10 +126,11 @@ func (r passwordResetTokenRepo) ListPasswordResetTokenMeta(subject model.Passwor
 	return meta, nil
 }
 
-func (r passwordResetTokenRepo) DropDownPasswordResetToken(subject model.PasswordResetToken) ([]model.PasswordResetToken, error) {
+func (r passwordResetTokenRepo) DropDownPasswordResetToken(passwordResetToken model.PasswordResetToken) ([]model.PasswordResetToken, error) {
 	var passwordResetTokens []model.PasswordResetToken
 	query := r.db.Table("password_reset_tokens").Order("id desc")
-	query = FilterPasswordResetToken(query, subject)
+	query = PreloadPasswordResetToken(query)
+	query = FilterPasswordResetToken(query, passwordResetToken)
 	query = query.Find(&passwordResetTokens)
 	if err := query.Error; err != nil {
 		return nil, err
@@ -117,15 +138,12 @@ func (r passwordResetTokenRepo) DropDownPasswordResetToken(subject model.Passwor
 	return passwordResetTokens, nil
 }
 
-func FilterPasswordResetToken(query *gorm.DB, subject model.PasswordResetToken) *gorm.DB {
-	if subject.Token != "" {
-		query = query.Where("token LIKE ?", "%"+subject.Token+"%")
+func FilterPasswordResetToken(query *gorm.DB, passwordResetToken model.PasswordResetToken) *gorm.DB {
+	if passwordResetToken.Token != "" {
+		query = query.Where("token LIKE ?", "%"+passwordResetToken.Token+"%")
 	}
-	if subject.Valid.String() != "" {
-		query = query.Where("valid LIKE ?", "%"+subject.Valid.Local().Format("2006-01-02")+"%")
-	}
-	if subject.UserID > 0 {
-		query = query.Where("user_id = ?", subject.UserID)
+	if passwordResetToken.UserID > 0 {
+		query = query.Where("user_id = ?", passwordResetToken.UserID)
 	}
 	return query
 }
@@ -134,5 +152,10 @@ func SearchPasswordResetToken(query *gorm.DB, search string) *gorm.DB {
 	if search != "" {
 		query = query.Where("token LIKE ? OR valid LIKE ? OR user_id LIKE ? ", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
+	return query
+}
+
+func PreloadPasswordResetToken(query *gorm.DB) *gorm.DB {
+	query = query.Preload("User")
 	return query
 }

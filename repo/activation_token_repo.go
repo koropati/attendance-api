@@ -58,6 +58,14 @@ func (r activationTokenRepo) UpdateActivationToken(id int, activationToken model
 	if err := r.db.Model(&model.ActivationToken{}).Where("id = ?", id).Updates(&activationToken).Error; err != nil {
 		return model.ActivationToken{}, err
 	}
+
+	query := r.db.Table("activation_tokens").Where("id = ?", id)
+	query = PreloadActivationToken(query)
+
+	if err := query.First(&activationToken).Error; err != nil {
+		return model.ActivationToken{}, err
+	}
+
 	return activationToken, nil
 }
 

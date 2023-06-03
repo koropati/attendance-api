@@ -15,7 +15,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 type PasswordResetTokenHandler interface {
@@ -63,12 +62,12 @@ func (h passwordResetTokenHandler) Create(c *gin.Context) {
 	}
 	data.GormCustom.CreatedBy = currentUserID
 
-	if err := validation.Validate(data.Token, validation.Required, validation.Length(1, 64), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Token, validation.Required, validation.Length(1, 64)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("token: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.UserID, validation.Required, is.UTFNumeric); err != nil {
+	if err := validation.Validate(data.UserID, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id pengguna: %v", err))
 		return
 	}
@@ -141,12 +140,12 @@ func (h passwordResetTokenHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.Token, validation.Required, validation.Length(1, 64), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Token, validation.Required, validation.Length(1, 64)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("token: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.UserID, validation.Required, is.UTFNumeric); err != nil {
+	if err := validation.Validate(data.UserID, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id pengguna: %v", err))
 		return
 	}
