@@ -1,6 +1,6 @@
 {
     "environment": {
-        "mode": "development"
+        "mode": "production"
     },
     "server" : {
         "web_url": "http://localhost:3000",
