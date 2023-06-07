@@ -322,29 +322,33 @@ func (h authUserHandler) Activation(c *gin.Context) {
 	config := h.infra.Config().Sub("server")
 	statusData := ""
 	messageData := ""
-	baseUrlRedirect := config.GetString("web_url") + "/pages/authentication/verify-email/"
+	baseUrl := config.GetString("web_url")
+	if baseUrl == "" {
+		baseUrl = "https://senku-koropati.vercel.app"
+	}
+	baseUrlRedirect := baseUrl + "/pages/authentication/verify-email/"
 	token := c.Query("token")
 	if token == "" {
 		statusData = "failed"
 		messageData = "Aktivasi token tidak valid"
-		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
+		c.Redirect(http.StatusFound, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
 	}
 	isValid, userID := h.activationTokenService.IsValid(token)
 	if userID == 0 && !isValid {
 		statusData = "failed"
 		messageData = "Ketika sedang memvalidasi, aktivasi token sudah kedaluarsa"
-		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
+		c.Redirect(http.StatusFound, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
 	}
 	user, err := h.authService.SetActiveUser(int(userID))
 	if err != nil {
 		statusData = "failed"
 		messageData = "Ketika sedang mengaktifkan pengguna aktivasi token sudah kedaluarsa"
-		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
+		c.Redirect(http.StatusFound, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
 	}
 
 	statusData = "success"
 	messageData = "Halo " + user.FirstName + " " + user.LastName + ", anda telah berhasil memferifikasi email, anda sekarang bisa mealakukan aktifitas pada aplikasi."
-	c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
+	c.Redirect(http.StatusFound, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
 }
 
 // Logout ... Logout System
