@@ -328,21 +328,18 @@ func (h authUserHandler) Activation(c *gin.Context) {
 		statusData = "failed"
 		messageData = "Aktivasi token tidak valid"
 		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
-		return
 	}
 	isValid, userID := h.activationTokenService.IsValid(token)
 	if userID == 0 && !isValid {
 		statusData = "failed"
 		messageData = "Ketika sedang memvalidasi, aktivasi token sudah kedaluarsa"
 		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
-		return
 	}
 	user, err := h.authService.SetActiveUser(int(userID))
 	if err != nil {
 		statusData = "failed"
 		messageData = "Ketika sedang mengaktifkan pengguna aktivasi token sudah kedaluarsa"
 		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
-		return
 	}
 
 	statusData = "success"
