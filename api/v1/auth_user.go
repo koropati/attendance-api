@@ -319,26 +319,35 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 // @Router /auth/activation [get]
 // @param token query string true "token data"
 func (h authUserHandler) Activation(c *gin.Context) {
+	config := h.infra.Config().Sub("server")
+	statusData := ""
+	messageData := ""
+	baseUrlRedirect := config.GetString("web_url") + "/pages/authentication/verify-email/"
 	token := c.Query("token")
 	if token == "" {
-		err := fmt.Errorf("aktivasi token tidak valid")
-		response.New(c).Error(http.StatusBadRequest, err)
+		statusData = "failed"
+		messageData = "Aktivasi token tidak valid"
+		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
 		return
 	}
 	isValid, userID := h.activationTokenService.IsValid(token)
 	if userID == 0 && !isValid {
-		err := fmt.Errorf("ketika memvalidasi token aktivasi token sudah kedaluarsa")
-		response.New(c).Error(http.StatusBadRequest, err)
+		statusData = "failed"
+		messageData = "Ketika sedang memvalidasi, aktivasi token sudah kedaluarsa"
+		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
 		return
 	}
 	user, err := h.authService.SetActiveUser(int(userID))
 	if err != nil {
-		err := fmt.Errorf("ketika sedang mengaktifkan pengguna aktivasi token sudah kedaluarsa")
-		response.New(c).Error(http.StatusBadRequest, err)
+		statusData = "failed"
+		messageData = "Ketika sedang mengaktifkan pengguna aktivasi token sudah kedaluarsa"
+		c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
 		return
 	}
 
-	response.New(c).Data(200, "berhasil mengaktifkan pengguna", user)
+	statusData = "success"
+	messageData = "Halo " + user.FirstName + " " + user.LastName + ", anda telah berhasil memferifikasi email, anda sekarang bisa mealakukan aktifitas pada aplikasi."
+	c.Redirect(http.StatusMovedPermanently, baseUrlRedirect+"?status="+statusData+"&message="+messageData)
 }
 
 // Logout ... Logout System

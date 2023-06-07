@@ -289,6 +289,19 @@ func (h studentHandler) Update(c *gin.Context) {
 		data.User.Password = string(password)
 	}
 
+	// get oldUserData
+	oldUser, err := h.userService.RetrieveUser(int(oldDataStudent.User.ID))
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// fill infomartion role
+	data.User.IsActive = oldUser.IsActive
+	data.User.IsUser = oldUser.IsUser
+	data.User.IsAdmin = oldUser.IsAdmin
+	data.User.IsSuperAdmin = oldUser.IsSuperAdmin
+
 	_, err = h.userService.UpdateUser(int(oldDataStudent.User.ID), data.User)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
