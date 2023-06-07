@@ -257,11 +257,25 @@ func (r userRepo) RetrieveUserByEmail(email string) (user model.User, err error)
 }
 
 func (r userRepo) UpdateUser(id int, user model.User) (model.User, error) {
-	query := r.db.Table("users")
-	query = PreloadUser(query)
-	if err := query.Where("id = ?", id).Updates(&user).Error; err != nil {
+	if err := r.db.Table("users").Where("id = ?", id).Updates(map[string]interface{}{
+		"is_active":      user.IsActive,
+		"is_user":        user.IsUser,
+		"is_admin":       user.IsAdmin,
+		"is_super_admin": user.IsSuperAdmin,
+	}).Error; err != nil {
 		return model.User{}, err
 	}
+
+	if err := r.db.Table("users").Where("id = ?", id).Updates(&user).Error; err != nil {
+		return model.User{}, err
+	}
+
+	query := r.db.Table("users")
+	query = PreloadUser(query)
+	if err := query.Where("id = ?", id).First(&user).Error; err != nil {
+		return model.User{}, err
+	}
+
 	user.Role = user.GetRole()
 	user.Avatar = user.GetAvatar()
 	user.UserAbilities = user.GetAbility()
