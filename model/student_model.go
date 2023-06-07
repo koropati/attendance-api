@@ -16,6 +16,7 @@ type Student struct {
 	StudyProgram   StudyProgram `json:"study_program"`
 	Address        string       `json:"address" gorm:"type:varchar(255)"`
 	Gender         string       `json:"gender" gorm:"type:enum('laki-laki','perempuan');default:'laki-laki'"`
+	Avatar         string       `json:"avatar" gorm:"-"`
 }
 
 type UserStudent struct {
@@ -38,6 +39,15 @@ type UserStudent struct {
 	StudyProgram   StudyProgram `json:"study_program"`
 	Address        string       `json:"address" gorm:"type:varchar(255)"`
 	Gender         string       `json:"gender" gorm:"type:enum('laki-laki','perempuan');default:'laki-laki'"`
+	Avatar         string       `json:"avatar" gorm:"-"`
+}
+
+func (data Student) GetAvatar() (url string) {
+	if data.Gender == "laki-laki" {
+		return "https://cdn-icons-png.flaticon.com/512/8348/8348118.png"
+	} else {
+		return "https://cdn-icons-png.flaticon.com/512/8348/8348099.png"
+	}
 }
 
 func (data Student) GeneratePassword() (passwordGenrate string) {

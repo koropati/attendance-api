@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"sync"
 
 	"gorm.io/gorm"
 )
@@ -42,7 +43,7 @@ func (r studentRepo) CreateStudent(student model.Student) (model.Student, error)
 	if err := query2.Where("id = ?", student.ID).First(&student).Error; err != nil {
 		return model.Student{}, err
 	}
-
+	student.Avatar = student.GetAvatar()
 	return student, nil
 }
 
@@ -53,6 +54,7 @@ func (r studentRepo) RetrieveStudent(id int) (model.Student, error) {
 	if err := query.Where("id = ?", id).First(&student).Error; err != nil {
 		return model.Student{}, err
 	}
+	student.Avatar = student.GetAvatar()
 	return student, nil
 }
 
@@ -63,6 +65,7 @@ func (r studentRepo) RetrieveStudentByUserID(userID int) (model.Student, error) 
 	if err := query.Where("user_id = ?", userID).First(&student).Error; err != nil {
 		return model.Student{}, err
 	}
+	student.Avatar = student.GetAvatar()
 	return student, nil
 }
 
@@ -73,6 +76,7 @@ func (r studentRepo) RetrieveStudentByOwner(id int, ownerID int) (model.Student,
 	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).First(&student).Error; err != nil {
 		return model.Student{}, err
 	}
+	student.Avatar = student.GetAvatar()
 	return student, nil
 }
 
@@ -88,6 +92,7 @@ func (r studentRepo) UpdateStudent(id int, student model.Student) (model.Student
 	if err := query2.Where("id = ?", id).First(&student).Error; err != nil {
 		return model.Student{}, err
 	}
+	student.Avatar = student.GetAvatar()
 	return student, nil
 }
 
@@ -103,6 +108,7 @@ func (r studentRepo) UpdateStudentByOwner(id int, ownerID int, student model.Stu
 	if err := query2.Where("id = ? AND owner_id = ?", id, ownerID).First(&student).Error; err != nil {
 		return model.Student{}, err
 	}
+	student.Avatar = student.GetAvatar()
 	return student, nil
 }
 
@@ -132,6 +138,16 @@ func (r studentRepo) ListStudent(student model.Student, pagination model.Paginat
 	if err := query.Error; err != nil {
 		return nil, err
 	}
+
+	wg := sync.WaitGroup{}
+	for i, student := range students {
+		wg.Add(1)
+		go func(i int, student model.Student) {
+			students[i].Avatar = student.GetAvatar()
+			wg.Done()
+		}(i, student)
+	}
+	wg.Wait()
 
 	return students, nil
 }

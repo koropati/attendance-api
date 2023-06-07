@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"sync"
 
 	"gorm.io/gorm"
 )
@@ -42,7 +43,7 @@ func (r teacherRepo) CreateTeacher(teacher model.Teacher) (model.Teacher, error)
 	if err := query2.Where("id = ?", teacher.ID).First(&teacher).Error; err != nil {
 		return model.Teacher{}, err
 	}
-
+	teacher.Avatar = teacher.GetAvatar()
 	return teacher, nil
 }
 
@@ -53,6 +54,7 @@ func (r teacherRepo) RetrieveTeacher(id int) (model.Teacher, error) {
 	if err := query.Where("id = ?", id).First(&teacher).Error; err != nil {
 		return model.Teacher{}, err
 	}
+	teacher.Avatar = teacher.GetAvatar()
 	return teacher, nil
 }
 
@@ -63,6 +65,7 @@ func (r teacherRepo) RetrieveTeacherByUserID(userID int) (model.Teacher, error) 
 	if err := query.Where("user_id = ?", userID).First(&teacher).Error; err != nil {
 		return model.Teacher{}, err
 	}
+	teacher.Avatar = teacher.GetAvatar()
 	return teacher, nil
 }
 
@@ -73,6 +76,7 @@ func (r teacherRepo) RetrieveTeacherByOwner(id int, ownerID int) (model.Teacher,
 	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).First(&teacher).Error; err != nil {
 		return model.Teacher{}, err
 	}
+	teacher.Avatar = teacher.GetAvatar()
 	return teacher, nil
 }
 
@@ -88,6 +92,7 @@ func (r teacherRepo) UpdateTeacher(id int, teacher model.Teacher) (model.Teacher
 	if err := query2.Where("id = ?", id).First(&teacher).Error; err != nil {
 		return model.Teacher{}, err
 	}
+	teacher.Avatar = teacher.GetAvatar()
 	return teacher, nil
 }
 
@@ -102,6 +107,7 @@ func (r teacherRepo) UpdateTeacherByOwner(id int, ownerID int, teacher model.Tea
 	if err := query2.Where("id = ? AND owner_id = ?", id, ownerID).First(&teacher).Error; err != nil {
 		return model.Teacher{}, err
 	}
+	teacher.Avatar = teacher.GetAvatar()
 	return teacher, nil
 }
 
@@ -131,6 +137,16 @@ func (r teacherRepo) ListTeacher(teacher model.Teacher, pagination model.Paginat
 	if err := query.Error; err != nil {
 		return nil, err
 	}
+
+	wg := sync.WaitGroup{}
+	for i, teacher := range teachers {
+		wg.Add(1)
+		go func(i int, teacher model.Teacher) {
+			teachers[i].Avatar = teacher.GetAvatar()
+			wg.Done()
+		}(i, teacher)
+	}
+	wg.Wait()
 
 	return teachers, nil
 }

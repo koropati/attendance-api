@@ -62,13 +62,13 @@ func (data User) GetAbility() (abilities []Ability) {
 
 func (data User) GetAvatar() (url string) {
 	if data.IsSuperAdmin {
-		return "https://cdn-icons-png.flaticon.com/512/6024/6024190.png"
+		return "https://cdn-icons-png.flaticon.com/512/1535/1535835.png"
 	} else if data.IsAdmin {
-		return "https://cdn-icons-png.flaticon.com/512/1089/1089129.png"
+		return "https://cdn-icons-png.flaticon.com/512/8443/8443259.png"
 	} else if data.IsUser {
-		return "https://cdn-icons-png.flaticon.com/512/9408/9408175.png"
+		return "https://cdn-icons-png.flaticon.com/512/201/201818.png"
 	} else {
-		return "https://cdn-icons-png.flaticon.com/512/2102/2102633.png"
+		return "https://cdn-icons-png.flaticon.com/512/7878/7878622.png"
 	}
 }
 
