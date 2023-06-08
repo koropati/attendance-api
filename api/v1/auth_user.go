@@ -122,7 +122,7 @@ func (h authUserHandler) Register(c *gin.Context) {
 
 		go func(user model.User) {
 			config := h.infra.Config().Sub("server")
-			urlActivation := fmt.Sprintf("%s/v1/auth/activation?token=%s", config.GetString("web_url"), activationData.Token)
+			urlActivation := fmt.Sprintf("%s/v1/auth/activation?token=%s", config.GetString("base_url"), activationData.Token)
 
 			if err := email.New(h.infra.GoMail(), h.infra.Config()).SendActivation(user.FirstName, user.Email, urlActivation); err != nil {
 				log.Printf("Error Send Email E: %v", err)

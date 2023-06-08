@@ -189,14 +189,14 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
                                  <tbody>
                                     <tr>
                                        <td width="100%%" align="center" style="padding-left:15px; padding-right:15px;">
-                                          <p style="font-family:'Ubuntu Mono', monospace; color:#ffffff; font-size:12px;">%s &copy; 2023, All Rights Reserved</p>
+                                          <p style="font-family:'Ubuntu Mono', monospace; color:#602234; font-size:12px;">%s &copy; 2023, All Rights Reserved</p>
                                        </td>
                                     </tr>
                                     <tr>
                                        <td width="100%%" align="center" style="padding-left:15px; padding-right:15px;">
-                                          <a href="%s" style="text-decoration:underline; font-family:'Ubuntu Mono', monospace; color:#ffffff; font-size:12px;">Terms of Use</a>
-                                          <span style="font-family:'Ubuntu Mono', monospace; color:#ffffff;">|</span>
-                                          <a href="%s" style="text-decoration:underline; font-family:'Ubuntu Mono', monospace; color:#ffffff; font-size:12px;">Privacy Policy</a>
+                                          <a href="%s" style="text-decoration:underline; font-family:'Ubuntu Mono', monospace; color:#602234; font-size:12px;">Terms of Use</a>
+                                          <span style="font-family:'Ubuntu Mono', monospace; color:#602234;">|</span>
+                                          <a href="%s" style="text-decoration:underline; font-family:'Ubuntu Mono', monospace; color:#602234; font-size:12px;">Privacy Policy</a>
                                        </td>
                                     </tr>
                                  </tbody>
