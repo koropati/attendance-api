@@ -1,6 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
-{{template "header.html"}}
+<html>
+<head>
+  <title>{{ .title }}</title>
+  <style>
+    body {
+      font-family: arial;
+      color: #585858;
+      background: #fafafa;
+    }
+
+    .container {
+      max-width: 600px;
+      font-size: 1.1rem;
+      margin: 0 auto;
+      border: 20px solid #585858;
+      text-align: center;
+      background: white;
+      line-height: 30px;
+    }
+
+    .container #text-wrapper {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .container #button-action {
+      margin: 40px 10px;
+    }
+
+    .container #verify-email {
+      background: #602234;
+      color: white;
+      text-decoration: none;
+      padding: 15px 50px;
+      font-size: 20px;
+    }
+
+    .footer {
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
 
 <body>
   <div class="container">
@@ -14,7 +57,10 @@
     </div><br /><span>Best Regards,</span>
     <h4>SENKU TEAM</h4>
   </div>
-  {{template "footer.html"}}
+  <div class="footer">
+    <p>© 2023 Senku</p>
+    <p>Ini adalah layanan email notifikasi dari senku</p>
+  </div>
 </body>
 
 </html>
