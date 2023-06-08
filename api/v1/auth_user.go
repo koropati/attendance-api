@@ -319,6 +319,7 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 // @Router /auth/activation [get]
 // @param token query string true "token data"
 func (h authUserHandler) Activation(c *gin.Context) {
+	c.Writer.Header().Set("Content-Type", "text/html")
 	config := h.infra.Config().Sub("server")
 	token := c.Query("token")
 	if token == "" {
