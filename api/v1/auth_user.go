@@ -362,6 +362,7 @@ func (h authUserHandler) Activation(c *gin.Context) {
 		"url":     config.GetString("web_url"),
 	}
 	c.HTML(http.StatusOK, "verify_email.html", data)
+	return
 }
 
 // Logout ... Logout System
