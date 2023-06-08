@@ -7,6 +7,8 @@ import (
 	docs "attendance-api/docs"
 	"attendance-api/infra"
 	"attendance-api/manager"
+	"strings"
+	"text/template"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -35,6 +37,11 @@ func NewServer(infra infra.Infra) Server {
 
 func (c server) Run() {
 	docs.SwaggerInfo.BasePath = "/v1"
+
+	c.gin.SetFuncMap(template.FuncMap{
+		"upper": strings.ToUpper,
+	})
+	c.gin.LoadHTMLGlob("views/*.html")
 	c.gin.Use(c.middleware.CORS())
 	c.handlers()
 	c.v1()

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "header.html"}}
+
+<body>
+  <div class="container">
+    <div id="text-wrapper">
+      <h3>Proses aktivasi akun, {{ .status }}</h3>
+      <p>{{ .message }}</p>
+    </div>
+    <div id="button-action"><a id="verify-email" href="{{ .url }}">Halaman Utama</a></div>
+    <div id="text-wrapper">
+      <p>jika anda merasa tidak pernah submit atau mendaftar di senku maka abaikan email ini</p>
+    </div><br /><span>Best Regards,</span>
+    <h4>SENKU TEAM</h4>
+  </div>
+  {{template "footer.html"}}
+</body>
+
+</html>

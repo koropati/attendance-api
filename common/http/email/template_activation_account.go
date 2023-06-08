@@ -9,8 +9,9 @@ import (
 func GenerateTemplateActivationAccount(linkActivation string, userName string, userEmail string, config *viper.Viper) (html string) {
 	dataConfig := config.Sub("general")
 
-	headerText := fmt.Sprintf(`Hello %s<%s>, <br>Thank you for Registration!`, userName, userEmail)
-	bodyText := fmt.Sprintf(`You are just one step away from completing your registration, activate your account by clicking the button below to start your jurney in %s and gain access to Clock In and Clock Out!`, dataConfig.GetString("company_name"))
+	headerText := fmt.Sprintf(`Hai %s<%s>, <br>Terimakasih sudah mendaftar`, userName, userEmail)
+	bodyText := fmt.Sprintf(`
+   Anda tinggal selangkah lagi untuk menyelesaikan pendaftaran Anda, aktifkan akun Anda dengan mengklik tombol di bawah ini untuk memulai perjalanan Anda di %s dan dapatkan akses ke Clock In dan Clock Out!`, dataConfig.GetString("company_name"))
 
 	html = fmt.Sprintf(`
 	<!-- START HEAD -->
@@ -39,7 +40,7 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
       <table width="100%%" border="0" cellpadding="0" cellspacing="0" align="center">
          <tbody>
             <tr>
-               <td align="center" bgcolor="#1976D2">
+               <td align="center" bgcolor="#f0ece2">
                   <table width="100%%" border="0" cellpadding="0" cellspacing="0" align="center">
                      <tbody>
                         <tr>
@@ -58,7 +59,7 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
                                  <tbody>
                                     <tr>
                                        <td width="100%%" align="center">
-                                          <img width="200" src="%s" alt="Wokdev" border="0" style="text-align: center;"/>
+                                          <img width="200" src="%s" alt="SENKU" border="0" style="text-align: center;"/>
                                        </td>
                                     </tr>
                                  </tbody>
@@ -82,7 +83,7 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
                                           <table width="100%%" border="0" cellpadding="0" cellspacing="0" align="center">
                                              <tbody>
                                                 <tr>
-                                                   <td width="100%%" height="7" align="center" border="0" bgcolor="#03a9f4"></td>
+                                                   <td width="100%%" height="7" align="center" border="0" bgcolor="#602234"></td>
                                                 </tr>
                                              </tbody>
                                           </table>
@@ -136,7 +137,7 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
                                           <table width="200" border="0" cellpadding="0" cellspacing="0" align="center">
                                              <tbody>
                                                 <tr>
-                                                   <td align="center" bgcolor="#1976D2">
+                                                   <td align="center" bgcolor="#602234">
                                                       <a style="font-family:'Ubuntu Mono', monospace; display:block; color:#ffffff; font-size:14px; font-weight:bold; text-decoration:none; padding-left:20px; padding-right:20px; padding-top:20px; padding-bottom:20px;" href="%s">Verify E-mail Address</a>
                                                    </td>
                                                 </tr>
@@ -171,13 +172,13 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
                                  <tbody>
                                     <tr>
                                        <td width="100%%" align="center">
-                                          <a href="%s"><img width="25" height="25" src="https://codewiz.co/img/email_templates/facebook_icon.png" alt="Facebook" border="0" style="text-align: center;"/></a>
-                                          <a href="%s"><img width="25" height="25" src="https://codewiz.co/img/email_templates/twitter_icon.png" alt="Twitter" border="0" style="text-align: center;"/></a>
-                                          <a href="%s"><img width="25" height="25" src="https://codewiz.co/img/email_templates/linkedin_icon.png" alt="LinkedIn" border="0" style="text-align: center;"/></a>
-                                          <a href="%s"><img width="25" height="25" src="https://codewiz.co/img/email_templates/instagram_icon.png" alt="Instagram" border="0" style="text-align: center;"/></a>
-                                          <a href="%s"><img width="25" height="25" src="https://codewiz.co/img/email_templates/youtube_icon.png" alt="Youtube" border="0" style="text-align: center;"/></a>
-                                          <a href="%s"><img width="25" height="25" src="https://codewiz.co/img/email_templates/google_plus_icon.png" alt="Google Plus" border="0" style="text-align: center;"/></a>
-                                          <a href="%s"><img width="25" height="25" src="https://codewiz.co/img/email_templates/github_icon.png" alt="Github" border="0" style="text-align: center;"/></a>
+                                          <a href="%s"><img width="25" height="25" src="https://cdn-icons-png.flaticon.com/512/4494/4494475.png" alt="Facebook" border="0" style="text-align: center;"/></a>
+                                          <a href="%s"><img width="25" height="25" src="https://cdn-icons-png.flaticon.com/512/4494/4494477.png" alt="Twitter" border="0" style="text-align: center;"/></a>
+                                          <a href="%s"><img width="25" height="25" src="https://cdn-icons-png.flaticon.com/512/4494/4494497.png" alt="LinkedIn" border="0" style="text-align: center;"/></a>
+                                          <a href="%s"><img width="25" height="25" src="https://cdn-icons-png.flaticon.com/512/4494/4494488.png" alt="Instagram" border="0" style="text-align: center;"/></a>
+                                          <a href="%s"><img width="25" height="25" src="https://cdn-icons-png.flaticon.com/512/4494/4494485.png" alt="Youtube" border="0" style="text-align: center;"/></a>
+                                          <a href="%s"><img width="25" height="25" src="https://cdn-icons-png.flaticon.com/512/2111/2111450.png" alt="Google Plus" border="0" style="text-align: center;"/></a>
+                                          <a href="%s"><img width="25" height="25" src="https://cdn-icons-png.flaticon.com/512/4494/4494749.png" alt="Github" border="0" style="text-align: center;"/></a>
                                        </td>
                                     </tr>
                                  </tbody>
@@ -188,7 +189,7 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
                                  <tbody>
                                     <tr>
                                        <td width="100%%" align="center" style="padding-left:15px; padding-right:15px;">
-                                          <p style="font-family:'Ubuntu Mono', monospace; color:#ffffff; font-size:12px;">%s &copy; 2017, All Rights Reserved</p>
+                                          <p style="font-family:'Ubuntu Mono', monospace; color:#ffffff; font-size:12px;">%s &copy; 2023, All Rights Reserved</p>
                                        </td>
                                     </tr>
                                     <tr>
