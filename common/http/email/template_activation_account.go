@@ -59,7 +59,7 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
                                  <tbody>
                                     <tr>
                                        <td width="100%%" align="center">
-                                          <img width="200" src="%s" alt="SENKU" border="0" style="text-align: center;"/>
+                                          <img width="25" src="%s" alt="SENKU" border="0" style="text-align: center;"/>
                                        </td>
                                     </tr>
                                  </tbody>
@@ -133,12 +133,13 @@ func GenerateTemplateActivationAccount(linkActivation string, userName string, u
                                           </table>
                                           <!-- END SPACING -->
                                           %s
+                                          <br>
                                           <!-- START BUTTON -->
                                           <table width="200" border="0" cellpadding="0" cellspacing="0" align="center">
                                              <tbody>
                                                 <tr>
                                                    <td align="center" bgcolor="#602234">
-                                                      <a style="font-family:'Ubuntu Mono', monospace; display:block; color:#ffffff; font-size:14px; font-weight:bold; text-decoration:none; padding-left:20px; padding-right:20px; padding-top:20px; padding-bottom:20px;" href="%s">Verify E-mail Address</a>
+                                                      <a style="font-family:'Ubuntu Mono', monospace; display:block; color:#ffffff; font-size:14px; font-weight:bold; text-decoration:none; padding-left:20px; padding-right:20px; padding-top:20px; padding-bottom:20px;" href="%s">Aktifkan Akun</a>
                                                    </td>
                                                 </tr>
                                              </tbody>
