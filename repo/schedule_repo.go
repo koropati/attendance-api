@@ -46,7 +46,7 @@ func (r scheduleRepo) RetrieveSchedule(id int) (model.Schedule, error) {
 	var schedule model.Schedule
 	query := r.db.Table("schedules")
 	query = PreloadSchedule(query)
-	if err := query.First(schedule, id).Error; err != nil {
+	if err := query.Where("id = ?", id).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
 	return schedule, nil

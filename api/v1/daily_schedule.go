@@ -152,7 +152,7 @@ func (h dailyScheduleHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255), is.Alphanumeric); err != nil {
+	if err := validation.Validate(data.Name, validation.Required, validation.Length(1, 255)); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("nama: %v", err))
 		return
 	}
