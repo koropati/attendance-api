@@ -3,6 +3,7 @@ package repo
 import (
 	"attendance-api/model"
 	"fmt"
+	"sync"
 	"time"
 
 	"gorm.io/gorm"
@@ -14,8 +15,10 @@ type UserScheduleRepo interface {
 	RetrieveUserScheduleByOwner(id int, ownerID int) (model.UserSchedule, error)
 	ListMySchedule(userID int) ([]model.MySchedule, error)
 	ListTodaySchedule(userID int, dayName string) ([]model.TodaySchedule, error)
-	ListUserInRule(scheduleID int, user model.User, pagination model.Pagination) ([]model.User, error)
-	ListUserInRuleMeta(scheduleID int, user model.User, pagination model.Pagination) (model.Meta, error)
+	ListUserInRule(scheduleID int, user model.Student, pagination model.Pagination) ([]model.Student, error)
+	ListUserInRuleMeta(scheduleID int, user model.Student, pagination model.Pagination) (model.Meta, error)
+	ListUserNotInRule(scheduleID int, user model.Student, pagination model.Pagination) ([]model.Student, error)
+	ListUserNotInRuleMeta(scheduleID int, user model.Student, pagination model.Pagination) (model.Meta, error)
 	UpdateUserSchedule(id int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	DeleteUserSchedule(id int) error
@@ -156,23 +159,84 @@ func (r userScheduleRepo) ListUserSchedule(userschedule model.UserSchedule, pagi
 	return userschedules, nil
 }
 
-func (r userScheduleRepo) ListUserInRule(scheduleID int, user model.User, pagination model.Pagination) ([]model.User, error) {
+func (r userScheduleRepo) ListUserInRule(scheduleID int, student model.Student, pagination model.Pagination) ([]model.Student, error) {
 	var userID []int
-	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
-		return nil, err
+	if student.OwnerID > 0 {
+		if err := PreloadUserSchedule(r.db.Model(&[]model.UserSchedule{})).Select("user_id").Where("schedule_id = ? AND owner_id = ?", scheduleID, student.OwnerID).Find(&userID).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := PreloadUserSchedule(r.db.Model(&[]model.UserSchedule{})).Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
+			return nil, err
+		}
 	}
-	var users []model.User
+
+	var students []model.Student
 	offset := (pagination.Page - 1) * pagination.Limit
-	query := r.db.Table("users").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-	query = query.Where("id IN ?", userID)
-	query = FilterUser(query, user)
-	query = SearchUser(query, pagination.Search)
-	query = query.Find(&users)
+	query := r.db.Model(&[]model.Student{})
+	query = PreloadStudent(query)
+	query = query.Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = query.Where("user_id IN (?)", userID)
+	query = FilterStudent(query, student)
+	query = SearchStudent(query, pagination.Search)
+	query = query.Find(&students)
 	if err := query.Error; err != nil {
 		return nil, err
 	}
 
-	return users, nil
+	wg := sync.WaitGroup{}
+	for i, student := range students {
+		wg.Add(1)
+		go func(i int, student model.Student) {
+			students[i].Avatar = student.GetAvatar()
+			wg.Done()
+		}(i, student)
+	}
+	wg.Wait()
+
+	return students, nil
+}
+
+func (r userScheduleRepo) ListUserNotInRule(scheduleID int, student model.Student, pagination model.Pagination) ([]model.Student, error) {
+	var userID []int
+
+	if student.OwnerID > 0 {
+		if err := PreloadUserSchedule(r.db.Model(&[]model.UserSchedule{})).Select("user_id").Where("schedule_id = ? AND owner_id = ?", scheduleID, student.OwnerID).Find(&userID).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := PreloadUserSchedule(r.db.Model(&[]model.UserSchedule{})).Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
+			return nil, err
+		}
+	}
+	if len(userID) <= 0 {
+		userID = append(userID, 0)
+	}
+
+	var students []model.Student
+	offset := (pagination.Page - 1) * pagination.Limit
+	query := r.db.Model(&[]model.Student{})
+	query = PreloadStudent(query)
+	query = query.Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = query.Not("user_id", userID)
+	query = FilterStudent(query, student)
+	query = SearchStudent(query, pagination.Search)
+	query = query.Find(&students)
+	if err := query.Error; err != nil {
+		return nil, err
+	}
+
+	wg := sync.WaitGroup{}
+	for i, student := range students {
+		wg.Add(1)
+		go func(i int, student model.Student) {
+			students[i].Avatar = student.GetAvatar()
+			wg.Done()
+		}(i, student)
+	}
+	wg.Wait()
+
+	return students, nil
 }
 
 func (r userScheduleRepo) ListUserScheduleMeta(userschedule model.UserSchedule, pagination model.Pagination) (model.Meta, error) {
@@ -212,20 +276,26 @@ func (r userScheduleRepo) ListUserScheduleMeta(userschedule model.UserSchedule, 
 	return meta, nil
 }
 
-func (r userScheduleRepo) ListUserInRuleMeta(scheduleID int, user model.User, pagination model.Pagination) (model.Meta, error) {
-	var users []model.User
+func (r userScheduleRepo) ListUserInRuleMeta(scheduleID int, student model.Student, pagination model.Pagination) (model.Meta, error) {
+	var students []model.Student
 	var totalRecord int
 	var totalPage int
 
 	var userID []int
-	if err := r.db.Table("user_schedules").Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
-		return model.Meta{}, err
+	if student.OwnerID > 0 {
+		if err := r.db.Table("user_schedules").Select("user_id").Where("schedule_id = ? AND owner_id = ?", scheduleID, student.OwnerID).Find(&userID).Error; err != nil {
+			return model.Meta{}, err
+		}
+	} else {
+		if err := r.db.Table("user_schedules").Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
+			return model.Meta{}, err
+		}
 	}
 
-	queryTotal := r.db.Model(&model.User{}).Select("count(*)")
-	queryTotal = queryTotal.Where("id IN ?", userID)
-	queryTotal = FilterUser(queryTotal, user)
-	queryTotal = SearchUser(queryTotal, pagination.Search)
+	queryTotal := r.db.Model(&model.Student{}).Select("count(*)")
+	queryTotal = queryTotal.Where("user_id IN (?)", userID)
+	queryTotal = FilterStudent(queryTotal, student)
+	queryTotal = SearchStudent(queryTotal, pagination.Search)
 	queryTotal = queryTotal.Scan(&totalRecord)
 	if err := queryTotal.Error; err != nil {
 		return model.Meta{}, err
@@ -238,11 +308,11 @@ func (r userScheduleRepo) ListUserInRuleMeta(scheduleID int, user model.User, pa
 
 	offset := (pagination.Page - 1) * pagination.Limit
 
-	query := r.db.Table("users").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-	query = query.Where("id IN ?", userID)
-	query = FilterUser(query, user)
-	query = SearchUser(query, pagination.Search)
-	query = query.Find(&users)
+	query := r.db.Table("students").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = query.Where("user_id IN (?)", userID)
+	query = FilterStudent(query, student)
+	query = SearchStudent(query, pagination.Search)
+	query = query.Find(&students)
 	if err := query.Error; err != nil {
 		return model.Meta{}, err
 	}
@@ -251,7 +321,61 @@ func (r userScheduleRepo) ListUserInRuleMeta(scheduleID int, user model.User, pa
 		CurrentPage:   pagination.Page,
 		TotalPage:     totalPage,
 		TotalRecord:   totalRecord,
-		CurrentRecord: len(users),
+		CurrentRecord: len(students),
+	}
+	return meta, nil
+}
+
+func (r userScheduleRepo) ListUserNotInRuleMeta(scheduleID int, student model.Student, pagination model.Pagination) (model.Meta, error) {
+	var students []model.User
+	var totalRecord int
+	var totalPage int
+
+	var userID []int
+	if student.OwnerID > 0 {
+		if err := r.db.Table("user_schedules").Select("user_id").Where("schedule_id = ? AND owner_id = ?", scheduleID, student.OwnerID).Find(&userID).Error; err != nil {
+			return model.Meta{}, err
+		}
+	} else {
+		if err := r.db.Table("user_schedules").Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
+			return model.Meta{}, err
+		}
+	}
+
+	if len(userID) <= 0 {
+		userID = append(userID, 0)
+	}
+
+	queryTotal := r.db.Model(&model.Student{}).Select("count(*)")
+	queryTotal = queryTotal.Not("user_id", userID)
+	queryTotal = FilterStudent(queryTotal, student)
+	queryTotal = SearchStudent(queryTotal, pagination.Search)
+	queryTotal = queryTotal.Scan(&totalRecord)
+	if err := queryTotal.Error; err != nil {
+		return model.Meta{}, err
+	}
+
+	totalPage = int(totalRecord / pagination.Limit)
+	if totalRecord%pagination.Limit > 0 {
+		totalPage += 1
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+
+	query := r.db.Table("students").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query = query.Not("user_id", userID)
+	query = FilterStudent(query, student)
+	query = SearchStudent(query, pagination.Search)
+	query = query.Find(&students)
+	if err := query.Error; err != nil {
+		return model.Meta{}, err
+	}
+
+	meta := model.Meta{
+		CurrentPage:   pagination.Page,
+		TotalPage:     totalPage,
+		TotalRecord:   totalRecord,
+		CurrentRecord: len(students),
 	}
 	return meta, nil
 }

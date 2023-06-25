@@ -18,6 +18,10 @@ type UserScheduleService interface {
 	ListTodaySchedule(userID int, dayName string) ([]model.TodaySchedule, error)
 	ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error)
 	ListUserScheduleMeta(userschedule model.UserSchedule, pagination model.Pagination) (model.Meta, error)
+	ListUserInRule(scheduleID int, student model.Student, pagination model.Pagination) ([]model.Student, error)
+	ListUserInRuleMeta(scheduleID int, student model.Student, pagination model.Pagination) (model.Meta, error)
+	ListUserNotInRule(scheduleID int, student model.Student, pagination model.Pagination) ([]model.Student, error)
+	ListUserNotInRuleMeta(scheduleID int, student model.Student, pagination model.Pagination) (model.Meta, error)
 	DropDownUserSchedule(userschedule model.UserSchedule) ([]model.UserSchedule, error)
 	CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error)
 	CheckUserInSchedule(scheduleID int, userID int) bool
@@ -106,6 +110,38 @@ func (s userScheduleService) ListUserSchedule(userschedule model.UserSchedule, p
 
 func (s userScheduleService) ListUserScheduleMeta(userschedule model.UserSchedule, pagination model.Pagination) (model.Meta, error) {
 	data, err := s.userScheduleRepo.ListUserScheduleMeta(userschedule, pagination)
+	if err != nil {
+		return model.Meta{}, err
+	}
+	return data, nil
+}
+
+func (s userScheduleService) ListUserInRule(scheduleID int, student model.Student, pagination model.Pagination) ([]model.Student, error) {
+	datas, err := s.userScheduleRepo.ListUserInRule(scheduleID, student, pagination)
+	if err != nil {
+		return nil, err
+	}
+	return datas, nil
+}
+
+func (s userScheduleService) ListUserInRuleMeta(scheduleID int, student model.Student, pagination model.Pagination) (model.Meta, error) {
+	data, err := s.userScheduleRepo.ListUserInRuleMeta(scheduleID, student, pagination)
+	if err != nil {
+		return model.Meta{}, err
+	}
+	return data, nil
+}
+
+func (s userScheduleService) ListUserNotInRule(scheduleID int, student model.Student, pagination model.Pagination) ([]model.Student, error) {
+	datas, err := s.userScheduleRepo.ListUserNotInRule(scheduleID, student, pagination)
+	if err != nil {
+		return nil, err
+	}
+	return datas, nil
+}
+
+func (s userScheduleService) ListUserNotInRuleMeta(scheduleID int, student model.Student, pagination model.Pagination) (model.Meta, error) {
+	data, err := s.userScheduleRepo.ListUserNotInRuleMeta(scheduleID, student, pagination)
 	if err != nil {
 		return model.Meta{}, err
 	}

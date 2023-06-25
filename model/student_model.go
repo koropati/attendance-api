@@ -17,6 +17,8 @@ type Student struct {
 	Address        string       `json:"address" gorm:"type:varchar(255)"`
 	Gender         string       `json:"gender" gorm:"type:enum('laki-laki','perempuan');default:'laki-laki'"`
 	Avatar         string       `json:"avatar" gorm:"-"`
+	ScheduleID     int          `json:"schedule_id" query:"schedule_id" gorm:"-"`
+	OwnerID        int          `json:"owner_id" query:"owner_id" gorm:"-"`
 }
 
 type UserStudent struct {

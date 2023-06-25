@@ -49,3 +49,8 @@ logrus | Logger library
 viper | Config library
 
 And others library are listed on `go.mod` file
+
+## Run Swag for generate api Documentation
+```console
+go run github.com/swaggo/swag/cmd/swag init
+```

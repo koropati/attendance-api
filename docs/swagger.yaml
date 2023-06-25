@@ -771,6 +771,51 @@ definitions:
         type: string
     type: object
   model.UserForm:
+    properties:
+      avatar:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_by:
+        type: integer
+      email:
+        type: string
+      first_name:
+        type: string
+      handphone:
+        type: string
+      intro:
+        type: string
+      is_active:
+        type: boolean
+      is_admin:
+        type: boolean
+      is_super_admin:
+        type: boolean
+      is_user:
+        type: boolean
+      last_login:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      profile:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+      user_abilities:
+        items:
+          $ref: '#/definitions/model.Ability'
+        type: array
+      username:
+        type: string
     type: object
   model.UserResponseData:
     properties:
@@ -2059,6 +2104,37 @@ paths:
       summary: Dropdown all Major
       tags:
       - Major
+  /major/drop-down-by-faculty:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown all Major By Faculty ID
+      parameters:
+      - description: id faculty
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MajorResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown all Major By Faculty ID
+      tags:
+      - Major
   /major/list:
     get:
       consumes:
@@ -2394,7 +2470,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.UserResponseData'
+            $ref: '#/definitions/model.AuthDataResponseData'
         "400":
           description: Bad Request
           schema:
@@ -3009,6 +3085,37 @@ paths:
       summary: Dropdown All Study Program
       tags:
       - Study Program
+  /study-program/drop-down-by-major:
+    get:
+      consumes:
+      - application/json
+      description: Dropdown Study Program By Major ID
+      parameters:
+      - description: id major
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudyProgramResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Dropdown All Study Program By Major ID
+      tags:
+      - Study Program
   /study-program/list:
     get:
       consumes:
@@ -3569,6 +3676,56 @@ paths:
       security:
       - BearerTokenAuth: []
       summary: List All User Schedule
+      tags:
+      - User Schedule
+  /user-schedule/list/user-in-rule:
+    get:
+      consumes:
+      - application/json
+      description: List All User IN Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All User IN Schedule
+      tags:
+      - User Schedule
+  /user-schedule/list/user-not-in-rule:
+    get:
+      consumes:
+      - application/json
+      description: List All User NOT IN Schedule
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StudentResponseList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All User NOT IN Schedule
       tags:
       - User Schedule
   /user-schedule/retrieve:

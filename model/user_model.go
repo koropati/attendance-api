@@ -33,6 +33,8 @@ type User struct {
 	Role          string    `json:"role" gorm:"-"`
 	UserAbilities []Ability `json:"user_abilities" gorm:"-"`
 	Avatar        string    `json:"avatar" gorm:"-"`
+	ScheduleID    int       `json:"schedule_id" query:"schedule_id" gorm:"-"`
+	OwnerID       int       `json:"owner_id" query:"owner_id" gorm:"-"`
 }
 
 func (data User) GetRole() (role string) {

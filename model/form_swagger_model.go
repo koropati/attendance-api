@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -178,28 +177,27 @@ type ScheduleForm struct {
 }
 
 type UserForm struct {
-	Username     string       `json:"username"`
-	Password     string       `json:"password"`
-	FirstName    string       `json:"first_name"`
-	LastName     string       `json:"last_name"`
-	Handphone    string       `json:"handphone"`
-	Email        string       `json:"email"`
-	Intro        string       `json:"intro"`
-	Profile      string       `json:"profile"`
-	IsActive     bool         `json:"is_active"`
-	IsUser       bool         `json:"is_user"`
-	IsAdmin      bool         `json:"is_admin"`
-	IsSuperAdmin bool         `json:"is_super_admin"`
-	LastLogin    string       `json:"last_login"`
-	Role         string       `json:"role"`
-	UserAbility  []Ability    `json:"user_abilities"`
-	Avatar       string       `json:"avatar"`
-	CreatedAt    time.Time    `json:"created_at"`
-	UpdatedAt    time.Time    `json:"updated_at"`
-	DeletedAt    sql.NullTime `json:"deleted_at" sql:"index"`
-	CreatedBy    int          `json:"created_by"`
-	UpdatedBy    int          `json:"updated_by"`
-	DeletedBy    int          `json:"deleted_by"`
+	Username     string    `json:"username"`
+	Password     string    `json:"password"`
+	FirstName    string    `json:"first_name"`
+	LastName     string    `json:"last_name"`
+	Handphone    string    `json:"handphone"`
+	Email        string    `json:"email"`
+	Intro        string    `json:"intro"`
+	Profile      string    `json:"profile"`
+	IsActive     bool      `json:"is_active"`
+	IsUser       bool      `json:"is_user"`
+	IsAdmin      bool      `json:"is_admin"`
+	IsSuperAdmin bool      `json:"is_super_admin"`
+	LastLogin    string    `json:"last_login"`
+	Role         string    `json:"role"`
+	UserAbility  []Ability `json:"user_abilities"`
+	Avatar       string    `json:"avatar"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+	CreatedBy    int       `json:"created_by"`
+	UpdatedBy    int       `json:"updated_by"`
+	DeletedBy    int       `json:"deleted_by"`
 }
 
 type UserForgotPasswordForm struct {
