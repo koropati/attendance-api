@@ -17,7 +17,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 type ScheduleHandler interface {
@@ -210,7 +209,7 @@ func (h scheduleHandler) Update(c *gin.Context) {
 		return
 	}
 
-	if err := validation.Validate(data.SubjectID, validation.Required, validation.Min(1), is.Int); err != nil {
+	if err := validation.Validate(data.SubjectID, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("id subjek: %v", "pilihan subjek harus terisi"))
 		return
 	}
