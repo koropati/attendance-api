@@ -3728,6 +3728,42 @@ paths:
       summary: List All User NOT IN Schedule
       tags:
       - User Schedule
+  /user-schedule/remove:
+    delete:
+      consumes:
+      - application/json
+      description: Remove User From Schedule
+      parameters:
+      - description: id schedule
+        in: query
+        name: schedule_id
+        required: true
+        type: string
+      - description: id user
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Remove User From Schedule
+      tags:
+      - User Schedule
   /user-schedule/retrieve:
     get:
       consumes:

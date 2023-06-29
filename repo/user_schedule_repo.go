@@ -23,6 +23,8 @@ type UserScheduleRepo interface {
 	UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	DeleteUserSchedule(id int) error
 	DeleteUserScheduleByOwner(id int, ownerID int) error
+	RemoveUserFromSchedule(scheduleID int, userID int) error
+	RemoveUserFromScheduleByOwner(scheduleID int, userID int, ownerID int) error
 	ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error)
 	ListUserScheduleMeta(userschedule model.UserSchedule, pagination model.Pagination) (model.Meta, error)
 	DropDownUserSchedule(userschedule model.UserSchedule) ([]model.UserSchedule, error)
@@ -105,8 +107,34 @@ func (r userScheduleRepo) DeleteUserSchedule(id int) error {
 	return nil
 }
 
+func (r userScheduleRepo) RemoveUserFromSchedule(scheduleID int, userID int) error {
+	var dataToDelete model.UserSchedule
+
+	if err := r.db.Model(&model.UserSchedule{}).Where("schedule_id = ? AND user_id = ?", scheduleID, userID).First(&dataToDelete).Error; err != nil {
+		return err
+	}
+
+	if err := r.db.Delete(&model.UserSchedule{}, dataToDelete.ID).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r userScheduleRepo) DeleteUserScheduleByOwner(id int, ownerID int) error {
 	if err := r.db.Where("id = ? AND owner_id = ?", id, ownerID).Delete(&model.UserSchedule{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r userScheduleRepo) RemoveUserFromScheduleByOwner(scheduleID int, userID int, ownerID int) error {
+	var dataToDelete model.UserSchedule
+
+	if err := r.db.Model(&model.UserSchedule{}).Where("schedule_id = ? AND user_id = ? AND owner_id = ?", scheduleID, userID, ownerID).First(&dataToDelete).Error; err != nil {
+		return err
+	}
+
+	if err := r.db.Delete(&model.UserSchedule{}, dataToDelete.ID).Error; err != nil {
 		return err
 	}
 	return nil

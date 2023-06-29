@@ -262,6 +262,7 @@ func (c server) v1() {
 			userSchedule.GET("/retrieve", userScheduleHandler.Retrieve)
 			userSchedule.PUT("/update", userScheduleHandler.Update)
 			userSchedule.DELETE("/delete", userScheduleHandler.Delete)
+			userSchedule.DELETE("/remove", userScheduleHandler.Remove)
 			userSchedule.GET("/list", userScheduleHandler.List)
 			userSchedule.GET("/list/user-in-rule", userScheduleHandler.ListUserInRule)
 			userSchedule.GET("/list/user-not-in-rule", userScheduleHandler.ListUserNotInRule)

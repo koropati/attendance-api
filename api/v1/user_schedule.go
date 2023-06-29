@@ -20,6 +20,7 @@ type UserScheduleHandler interface {
 	Retrieve(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
+	Remove(c *gin.Context)
 	List(c *gin.Context)
 	ListUserInRule(c *gin.Context)
 	ListUserNotInRule(c *gin.Context)
@@ -197,6 +198,52 @@ func (h userScheduleHandler) Delete(c *gin.Context) {
 	}
 
 	response.New(c).Write(http.StatusOK, "sukses menghapus data")
+}
+
+// Remove ... Remove User From Schedule
+// @Summary Remove User From Schedule
+// @Description  Remove User From Schedule
+// @Tags User Schedule
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /user-schedule/remove [delete]
+// @Security BearerTokenAuth
+// @param schedule_id query string true "id schedule"
+// @param user_id query string true "id user"
+func (h userScheduleHandler) Remove(c *gin.Context) {
+	scheduleID, err := strconv.Atoi(c.Query("schedule_id"))
+	if scheduleID < 1 || err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("schedule_id harus diisi dengan nomor yang valid"))
+		return
+	}
+
+	UserID, err := strconv.Atoi(c.Query("user_id"))
+	if UserID < 1 || err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("user_id harus diisi dengan nomor yang valid"))
+		return
+	}
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if h.middleware.IsSuperAdmin(c) {
+		if err := h.userScheduleService.RemoveUserFromSchedule(scheduleID, UserID); err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+	} else {
+		if err := h.userScheduleService.RemoveUserFromScheduleByOwner(scheduleID, UserID, currentUserID); err != nil {
+			response.New(c).Error(http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	response.New(c).Write(http.StatusOK, "sukses mengeluarkan mahasiswa dalam jadwal")
 }
 
 // List ... List All User Schedule

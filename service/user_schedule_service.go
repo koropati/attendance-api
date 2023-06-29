@@ -14,6 +14,8 @@ type UserScheduleService interface {
 	UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	DeleteUserSchedule(id int) error
 	DeleteUserScheduleByOwner(id int, ownerID int) error
+	RemoveUserFromSchedule(scheduleID int, userID int) error
+	RemoveUserFromScheduleByOwner(scheduleID int, userID int, ownerID int) error
 	ListMySchedule(userID int) ([]model.MySchedule, error)
 	ListTodaySchedule(userID int, dayName string) ([]model.TodaySchedule, error)
 	ListUserSchedule(userschedule model.UserSchedule, pagination model.Pagination) ([]model.UserSchedule, error)
@@ -84,8 +86,24 @@ func (s userScheduleService) DeleteUserSchedule(id int) error {
 	}
 }
 
+func (s userScheduleService) RemoveUserFromSchedule(scheduleID int, userID int) error {
+	if err := s.userScheduleRepo.RemoveUserFromSchedule(scheduleID, userID); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
 func (s userScheduleService) DeleteUserScheduleByOwner(id int, ownerID int) error {
 	if err := s.userScheduleRepo.DeleteUserScheduleByOwner(id, ownerID); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func (s userScheduleService) RemoveUserFromScheduleByOwner(scheduleID int, userID int, ownerID int) error {
+	if err := s.userScheduleRepo.RemoveUserFromScheduleByOwner(scheduleID, userID, ownerID); err != nil {
 		return err
 	} else {
 		return nil
