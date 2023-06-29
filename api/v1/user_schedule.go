@@ -249,8 +249,19 @@ func (h userScheduleHandler) List(c *gin.Context) {
 // @Security BearerTokenAuth
 func (h userScheduleHandler) ListUserInRule(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
+
+	scheduleID, err := strconv.Atoi(c.Query("schedule_id"))
+	if scheduleID < 1 || err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("schedule_id harus diisi dengan nomor yang valid"))
+		return
+	}
+
 	var data model.Student
-	c.BindQuery(&data)
+
+	if err := c.BindQuery(&data); err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
 
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
@@ -262,12 +273,12 @@ func (h userScheduleHandler) ListUserInRule(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	dataList, err := h.userScheduleService.ListUserInRule(data.ScheduleID, data, pagination)
+	dataList, err := h.userScheduleService.ListUserInRule(scheduleID, data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.userScheduleService.ListUserInRuleMeta(data.ScheduleID, data, pagination)
+	metaList, err := h.userScheduleService.ListUserInRuleMeta(scheduleID, data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
@@ -287,8 +298,19 @@ func (h userScheduleHandler) ListUserInRule(c *gin.Context) {
 // @Security BearerTokenAuth
 func (h userScheduleHandler) ListUserNotInRule(c *gin.Context) {
 	pagination := pagination.GeneratePaginationFromRequest(c)
+
+	scheduleID, err := strconv.Atoi(c.Query("schedule_id"))
+	if scheduleID < 1 || err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("schedule_id harus diisi dengan nomor yang valid"))
+		return
+	}
+
 	var data model.Student
-	c.BindQuery(&data)
+
+	if err := c.BindQuery(&data); err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
 
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
@@ -300,12 +322,12 @@ func (h userScheduleHandler) ListUserNotInRule(c *gin.Context) {
 		data.OwnerID = currentUserID
 	}
 
-	dataList, err := h.userScheduleService.ListUserNotInRule(data.ScheduleID, data, pagination)
+	dataList, err := h.userScheduleService.ListUserNotInRule(scheduleID, data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}
 
-	metaList, err := h.userScheduleService.ListUserNotInRuleMeta(data.ScheduleID, data, pagination)
+	metaList, err := h.userScheduleService.ListUserNotInRuleMeta(scheduleID, data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}

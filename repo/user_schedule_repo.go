@@ -46,6 +46,9 @@ func (r userScheduleRepo) CreateUserSchedule(userschedule model.UserSchedule) (r
 	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ?", userschedule.ID).First(&result).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
 	return
 }
 
@@ -53,6 +56,9 @@ func (r userScheduleRepo) RetrieveUserSchedule(id int) (result model.UserSchedul
 	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ?", id).First(&result).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
 	return
 }
 
@@ -60,6 +66,9 @@ func (r userScheduleRepo) RetrieveUserScheduleByOwner(id int, ownerID int) (resu
 	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ? AND owner_id = ?", id, ownerID).First(&result).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
 	return
 }
 
@@ -70,6 +79,9 @@ func (r userScheduleRepo) UpdateUserSchedule(id int, userschedule model.UserSche
 	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ?", id).First(&result).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
 	return
 }
 
@@ -80,6 +92,9 @@ func (r userScheduleRepo) UpdateUserScheduleByOwner(id int, ownerID int, usersch
 	if err := PreloadUserSchedule(r.db.Table("user_schedules")).Where("id = ?", id).First(&result).Error; err != nil {
 		return model.UserSchedule{}, err
 	}
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
 	return
 }
 
@@ -155,18 +170,28 @@ func (r userScheduleRepo) ListUserSchedule(userschedule model.UserSchedule, pagi
 	if err := query.Error; err != nil {
 		return nil, err
 	}
-
+	wg := sync.WaitGroup{}
+	for i, data := range userschedules {
+		wg.Add(1)
+		go func(i int, data model.UserSchedule) {
+			userschedules[i].User.Role = data.User.GetRole()
+			userschedules[i].User.Avatar = data.User.GetAvatar()
+			userschedules[i].User.UserAbilities = data.User.GetAbility()
+			wg.Done()
+		}(i, data)
+	}
+	wg.Wait()
 	return userschedules, nil
 }
 
 func (r userScheduleRepo) ListUserInRule(scheduleID int, student model.Student, pagination model.Pagination) ([]model.Student, error) {
 	var userID []int
 	if student.OwnerID > 0 {
-		if err := PreloadUserSchedule(r.db.Model(&[]model.UserSchedule{})).Select("user_id").Where("schedule_id = ? AND owner_id = ?", scheduleID, student.OwnerID).Find(&userID).Error; err != nil {
+		if err := r.db.Model(&[]model.UserSchedule{}).Select("user_id").Where("schedule_id = ? AND owner_id = ?", scheduleID, student.OwnerID).Find(&userID).Error; err != nil {
 			return nil, err
 		}
 	} else {
-		if err := PreloadUserSchedule(r.db.Model(&[]model.UserSchedule{})).Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
+		if err := r.db.Model(&[]model.UserSchedule{}).Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -189,6 +214,9 @@ func (r userScheduleRepo) ListUserInRule(scheduleID int, student model.Student, 
 		wg.Add(1)
 		go func(i int, student model.Student) {
 			students[i].Avatar = student.GetAvatar()
+			students[i].User.Avatar = student.User.GetAvatar()
+			students[i].User.Role = student.User.GetRole()
+			students[i].User.UserAbilities = student.User.GetAbility()
 			wg.Done()
 		}(i, student)
 	}
@@ -201,11 +229,11 @@ func (r userScheduleRepo) ListUserNotInRule(scheduleID int, student model.Studen
 	var userID []int
 
 	if student.OwnerID > 0 {
-		if err := PreloadUserSchedule(r.db.Model(&[]model.UserSchedule{})).Select("user_id").Where("schedule_id = ? AND owner_id = ?", scheduleID, student.OwnerID).Find(&userID).Error; err != nil {
+		if err := r.db.Model(&[]model.UserSchedule{}).Select("user_id").Where("schedule_id = ? AND owner_id = ?", scheduleID, student.OwnerID).Find(&userID).Error; err != nil {
 			return nil, err
 		}
 	} else {
-		if err := PreloadUserSchedule(r.db.Model(&[]model.UserSchedule{})).Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
+		if err := r.db.Model(&[]model.UserSchedule{}).Select("user_id").Where("schedule_id = ?", scheduleID).Find(&userID).Error; err != nil {
 			return nil, err
 		}
 	}
@@ -231,6 +259,9 @@ func (r userScheduleRepo) ListUserNotInRule(scheduleID int, student model.Studen
 		wg.Add(1)
 		go func(i int, student model.Student) {
 			students[i].Avatar = student.GetAvatar()
+			students[i].User.Avatar = student.User.GetAvatar()
+			students[i].User.Role = student.User.GetRole()
+			students[i].User.UserAbilities = student.User.GetAbility()
 			wg.Done()
 		}(i, student)
 	}
@@ -388,6 +419,17 @@ func (r userScheduleRepo) DropDownUserSchedule(userschedule model.UserSchedule) 
 	if err := query.Error; err != nil {
 		return nil, err
 	}
+	wg := sync.WaitGroup{}
+	for i, data := range userschedules {
+		wg.Add(1)
+		go func(i int, data model.UserSchedule) {
+			userschedules[i].User.Role = data.User.GetRole()
+			userschedules[i].User.Avatar = data.User.GetAvatar()
+			userschedules[i].User.UserAbilities = data.User.GetAbility()
+			wg.Done()
+		}(i, data)
+	}
+	wg.Wait()
 	return userschedules, nil
 }
 

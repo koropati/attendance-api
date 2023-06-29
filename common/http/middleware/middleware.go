@@ -52,7 +52,7 @@ func (m *middleware) CORS() gin.HandlerFunc {
 		c.Writer.Header().Set("Accept-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Accept-Control-Allow-Methods", "*")
 		c.Writer.Header().Set("Accept-Control-Allow-Headers", "*")
-		c.Writer.Header().Set("Content-Type", "*")
+		c.Writer.Header().Set("Content-Type", "application/json")
 
 		if c.Request.Method == "OPTIONS" {
 			c.Header("Access-Control-Allow-Origin", "*")
