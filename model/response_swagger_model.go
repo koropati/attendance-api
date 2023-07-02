@@ -248,3 +248,33 @@ type AuthDataResponseData struct {
 	UserData  UserForm  `json:"user_data"`
 	TokenData TokenData `json:"token_data"`
 }
+
+type DashboardAcademicResponseData struct {
+	Code    int               `json:"code"`
+	Data    DashboardAcademic `json:"data"`
+	Message string            `json:"message"`
+}
+
+type DashboardUserResponseData struct {
+	Code    int           `json:"code"`
+	Data    DashboardUser `json:"data"`
+	Message string        `json:"message"`
+}
+
+type DashboardStudentResponseData struct {
+	Code    int              `json:"code"`
+	Data    DashboardStudent `json:"data"`
+	Message string           `json:"message"`
+}
+
+type DashboardTeacherResponseData struct {
+	Code    int              `json:"code"`
+	Data    DashboardTeacher `json:"data"`
+	Message string           `json:"message"`
+}
+
+type DashboardAttendanceResponseData struct {
+	Code    int                   `json:"code"`
+	Data    []DashboardAttendance `json:"data"`
+	Message string                `json:"message"`
+}

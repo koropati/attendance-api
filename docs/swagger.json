@@ -1482,6 +1482,166 @@
                 }
             }
         },
+        "/dashboard/academic": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Retrieve Dashboard Academic",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Retrieve Dashboard Academic",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DashboardAcademicResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/student": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Retrieve Dashboard Student",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Retrieve Dashboard Student",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DashboardStudentResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/teacher": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Retrieve Dashboard Teacher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Retrieve Dashboard Teacher",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DashboardTeacherResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/dashboard/user": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Retrieve Dashboard Users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Retrieve Dashboard Users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DashboardUserResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/faculty/create": {
             "post": {
                 "security": [
@@ -5414,6 +5574,127 @@
                 },
                 "meta": {
                     "$ref": "#/definitions/model.Meta"
+                }
+            }
+        },
+        "model.DashboardAcademic": {
+            "type": "object",
+            "properties": {
+                "total_faculty": {
+                    "type": "integer"
+                },
+                "total_major": {
+                    "type": "integer"
+                },
+                "total_schedule": {
+                    "type": "integer"
+                },
+                "total_study_program": {
+                    "type": "integer"
+                },
+                "total_subject": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.DashboardAcademicResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/model.DashboardAcademic"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DashboardStudent": {
+            "type": "object",
+            "properties": {
+                "total_student": {
+                    "type": "integer"
+                },
+                "total_student_active": {
+                    "type": "integer"
+                },
+                "total_student_non_active": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.DashboardStudentResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/model.DashboardStudent"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DashboardTeacher": {
+            "type": "object",
+            "properties": {
+                "total_teacher": {
+                    "type": "integer"
+                },
+                "total_teacher_active": {
+                    "type": "integer"
+                },
+                "total_teacher_non_active": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.DashboardTeacherResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/model.DashboardTeacher"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DashboardUser": {
+            "type": "object",
+            "properties": {
+                "total_super_admin": {
+                    "type": "integer"
+                },
+                "total_user": {
+                    "type": "integer"
+                },
+                "total_user_active": {
+                    "type": "integer"
+                },
+                "total_user_non_active": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.DashboardUserResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/model.DashboardUser"
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },

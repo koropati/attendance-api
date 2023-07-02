@@ -23,6 +23,7 @@ type RepoManager interface {
 	FacultyRepo() repo.FacultyRepo
 	MajorRepo() repo.MajorRepo
 	StudyProgramRepo() repo.StudyProgramRepo
+	DashboardRepo() repo.DashboardRepo
 }
 
 type repoManager struct {
@@ -49,6 +50,7 @@ var (
 	userScheduleRepoOnce       sync.Once
 	attendanceLogRepoOnce      sync.Once
 	attendanceRepoOnce         sync.Once
+	dashboardRepoOnce          sync.Once
 	facultyRepo                repo.FacultyRepo
 	majorRepo                  repo.MajorRepo
 	studyProgramRepo           repo.StudyProgramRepo
@@ -64,6 +66,7 @@ var (
 	userScheduleRepo           repo.UserScheduleRepo
 	attendanceLogRepo          repo.AttendanceLogRepo
 	attendanceRepo             repo.AttendanceRepo
+	dashboardRepo              repo.DashboardRepo
 )
 
 func (rm *repoManager) FacultyRepo() repo.FacultyRepo {
@@ -169,4 +172,11 @@ func (rm *repoManager) AttendanceRepo() repo.AttendanceRepo {
 		attendanceRepo = repo.NewAttendanceRepo(rm.infra.GormDB())
 	})
 	return attendanceRepo
+}
+
+func (rm *repoManager) DashboardRepo() repo.DashboardRepo {
+	dashboardRepoOnce.Do(func() {
+		dashboardRepo = repo.NewDashboardRepo(rm.infra.GormDB())
+	})
+	return dashboardRepo
 }

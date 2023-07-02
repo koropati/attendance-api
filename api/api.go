@@ -60,6 +60,7 @@ func (c server) handlers() {
 func (c server) v1() {
 	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
+	dashboardHandler := v1.NewDashboardHandler(c.service.DashboardService(), c.infra, c.middleware)
 	profileHandler := v1.NewProfileHandler(
 		c.service.UserService(),
 		c.service.StudentService(),
@@ -130,6 +131,15 @@ func (c server) v1() {
 			user.GET("/drop-down", userHandler.DropDown)
 			user.PATCH("/active", userHandler.SetActive)
 			user.PATCH("/deactive", userHandler.SetDeactive)
+		}
+
+		dashboard := v1.Group("/dashboard")
+		dashboard.Use(c.middleware.AUTH())
+		{
+			dashboard.GET("/academic", dashboardHandler.GetDashboardAcademic)
+			dashboard.GET("/user", dashboardHandler.GetDashboardUser)
+			dashboard.GET("/student", dashboardHandler.GetDashboardStudent)
+			dashboard.GET("/teacher", dashboardHandler.GetDashboardTeacher)
 		}
 
 		student := v1.Group("/student")

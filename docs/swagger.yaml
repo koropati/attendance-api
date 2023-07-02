@@ -247,6 +247,84 @@ definitions:
       meta:
         $ref: '#/definitions/model.Meta'
     type: object
+  model.DashboardAcademic:
+    properties:
+      total_faculty:
+        type: integer
+      total_major:
+        type: integer
+      total_schedule:
+        type: integer
+      total_study_program:
+        type: integer
+      total_subject:
+        type: integer
+    type: object
+  model.DashboardAcademicResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.DashboardAcademic'
+      message:
+        type: string
+    type: object
+  model.DashboardStudent:
+    properties:
+      total_student:
+        type: integer
+      total_student_active:
+        type: integer
+      total_student_non_active:
+        type: integer
+    type: object
+  model.DashboardStudentResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.DashboardStudent'
+      message:
+        type: string
+    type: object
+  model.DashboardTeacher:
+    properties:
+      total_teacher:
+        type: integer
+      total_teacher_active:
+        type: integer
+      total_teacher_non_active:
+        type: integer
+    type: object
+  model.DashboardTeacherResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.DashboardTeacher'
+      message:
+        type: string
+    type: object
+  model.DashboardUser:
+    properties:
+      total_super_admin:
+        type: integer
+      total_user:
+        type: integer
+      total_user_active:
+        type: integer
+      total_user_non_active:
+        type: integer
+    type: object
+  model.DashboardUserResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.DashboardUser'
+      message:
+        type: string
+    type: object
   model.FacultyForm:
     properties:
       code:
@@ -1835,6 +1913,106 @@ paths:
       summary: Update Single Daily Schedule
       tags:
       - Daily Schedule
+  /dashboard/academic:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Dashboard Academic
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DashboardAcademicResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Dashboard Academic
+      tags:
+      - Dashboard
+  /dashboard/student:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Dashboard Student
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DashboardStudentResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Dashboard Student
+      tags:
+      - Dashboard
+  /dashboard/teacher:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Dashboard Teacher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DashboardTeacherResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Dashboard Teacher
+      tags:
+      - Dashboard
+  /dashboard/user:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Dashboard Users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DashboardUserResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Dashboard Users
+      tags:
+      - Dashboard
   /faculty/create:
     post:
       consumes:
