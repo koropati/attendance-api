@@ -13,6 +13,7 @@ import (
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"github.com/streadway/amqp"
 	"gopkg.in/gomail.v2"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,6 +28,7 @@ type Infra interface {
 	SendGrid() *sendgrid.Client
 	Migrate(values ...interface{})
 	Port() string
+	AMQP() *amqp.Connection
 }
 
 type infra struct {
@@ -232,4 +234,29 @@ func (i *infra) Port() string {
 	})
 
 	return ":" + port
+}
+
+var (
+	amqpOnce sync.Once
+	amqpConn *amqp.Connection
+)
+
+func (i *infra) AMQP() *amqp.Connection {
+	amqpOnce.Do(func() {
+		config := i.Config().Sub("amqp")
+		host := config.GetString("host")
+		user := config.GetString("user")
+		pass := config.GetString("pass")
+		// port := config.GetInt("port")
+
+		url := fmt.Sprintf(`amqps://%s:%s@%s/%s`, user, pass, host, user)
+
+		conn, err := amqp.Dial(url)
+		if err != nil {
+			log.Printf("[Error][amqp.Dial] E: %v", err)
+		}
+		amqpConn = conn
+	})
+
+	return amqpConn
 }

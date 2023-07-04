@@ -5,6 +5,8 @@ import (
 	_ "attendance-api/docs"
 	"attendance-api/infra"
 	"attendance-api/model"
+	"attendance-api/scheduler/consumer"
+	"attendance-api/scheduler/publisher"
 	"log"
 	"os"
 )
@@ -33,8 +35,12 @@ func main() {
 func handleCommand() {
 	if len(os.Args) >= 2 {
 		switch command := os.Args[1]; command {
-		case "scheduler":
-			log.Printf("Hello gan \n")
+		case "consumer":
+			i := infra.New("config/config.json")
+			consumer.NewConsumer(i).Run()
+		case "publisher":
+			i := infra.New("config/config.json")
+			publisher.NewPublisher(i).Run()
 		case "server":
 			i := infra.New("config/config.json")
 			i.SetMode()
@@ -65,7 +71,8 @@ func handleCommand() {
 		case "help":
 			log.Printf("Available List Command:\n")
 			log.Printf("- go run main.go server    (to start server process)\n")
-			log.Printf("- go run main.go scheduler (to start scheduler process)\n")
+			log.Printf("- go run main.go consumer (to start scheduler consumer process)\n")
+			log.Printf("- go run main.go publisher (to start scheduler publisher process)\n")
 			log.Printf("- go run main.go migrate   (to start migration process)\n")
 		default:
 			log.Printf("It's Working!\n")
@@ -74,7 +81,8 @@ func handleCommand() {
 		log.Printf("Program It's Working!, you must select opration to start a session.\n")
 		log.Printf("List Command:\n")
 		log.Printf("- go run main.go server    (to start server process)\n")
-		log.Printf("- go run main.go scheduler (to start scheduler process)\n")
+		log.Printf("- go run main.go consumer (to start scheduler consumer process)\n")
+		log.Printf("- go run main.go publisher (to start scheduler publisher process)\n")
 		log.Printf("- go run main.go migrate   (to start migration process)\n")
 		log.Printf("- go run main.go help      (to see list of command)\n")
 	}

@@ -22,6 +22,13 @@
         "pass": "DhKWOBVjStUn492g",
         "encryption": "tls"
     },
+    "amqp": {
+        "host": "armadillo.rmq.cloudamqp.com",
+        "user": "ofulvwfd",
+        "pass": "XgU2H6LKj0WdJ-_liCgk3uw5JI4dgyEK",
+        "port": 5671,
+        "queue_name": "senku_apps"
+    },
     "secret": {
         "key": "v3ry53cr3tk3yk3yNieh!",
         "crypto": "4YaM60r3ng3n4KL0",
