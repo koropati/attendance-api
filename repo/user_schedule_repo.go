@@ -31,6 +31,8 @@ type UserScheduleRepo interface {
 	CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error)
 	CheckUserInSchedule(scheduleID int, userID int) bool
 	CountByScheduleID(scheduleID int) (total int)
+	GetAll() (results []model.UserSchedule, err error)
+	GetAllByTodayRange() (results []model.UserSchedule, err error)
 }
 
 type userScheduleRepo struct {
@@ -443,6 +445,63 @@ func (r userScheduleRepo) DropDownUserSchedule(userschedule model.UserSchedule) 
 	var userschedules []model.UserSchedule
 	query := PreloadUserSchedule(r.db.Table("user_schedules")).Order("id desc")
 	query = FilterUserSchedule(query, userschedule)
+	query = query.Find(&userschedules)
+	if err := query.Error; err != nil {
+		return nil, err
+	}
+	wg := sync.WaitGroup{}
+	for i, data := range userschedules {
+		wg.Add(1)
+		go func(i int, data model.UserSchedule) {
+			userschedules[i].User.Role = data.User.GetRole()
+			userschedules[i].User.Avatar = data.User.GetAvatar()
+			userschedules[i].User.UserAbilities = data.User.GetAbility()
+			wg.Done()
+		}(i, data)
+	}
+	wg.Wait()
+	return userschedules, nil
+}
+
+func (r userScheduleRepo) GetAll() (results []model.UserSchedule, err error) {
+	var userschedules []model.UserSchedule
+	query := PreloadUserSchedule(r.db.Table("user_schedules")).Order("id desc")
+	query = query.Find(&userschedules)
+	if err := query.Error; err != nil {
+		return nil, err
+	}
+	wg := sync.WaitGroup{}
+	for i, data := range userschedules {
+		wg.Add(1)
+		go func(i int, data model.UserSchedule) {
+			userschedules[i].User.Role = data.User.GetRole()
+			userschedules[i].User.Avatar = data.User.GetAvatar()
+			userschedules[i].User.UserAbilities = data.User.GetAbility()
+			wg.Done()
+		}(i, data)
+	}
+	wg.Wait()
+	return userschedules, nil
+}
+
+func (r userScheduleRepo) GetAllByTodayRange() (resutls []model.UserSchedule, err error) {
+	today := time.Now().UTC().Truncate(24 * time.Hour)
+
+	var idSchedule []int
+
+	queryID := r.db.Model(&[]model.Schedule{}).Select("id")
+	queryID = queryID.Where("start_date <= ? AND end_date >= ?", today, today)
+	if err := queryID.Find(&idSchedule).Error; err != nil {
+		return nil, err
+	}
+
+	if len(idSchedule) <= 0 {
+		return nil, nil
+	}
+
+	var userschedules []model.UserSchedule
+	query := PreloadUserSchedule(r.db.Table("user_schedules")).Order("id desc")
+	query = query.Where("schedule_id IN ?", idSchedule)
 	query = query.Find(&userschedules)
 	if err := query.Error; err != nil {
 		return nil, err

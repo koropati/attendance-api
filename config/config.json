@@ -27,6 +27,13 @@
         "user": "ofulvwfd",
         "pass": "XgU2H6LKj0WdJ-_liCgk3uw5JI4dgyEK",
         "port": 5671,
+        "queue_name": "attd_apps"
+    },
+    "amqp_backup": {
+        "host": "armadillo.rmq.cloudamqp.com",
+        "user": "ofulvwfd",
+        "pass": "XgU2H6LKj0WdJ-_liCgk3uw5JI4dgyEK",
+        "port": 5671,
         "queue_name": "senku_apps"
     },
     "secret": {

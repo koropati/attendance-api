@@ -1,7 +1,9 @@
 package model
 
 import (
+	"fmt"
 	"math"
+	"time"
 )
 
 // tag
@@ -21,6 +23,40 @@ type Schedule struct {
 	Radius        int             `json:"radius"` //in metter
 	UserInRule    int             `json:"user_in_rule" gorm:"-"`
 	OwnerID       int             `json:"owner_id" gorm:"not null"`
+}
+
+func (data Schedule) IsTodaySchedule() (isTodaySchedule bool) {
+	inRange := false
+	isToday := false
+	today := time.Now().UTC().Truncate(24 * time.Hour)
+	startDate, err := time.Parse("2006-01-02", data.StartDate)
+	if err != nil {
+		fmt.Println("Format tanggal mulai tidak valid")
+		return false
+	}
+	endDate, err := time.Parse("2006-01-02", data.EndDate)
+	if err != nil {
+		fmt.Println("Format tanggal selesai tidak valid")
+		return false
+	}
+
+	if today.After(startDate) && today.Before(endDate) {
+		inRange = true
+		for _, daily := range data.DailySchedule {
+			if daily.IsToday() {
+				isToday = true
+				break
+			}
+		}
+		if inRange && isToday {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
+	}
+
 }
 
 func (data Schedule) InRange(latitudeCheck float64, longitudeCheck float64) (isPassed bool) {

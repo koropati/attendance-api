@@ -28,6 +28,8 @@ type UserScheduleService interface {
 	CheckHaveSchedule(userID int, date time.Time) (isHaveSchedule bool, scheduleID int, err error)
 	CheckUserInSchedule(scheduleID int, userID int) bool
 	CountByScheduleID(scheduleID int) (total int)
+	GetAll() (results []model.UserSchedule, err error)
+	GetAllByTodayRange() (results []model.UserSchedule, err error)
 }
 
 type userScheduleService struct {
@@ -184,4 +186,12 @@ func (s userScheduleService) CheckUserInSchedule(scheduleID int, userID int) boo
 
 func (s userScheduleService) CountByScheduleID(scheduleID int) (total int) {
 	return s.userScheduleRepo.CountByScheduleID(scheduleID)
+}
+
+func (s userScheduleService) GetAll() (resutls []model.UserSchedule, err error) {
+	return s.userScheduleRepo.GetAll()
+}
+
+func (s userScheduleService) GetAllByTodayRange() (resutls []model.UserSchedule, err error) {
+	return s.userScheduleRepo.GetAllByTodayRange()
 }

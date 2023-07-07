@@ -3,6 +3,7 @@ package publisher
 import (
 	"attendance-api/infra"
 	"log"
+	"os"
 )
 
 type Publisher interface {
@@ -34,6 +35,8 @@ func (c publisher) Run() {
 	stopChan := make(chan bool)
 	cronJob := InitCronJob(amqpChannel, queueName)
 	cronJob.Start()
+
+	log.Printf("Publisher ready, PID: %d", os.Getpid())
 
 	defer cronJob.Stop()
 	// Stop for program termination

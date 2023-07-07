@@ -14,7 +14,7 @@ import (
 func InitCronJob(amqpChannel *amqp.Channel, queueName string) (cronJob *cron.Cron) {
 	c := cron.New()
 
-	c.AddFunc("* * * * *", TaskAttendance(amqpChannel, queueName))
+	c.AddFunc("0 0 * * *", TaskAttendance(amqpChannel, queueName)) //tiap jam 00:00 dini hari
 
 	return c
 }

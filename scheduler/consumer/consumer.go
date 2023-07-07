@@ -27,6 +27,7 @@ func NewConsumer(infra infra.Infra) Consumer {
 }
 
 func (c consumer) Run() {
+	myTask := NewTask(c.infra)
 	config := c.infra.Config().Sub("amqp")
 	queueName := config.GetString("queue_name")
 
@@ -70,7 +71,8 @@ func (c consumer) Run() {
 				log.Printf("Error decoding JSON: %s", err)
 			}
 
-			InitTask(addTask)
+			//Run Initial Task Job
+			myTask.InitTask(addTask)
 
 			if err := d.Ack(false); err != nil {
 				log.Printf("Error acknowledging message : %s", err)

@@ -1,20 +1,37 @@
 package consumer
 
 import (
+	"attendance-api/infra"
+	"attendance-api/manager"
 	"attendance-api/scheduler"
-	"fmt"
+	"attendance-api/scheduler/consumer/jobs"
 )
 
-func InitTask(task *scheduler.AddTask) {
-	if task.Action == "attendance" {
-		TaskAttendance(task)
+type Task interface {
+	InitTask(task *scheduler.AddTask)
+}
+
+type task struct {
+	infra   infra.Infra
+	service manager.ServiceManager
+}
+
+func NewTask(infra infra.Infra) Task {
+	return &task{
+		infra:   infra,
+		service: manager.NewServiceManager(infra),
 	}
 }
 
-func TaskAttendance(task *scheduler.AddTask) {
-	fmt.Println("Execute Task Attendance")
-	fmt.Printf("Action: %v\n", task.Action)
-	fmt.Printf("Body  : %v\n", task.Body)
-	fmt.Printf("Date  : %v\n", task.Date)
-	fmt.Printf("TStm  : %v\n", task.TimeStamp)
+func (t task) InitTask(task *scheduler.AddTask) {
+	attendanceJob := jobs.NewAttendanceJob(
+		t.service.UserScheduleService(),
+		t.service.AttendanceService(),
+		t.service.AttendanceLogService(),
+		task,
+	)
+
+	if task.Action == "attendance" {
+		attendanceJob.AutoCreate()
+	}
 }
