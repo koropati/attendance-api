@@ -6,6 +6,7 @@ import (
 	"attendance-api/infra"
 	"attendance-api/service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,7 @@ type DashboardHandler interface {
 	GetDashboardUser(c *gin.Context)
 	GetDashboardStudent(c *gin.Context)
 	GetDashboardTeacher(c *gin.Context)
+	GetDashboardAttendance(c *gin.Context)
 }
 
 type dashboardHandler struct {
@@ -105,4 +107,26 @@ func (h dashboardHandler) GetDashboardTeacher(c *gin.Context) {
 	}
 
 	response.New(c).Data(http.StatusOK, "sukses mengambil dashboard dosen", result)
+}
+
+// Retrieve Dashboard Attendance ... Retrieve Dashboard Attendance
+// @Summary Retrieve Dashboard Attendance
+// @Description Retrieve Dashboard Attendance
+// @Tags Dashboard
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.DashboardAttendanceResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /dashboard/attendance [get]
+// @Security BearerTokenAuth
+func (h dashboardHandler) GetDashboardAttendance(c *gin.Context) {
+	month, _ := strconv.Atoi(c.Query("month"))
+	year, _ := strconv.Atoi(c.Query("year"))
+	result, err := h.dashboardService.RetrieveDashboardAttendance(month, year)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	response.New(c).Data(http.StatusOK, "sukses mengambil dashboard attendance", result)
 }

@@ -4,6 +4,7 @@ import (
 	"attendance-api/model"
 	"fmt"
 	"log"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -13,6 +14,7 @@ type DashboardRepo interface {
 	RetrieveDashboardUser() (result model.DashboardUser, err error)
 	RetrieveDashboardStudent() (result model.DashboardStudent, err error)
 	RetrieveDashboardTeacher() (result model.DashboardTeacher, err error)
+	RetrieveDashboardAttendance(month, year int) (results []model.DashboardAttendance, err error)
 }
 
 type dashboardRepo struct {
@@ -83,6 +85,38 @@ func (r dashboardRepo) RetrieveDashboardTeacher() (result model.DashboardTeacher
 							FROM %s t LEFT JOIN users u ON t.user_id = u.id`, "teachers")
 	if err := r.db.Raw(rawQuery).Scan(&result).Error; err != nil {
 		return model.DashboardTeacher{}, err
+	}
+	return
+}
+
+func (r dashboardRepo) RetrieveDashboardAttendance(month, year int) (results []model.DashboardAttendance, err error) {
+
+	query := r.db.Table("attendances")
+	query = query.Select("STR_TO_DATE(date, '%Y-%m-%d') as date, " +
+		"MONTH(STR_TO_DATE(date, '%Y-%m-%d')) as month_period, " +
+		"YEAR(STR_TO_DATE(date, '%Y-%m-%d')) as year_period, " +
+		"SUM(CASE WHEN status_presence = 'presence' THEN 1 ELSE 0 END) as total_presence, " +
+		"SUM(CASE WHEN status_presence = 'not_presence' THEN 1 ELSE 0 END) as total_not_presence, " +
+		"SUM(CASE WHEN status_presence = 'sick' THEN 1 ELSE 0 END) as total_sick, " +
+		"SUM(CASE WHEN status_presence = 'leave_attendance' THEN 1 ELSE 0 END) as total_leave_attendance, " +
+		"SUM(CASE WHEN clock_in = 0 AND clock_out > 0 THEN 1 ELSE 0 END) as total_no_clock_in, " +
+		"SUM(CASE WHEN clock_in > 0 AND clock_out = 0 THEN 1 ELSE 0 END) as total_no_clock_out, " +
+		"SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END) as total_late, " +
+		"SUM(CASE WHEN status = 'come_home_early' THEN 1 ELSE 0 END) as total_come_home_early, " +
+		"SUM(CASE WHEN status = 'late_and_home_early' THEN 1 ELSE 0 END) as total_late_and_home_early")
+
+	if month > 0 && year > 0 {
+		query = query.Where("YEAR(STR_TO_DATE(date, '%Y-%m-%d')) = ? AND MONTH(STR_TO_DATE(date, '%Y-%m-%d')) = ?", year, month)
+	} else if month > 0 && year <= 0 {
+		year = time.Now().Year()
+		query = query.Where("YEAR(STR_TO_DATE(date, '%Y-%m-%d')) = ? AND MONTH(STR_TO_DATE(date, '%Y-%m-%d')) = ?", year, month)
+	} else if month <= 0 && year > 0 {
+		query = query.Where("YEAR(STR_TO_DATE(date, '%Y-%m-%d')) = ?", year)
+	}
+	query = query.Group("YEAR(STR_TO_DATE(date, '%Y-%m-%d')), MONTH(STR_TO_DATE(date, '%Y-%m-%d'))")
+
+	if err := query.Find(&results).Error; err != nil {
+		return nil, err
 	}
 	return
 }

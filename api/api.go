@@ -140,6 +140,7 @@ func (c server) v1() {
 			dashboard.GET("/user", dashboardHandler.GetDashboardUser)
 			dashboard.GET("/student", dashboardHandler.GetDashboardStudent)
 			dashboard.GET("/teacher", dashboardHandler.GetDashboardTeacher)
+			dashboard.GET("/attendance", dashboardHandler.GetDashboardAttendance)
 		}
 
 		student := v1.Group("/student")

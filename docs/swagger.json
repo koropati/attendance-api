@@ -1522,6 +1522,46 @@
                 }
             }
         },
+        "/dashboard/attendance": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Retrieve Dashboard Attendance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Retrieve Dashboard Attendance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DashboardAttendanceResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/dashboard/student": {
             "get": {
                 "security": [
@@ -5605,6 +5645,64 @@
                 },
                 "data": {
                     "$ref": "#/definitions/model.DashboardAcademic"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DashboardAttendance": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "month_period": {
+                    "type": "integer"
+                },
+                "total_come_home_early": {
+                    "type": "integer"
+                },
+                "total_late": {
+                    "type": "integer"
+                },
+                "total_late_and_home_early": {
+                    "type": "integer"
+                },
+                "total_leave_attendance": {
+                    "type": "integer"
+                },
+                "total_no_clock_in": {
+                    "type": "integer"
+                },
+                "total_no_clock_out": {
+                    "type": "integer"
+                },
+                "total_not_presence": {
+                    "type": "integer"
+                },
+                "total_presence": {
+                    "type": "integer"
+                },
+                "total_sick": {
+                    "type": "integer"
+                },
+                "year_period": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.DashboardAttendanceResponseData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DashboardAttendance"
+                    }
                 },
                 "message": {
                     "type": "string"

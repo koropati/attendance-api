@@ -269,6 +269,44 @@ definitions:
       message:
         type: string
     type: object
+  model.DashboardAttendance:
+    properties:
+      date:
+        type: string
+      month_period:
+        type: integer
+      total_come_home_early:
+        type: integer
+      total_late:
+        type: integer
+      total_late_and_home_early:
+        type: integer
+      total_leave_attendance:
+        type: integer
+      total_no_clock_in:
+        type: integer
+      total_no_clock_out:
+        type: integer
+      total_not_presence:
+        type: integer
+      total_presence:
+        type: integer
+      total_sick:
+        type: integer
+      year_period:
+        type: integer
+    type: object
+  model.DashboardAttendanceResponseData:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/model.DashboardAttendance'
+        type: array
+      message:
+        type: string
+    type: object
   model.DashboardStudent:
     properties:
       total_student:
@@ -1936,6 +1974,31 @@ paths:
       security:
       - BearerTokenAuth: []
       summary: Retrieve Dashboard Academic
+      tags:
+      - Dashboard
+  /dashboard/attendance:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Dashboard Attendance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DashboardAttendanceResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Retrieve Dashboard Attendance
       tags:
       - Dashboard
   /dashboard/student:
