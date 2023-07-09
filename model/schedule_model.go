@@ -9,20 +9,20 @@ import (
 // tag
 type Schedule struct {
 	GormCustom
-	Name          string          `json:"name" gorm:"type:varchar(100)"`
-	Code          string          `json:"code" gorm:"unique;type:varchar(100)"`
-	QRCode        string          `json:"qr_code" gorm:"unique;type:varchar(100)"`
-	StartDate     string          `json:"start_date" gorm:"type:date"`
-	EndDate       string          `json:"end_date" gorm:"type:date"`
-	SubjectID     uint            `json:"subject_id"`
-	Subject       Subject         `json:"subject" gorm:"foreignKey:SubjectID"`
-	DailySchedule []DailySchedule `json:"daily_schedule" gorm:"foreignKey:ScheduleID"`
-	LateDuration  int             `json:"late_duration"` // in minute
-	Latitude      float64         `json:"latitude"`
-	Longitude     float64         `json:"longitude"`
-	Radius        int             `json:"radius"` //in metter
-	UserInRule    int             `json:"user_in_rule" gorm:"-"`
-	OwnerID       int             `json:"owner_id" gorm:"not null"`
+	Name          string          `json:"name" gorm:"type:varchar(100)" query:"name" form:"name"`
+	Code          string          `json:"code" gorm:"unique;type:varchar(100)" query:"code" form:"code"`
+	QRCode        string          `json:"qr_code" gorm:"unique;type:varchar(100)" query:"qr_code" form:"qr_code"`
+	StartDate     string          `json:"start_date" gorm:"type:date" query:"start_date" form:"start_date"`
+	EndDate       string          `json:"end_date" gorm:"type:date" query:"end_date" form:"end_date"`
+	SubjectID     uint            `json:"subject_id" query:"subject_id" form:"subject_id"`
+	Subject       Subject         `json:"subject" gorm:"foreignKey:SubjectID" query:"subject" form:"subject"`
+	DailySchedule []DailySchedule `json:"daily_schedule" gorm:"foreignKey:ScheduleID" query:"daily_schedule" form:"daily_schedule"`
+	LateDuration  int             `json:"late_duration" query:"late_duration" form:"late_duration"` // in minute
+	Latitude      float64         `json:"latitude" query:"latitude" form:"latitude"`
+	Longitude     float64         `json:"longitude" query:"longitude" form:"longitude"`
+	Radius        int             `json:"radius" query:"radius" form:"radius"` //in metter
+	UserInRule    int             `json:"user_in_rule" gorm:"-" query:"user_in_rule" form:"user_in_rule"`
+	OwnerID       int             `json:"owner_id" gorm:"not null" query:"owner_id" form:"owner_id"`
 }
 
 func (data Schedule) IsTodaySchedule() (isTodaySchedule bool) {

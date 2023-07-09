@@ -6,35 +6,35 @@ import (
 )
 
 type GormCustom struct {
-	ID        uint         `json:"id" gorm:"primary_key"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at" sql:"index"`
-	CreatedBy int          `json:"created_by"`
-	UpdatedBy int          `json:"updated_by"`
-	DeletedBy int          `json:"deleted_by"`
+	ID        uint         `json:"id" gorm:"primary_key" query:"id" form:"id"`
+	CreatedAt time.Time    `json:"created_at" query:"created_at" form:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at" query:"updated_at" form:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at" sql:"index" query:"deleted_at" form:"deleted_at"`
+	CreatedBy int          `json:"created_by" query:"created_by" form:"created_by"`
+	UpdatedBy int          `json:"updated_by" query:"updated_by" form:"updated_by"`
+	DeletedBy int          `json:"deleted_by" query:"deleted_by" form:"deleted_by"`
 }
 
 type User struct {
 	GormCustom
-	Username      string    `json:"username" gorm:"unique"`
-	Password      string    `json:"password"`
-	FirstName     string    `json:"first_name"`
-	LastName      string    `json:"last_name"`
-	Handphone     string    `json:"handphone" gorm:"unique"`
-	Email         string    `json:"email" gorm:"unique"`
-	Intro         string    `json:"intro" gorm:"type:varchar(255)"`
-	Profile       string    `json:"profile" gorm:"type:varchar(255)"`
-	IsActive      bool      `json:"is_active"`
-	IsSuperAdmin  bool      `json:"is_super_admin"`
-	IsAdmin       bool      `json:"is_admin"`
-	IsUser        bool      `json:"is_user"`
-	LastLogin     time.Time `json:"last_login" gorm:"default:'0001-01-01 11:11:11.111'"`
-	Role          string    `json:"role" gorm:"-"`
-	UserAbilities []Ability `json:"user_abilities" gorm:"-"`
-	Avatar        string    `json:"avatar" gorm:"-"`
-	ScheduleID    int       `json:"schedule_id" query:"schedule_id" gorm:"-"`
-	OwnerID       int       `json:"owner_id" query:"owner_id" gorm:"-"`
+	Username      string    `json:"username" gorm:"unique" query:"username" form:"username"`
+	Password      string    `json:"password" query:"password" form:"password"`
+	FirstName     string    `json:"first_name" query:"first_name" form:"first_name"`
+	LastName      string    `json:"last_name" query:"last_name" form:"last_name"`
+	Handphone     string    `json:"handphone" gorm:"unique" query:"handphone" form:"handphone"`
+	Email         string    `json:"email" gorm:"unique" query:"email" form:"email"`
+	Intro         string    `json:"intro" gorm:"type:varchar(255)" query:"intro" form:"intro"`
+	Profile       string    `json:"profile" gorm:"type:varchar(255)" query:"profile" form:"profile"`
+	IsActive      bool      `json:"is_active" query:"is_active" form:"is_active"`
+	IsSuperAdmin  bool      `json:"is_super_admin" query:"is_super_admin" form:"is_super_admin"`
+	IsAdmin       bool      `json:"is_admin" query:"is_admin" form:"is_admin"`
+	IsUser        bool      `json:"is_user" query:"is_user" form:"is_user"`
+	LastLogin     time.Time `json:"last_login" gorm:"default:'0001-01-01 11:11:11.111'" query:"last_login" form:"last_login"`
+	Role          string    `json:"role" gorm:"-" query:"role" form:"role"`
+	UserAbilities []Ability `json:"user_abilities" gorm:"-" query:"user_abilities" form:"user_abilities"`
+	Avatar        string    `json:"avatar" gorm:"-" query:"avatar" form:"avatar"`
+	ScheduleID    int       `json:"schedule_id" gorm:"-" query:"schedule_id" form:"schedule_id"`
+	OwnerID       int       `json:"owner_id" gorm:"-" query:"owner_id" form:"owner_id"`
 }
 
 func (data User) GetRole() (role string) {

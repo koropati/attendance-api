@@ -2,11 +2,11 @@ package model
 
 type UserSchedule struct {
 	GormCustom
-	UserID     int      `json:"user_id"`
-	ScheduleID uint     `json:"schedule_id"`
+	UserID     int      `json:"user_id" query:"user_id" form:"user_id"`
+	ScheduleID uint     `json:"schedule_id" query:"schedule_id" form:"schedule_id"`
 	Schedule   Schedule `json:"schedule" gorm:"foreignKey:ScheduleID"`
 	User       User     `json:"user" gorm:"foreignKey:UserID"`
-	OwnerID    int      `json:"owner_id" gorm:"not null"`
+	OwnerID    int      `json:"owner_id" gorm:"not null" query:"owner_id" form:"owner_id"`
 }
 
 type MySchedule struct {
