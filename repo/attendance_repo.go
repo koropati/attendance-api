@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"sync"
 
 	"gorm.io/gorm"
 )
@@ -31,49 +32,80 @@ func NewAttendanceRepo(db *gorm.DB) AttendanceRepo {
 	return &attendanceRepo{db: db}
 }
 
-func (r attendanceRepo) CreateAttendance(attendance model.Attendance) (model.Attendance, error) {
+func (r attendanceRepo) CreateAttendance(attendance model.Attendance) (result model.Attendance, err error) {
 	if err := r.db.Table("attendances").Create(&attendance).Error; err != nil {
 		return model.Attendance{}, err
 	}
-	return attendance, nil
-}
 
-func (r attendanceRepo) RetrieveAttendance(id int) (model.Attendance, error) {
-	var attendance model.Attendance
-	if err := r.db.First(&attendance, id).Error; err != nil {
+	if err := PreloadAttendance(r.db.Table("attendances")).Where("id = ?", attendance.ID).First(&result).Error; err != nil {
 		return model.Attendance{}, err
 	}
-	return attendance, nil
+
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
+	return
 }
 
-func (r attendanceRepo) RetrieveAttendanceByUserID(id int, userID int) (model.Attendance, error) {
-	var attendance model.Attendance
-	if err := r.db.Model(&model.Attendance{}).Where("id = ? AND user_id = ?", id, userID).First(&attendance).Error; err != nil {
+func (r attendanceRepo) RetrieveAttendance(id int) (result model.Attendance, err error) {
+	if err := PreloadAttendance(r.db.Table("attendances")).Where("id = ?", id).First(&result).Error; err != nil {
 		return model.Attendance{}, err
 	}
-	return attendance, nil
+
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
+	return
 }
 
-func (r attendanceRepo) RetrieveAttendanceByDate(userID int, scheduleID int, date string) (model.Attendance, error) {
-	var attendance model.Attendance
-	if err := r.db.Model(&model.Attendance{}).Where("user_id = ? AND schedule_id = ? AND DATE(date) = ?", userID, scheduleID, date).First(&attendance).Error; err != nil {
+func (r attendanceRepo) RetrieveAttendanceByUserID(id int, userID int) (result model.Attendance, err error) {
+	if err := PreloadAttendance(r.db.Table("attendances")).Where("id = ? AND user_id = ?", id, userID).First(&result).Error; err != nil {
 		return model.Attendance{}, err
 	}
-	return attendance, nil
+
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
+	return
 }
 
-func (r attendanceRepo) UpdateAttendance(id int, attendance model.Attendance) (model.Attendance, error) {
-	if err := r.db.Model(&model.Attendance{}).Where("id = ?", id).Updates(&attendance).Error; err != nil {
+func (r attendanceRepo) RetrieveAttendanceByDate(userID int, scheduleID int, date string) (result model.Attendance, err error) {
+	if err := PreloadAttendance(r.db.Table("attendances")).Where("user_id = ? AND schedule_id = ? AND DATE(date) = ?", userID, scheduleID, date).First(&result).Error; err != nil {
 		return model.Attendance{}, err
 	}
-	return attendance, nil
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
+	return
 }
 
-func (r attendanceRepo) UpdateAttendanceByUserID(id int, userID int, attendance model.Attendance) (model.Attendance, error) {
+func (r attendanceRepo) UpdateAttendance(id int, attendance model.Attendance) (result model.Attendance, err error) {
+	if err := r.db.Table("attendances").Where("id = ?", id).Updates(&attendance).Error; err != nil {
+		return model.Attendance{}, err
+	}
+	if err := PreloadAttendance(r.db.Table("attendances")).Where("id = ?", id).First(&result).Error; err != nil {
+		return model.Attendance{}, err
+	}
+
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
+	return
+}
+
+func (r attendanceRepo) UpdateAttendanceByUserID(id int, userID int, attendance model.Attendance) (result model.Attendance, err error) {
 	if err := r.db.Model(&model.Attendance{}).Where("id = ? AND user_Id = ?", id, userID).Updates(&attendance).Error; err != nil {
 		return model.Attendance{}, err
 	}
-	return attendance, nil
+
+	if err := PreloadAttendance(r.db.Table("attendances")).Where("id = ?", id).First(&result).Error; err != nil {
+		return model.Attendance{}, err
+	}
+
+	result.User.Role = result.User.GetRole()
+	result.User.Avatar = result.User.GetAvatar()
+	result.User.UserAbilities = result.User.GetAbility()
+	return
 }
 
 func (r attendanceRepo) DeleteAttendance(id int) error {
@@ -94,7 +126,7 @@ func (r attendanceRepo) ListAttendance(attendance model.Attendance, pagination m
 	var attendances []model.Attendance
 	offset := (pagination.Page - 1) * pagination.Limit
 
-	query := r.db.Table("attendances").Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	query := PreloadAttendance(r.db.Table("attendances")).Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
 	query = FilterAttendance(query, attendance)
 	query = SearchAttendance(query, pagination.Search)
 	query = query.Find(&attendances)
@@ -102,6 +134,17 @@ func (r attendanceRepo) ListAttendance(attendance model.Attendance, pagination m
 		return nil, err
 	}
 
+	wg := sync.WaitGroup{}
+	for i, data := range attendances {
+		wg.Add(1)
+		go func(i int, data model.Attendance) {
+			attendances[i].User.Role = data.User.GetRole()
+			attendances[i].User.Avatar = data.User.GetAvatar()
+			attendances[i].User.UserAbilities = data.User.GetAbility()
+			wg.Done()
+		}(i, data)
+	}
+	wg.Wait()
 	return attendances, nil
 }
 
@@ -144,12 +187,23 @@ func (r attendanceRepo) ListAttendanceMeta(attendance model.Attendance, paginati
 
 func (r attendanceRepo) DropDownAttendance(attendance model.Attendance) ([]model.Attendance, error) {
 	var attendances []model.Attendance
-	query := r.db.Table("attendances").Order("id desc")
+	query := PreloadAttendance(r.db.Table("attendances")).Order("id desc")
 	query = FilterAttendance(query, attendance)
 	query = query.Find(&attendances)
 	if err := query.Error; err != nil {
 		return nil, err
 	}
+	wg := sync.WaitGroup{}
+	for i, data := range attendances {
+		wg.Add(1)
+		go func(i int, data model.Attendance) {
+			attendances[i].User.Role = data.User.GetRole()
+			attendances[i].User.Avatar = data.User.GetAvatar()
+			attendances[i].User.UserAbilities = data.User.GetAbility()
+			wg.Done()
+		}(i, data)
+	}
+	wg.Wait()
 	return attendances, nil
 }
 
@@ -194,5 +248,12 @@ func SearchAttendance(query *gorm.DB, search string) *gorm.DB {
 	if search != "" {
 		query = query.Where("user_id LIKE ? OR schedule_id LIKE ? OR date LIKE ? OR status_presence LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
 	}
+	return query
+}
+
+func PreloadAttendance(query *gorm.DB) *gorm.DB {
+	query = query.Preload("User")
+	query = query.Preload("Schedule")
+	query = query.Preload("AttendanceLog")
 	return query
 }
