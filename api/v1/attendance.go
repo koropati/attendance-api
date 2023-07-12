@@ -12,6 +12,7 @@ import (
 	"attendance-api/service"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -75,7 +76,10 @@ func NewAttendanceHandler(
 // @Security BearerTokenAuth
 func (h attendanceHandler) Create(c *gin.Context) {
 	var data model.Attendance
-	c.BindJSON(&data)
+	errBind := c.BindJSON(&data)
+	if errBind != nil {
+		log.Printf("ERROR BIND : %v\n", errBind)
+	}
 
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
@@ -88,22 +92,22 @@ func (h attendanceHandler) Create(c *gin.Context) {
 		data.UserID = currentUserID
 	}
 
-	if err := validation.Validate(data.LatitudeIn, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(data.LatitudeIn, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude_in: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.LongitudeIn, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(data.LongitudeIn, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("longitude_in: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.LatitudeOut, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(data.LatitudeOut, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude_out: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.LongitudeOut, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(data.LongitudeOut, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("longitude_out: %v", err))
 		return
 	}
@@ -346,7 +350,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 	c.BindJSON(&dataClockIn)
 
 	currentCheckIn := presence.GetCurrentMillis()
-	toDay := time.Now()
+	toDay := time.Now().Format("2006-01-02")
 
 	if err := validation.Validate(dataClockIn.Latitude, validation.Required, is.Float); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude: %v", err))
@@ -389,7 +393,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 	}
 
 	// Check daily Schedule
-	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayName(toDay))
+	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayNameFromDateString(toDay))
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -415,10 +419,10 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 	}
 
 	// Check Attendance is Exist or not
-	isExistAttendance := h.attendanceService.CheckIsExistByDate(currentUserID, int(schedule.ID), toDay.Format("2006-01-02"))
+	isExistAttendance := h.attendanceService.CheckIsExistByDate(currentUserID, int(schedule.ID), toDay)
 	if isExistAttendance {
 		// Get
-		attendance, err := h.attendanceService.RetrieveAttendanceByDate(currentUserID, int(schedule.ID), toDay.Format("2006-01-02"))
+		attendance, err := h.attendanceService.RetrieveAttendanceByDate(currentUserID, int(schedule.ID), toDay)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
@@ -458,7 +462,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 		newAttendance := model.Attendance{
 			GormCustom: model.GormCustom{
 				CreatedBy: currentUserID,
-				CreatedAt: toDay,
+				CreatedAt: time.Now(),
 			},
 			UserID:      currentUserID,
 			ScheduleID:  schedule.ID,
@@ -512,7 +516,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 	c.BindJSON(&dataClockOut)
 
 	currentCheckIn := presence.GetCurrentMillis()
-	toDay := time.Now()
+	toDay := time.Now().Format("2006-01-02")
 
 	if err := validation.Validate(dataClockOut.Latitude, validation.Required, is.Float); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude: %v", err))
@@ -555,7 +559,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 	}
 
 	// Check daily Schedule
-	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayName(toDay))
+	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayNameFromDateString(toDay))
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -581,10 +585,10 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 	}
 
 	// Check Attendance is Exist or not
-	isExistAttendance := h.attendanceService.CheckIsExistByDate(currentUserID, int(schedule.ID), toDay.Format("2006-01-02"))
+	isExistAttendance := h.attendanceService.CheckIsExistByDate(currentUserID, int(schedule.ID), toDay)
 	if isExistAttendance {
 		// Get
-		attendance, err := h.attendanceService.RetrieveAttendanceByDate(currentUserID, int(schedule.ID), toDay.Format("2006-01-02"))
+		attendance, err := h.attendanceService.RetrieveAttendanceByDate(currentUserID, int(schedule.ID), toDay)
 		if err != nil {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
@@ -626,7 +630,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 		newAttendance := model.Attendance{
 			GormCustom: model.GormCustom{
 				CreatedBy: currentUserID,
-				CreatedAt: toDay,
+				CreatedAt: time.Now(),
 			},
 			UserID:       currentUserID,
 			ScheduleID:   schedule.ID,

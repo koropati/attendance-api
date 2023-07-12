@@ -235,8 +235,8 @@ func FilterAttendance(query *gorm.DB, attendance model.Attendance) *gorm.DB {
 	if attendance.ScheduleID > 0 {
 		query = query.Where("schedule_id = ?", attendance.ScheduleID)
 	}
-	if attendance.Date.Format("2006-01-02") != "" {
-		query = query.Where("DATE(date) = ?", attendance.Date.Format("2006-01-02"))
+	if attendance.Date != "" {
+		query = query.Where("DATE(date) = ?", attendance.Date)
 	}
 	if attendance.Status != "" {
 		query = query.Where("status = ?", attendance.Status)
@@ -254,6 +254,7 @@ func SearchAttendance(query *gorm.DB, search string) *gorm.DB {
 func PreloadAttendance(query *gorm.DB) *gorm.DB {
 	query = query.Preload("User")
 	query = query.Preload("Schedule")
+	query = query.Preload("Schedule.Subject")
 	query = query.Preload("AttendanceLog")
 	return query
 }

@@ -57,7 +57,7 @@ func (j attendanceJob) AutoCreate() {
 				dataAttendance := model.Attendance{
 					UserID:         userSchedule.UserID,
 					ScheduleID:     userSchedule.ScheduleID,
-					Date:           time.Now(),
+					Date:           time.Now().Format("2006-01-02"),
 					ClockIn:        0,
 					ClockOut:       0,
 					Status:         "-",

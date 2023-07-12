@@ -1,16 +1,12 @@
 package model
 
-import (
-	"time"
-)
-
 type Attendance struct {
 	GormCustom
 	UserID         int           `json:"user_id" query:"user_id" form:"user_id"`
 	ScheduleID     uint          `json:"schedule_id" query:"schedule_id" form:"schedule_id"`
 	User           User          `json:"user" gorm:"foreignKey:UserID" query:"user" form:"user"`
 	Schedule       Schedule      `json:"schedule" gorm:"foreignKey:ScheduleID" query:"schedule" form:"schedule"`
-	Date           time.Time     `json:"date" gorm:"type:date;not null" query:"date" form:"date"`
+	Date           string        `json:"date" gorm:"type:date;not null" query:"date" form:"date"`
 	ClockIn        int64         `json:"clock_in" query:"clock_in" form:"clock_in"`
 	ClockOut       int64         `json:"clock_out" query:"clock_out" form:"clock_out"`
 	Status         string        `json:"status" gorm:"type:enum('-','late','come_home_early','late_and_home_early');default:'-'" query:"status" form:"status"`
