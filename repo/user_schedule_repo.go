@@ -529,7 +529,7 @@ func (r userScheduleRepo) CheckHaveSchedule(userID int, date time.Time) (isHaveS
 	rawQuery := fmt.Sprintf(`SELECT COUNT(*) > 0 as is_have_schedule, us.schedule_id as schedule_id 
 	FROM user_schedules us 
 	LEFT JOIN schedules s ON us.schedule_id = s.id 
-	WHERE us.user_id = %d AND %v BETWEEN s.start_date AND s.end_date`, userID, date)
+	WHERE us.user_id = %d AND '%v' BETWEEN s.start_date AND s.end_date`, userID, date)
 
 	if err := r.db.Raw(rawQuery).Scan(&data).Error; err != nil {
 		return data.IsHaveSchedule, data.ScheduleID, err

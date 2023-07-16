@@ -255,6 +255,7 @@ func PreloadAttendance(query *gorm.DB) *gorm.DB {
 	query = query.Preload("User")
 	query = query.Preload("Schedule")
 	query = query.Preload("Schedule.Subject")
+	query = query.Preload("Schedule.DailySchedule")
 	query = query.Preload("AttendanceLog")
 	return query
 }

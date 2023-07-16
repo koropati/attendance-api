@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -30,26 +31,29 @@ type ScheduleHandler interface {
 }
 
 type scheduleHandler struct {
-	scheduleService     service.ScheduleService
-	subjectService      service.SubjectService
-	userScheduleService service.UserScheduleService
-	infra               infra.Infra
-	middleware          middleware.Middleware
+	scheduleService      service.ScheduleService
+	subjectService       service.SubjectService
+	userScheduleService  service.UserScheduleService
+	dailyScheduleService service.DailyScheduleService
+	infra                infra.Infra
+	middleware           middleware.Middleware
 }
 
 func NewScheduleHandler(
 	scheduleService service.ScheduleService,
 	subjectService service.SubjectService,
 	userScheduleService service.UserScheduleService,
+	dailyScheduleService service.DailyScheduleService,
 	infra infra.Infra,
 	middleware middleware.Middleware,
 ) ScheduleHandler {
 	return &scheduleHandler{
-		scheduleService:     scheduleService,
-		subjectService:      subjectService,
-		userScheduleService: userScheduleService,
-		infra:               infra,
-		middleware:          middleware,
+		scheduleService:      scheduleService,
+		subjectService:       subjectService,
+		userScheduleService:  userScheduleService,
+		dailyScheduleService: dailyScheduleService,
+		infra:                infra,
+		middleware:           middleware,
 	}
 }
 
@@ -252,6 +256,41 @@ func (h scheduleHandler) Update(c *gin.Context) {
 			return
 		}
 	}
+
+	wg := sync.WaitGroup{}
+	for _, dailySchedule := range data.DailySchedule {
+		wg.Add(1)
+		go func(dailySchedule model.DailySchedule) {
+			if dailySchedule.ID > 0 {
+				// update
+				h.dailyScheduleService.UpdateDailySchedule(int(dailySchedule.ID), model.DailySchedule{
+					GormCustom: model.GormCustom{
+						ID:        dailySchedule.ID,
+						UpdatedAt: time.Now(),
+						UpdatedBy: currentUserID,
+					},
+					ScheduleID: data.ID,
+					Name:       dailySchedule.Name,
+					StartTime:  dailySchedule.StartTime,
+					EndTime:    dailySchedule.EndTime,
+				})
+			} else {
+				// Create
+				h.dailyScheduleService.CreateDailySchedule(model.DailySchedule{
+					GormCustom: model.GormCustom{
+						CreatedAt: time.Now(),
+						CreatedBy: currentUserID,
+					},
+					ScheduleID: data.ID,
+					Name:       dailySchedule.Name,
+					StartTime:  dailySchedule.StartTime,
+					EndTime:    dailySchedule.EndTime,
+				})
+			}
+			wg.Done()
+		}(dailySchedule)
+	}
+	wg.Wait()
 
 	response.New(c).Data(http.StatusOK, "sukses memperbaharui data", result)
 }

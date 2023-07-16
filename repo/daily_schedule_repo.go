@@ -159,7 +159,7 @@ func (r dailyScheduleRepo) CheckHaveDailySchedule(scheduleID int, day string) (i
 	}
 	var data DataDailySchedule
 	rawQuery := fmt.Sprintf(`SELECT COUNT(*) > 0 as is_have_daily_schedule, ds.id as daily_schedule_id 
-	FROM daily_schedules ds WHERE ds.schedule_id = %d AND name = %s`, scheduleID, day)
+	FROM daily_schedules ds WHERE ds.schedule_id = %d AND name = '%s' GROUP BY ds.id LIMIT 1`, scheduleID, day)
 
 	if err := r.db.Raw(rawQuery).Scan(&data).Error; err != nil {
 		return data.IsHaveDailySchedule, data.DailyScheduleID, err

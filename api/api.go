@@ -76,6 +76,7 @@ func (c server) v1() {
 		c.service.ScheduleService(),
 		c.service.SubjectService(),
 		c.service.UserScheduleService(),
+		c.service.DailyScheduleService(),
 		c.infra,
 		c.middleware,
 	)

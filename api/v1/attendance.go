@@ -112,11 +112,56 @@ func (h attendanceHandler) Create(c *gin.Context) {
 		return
 	}
 
+	schedule, err := h.scheduleService.RetrieveSchedule(int(data.ScheduleID))
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check In Radius
+	if inRadius := schedule.InRange(data.LatitudeIn, data.LongitudeIn); !inRadius {
+		err = errors.New("data jam masuk berada di luar radius")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check In Radius
+	if inRadius := schedule.InRange(data.LatitudeOut, data.LongitudeOut); !inRadius {
+		err = errors.New("data jam keluar berada di luar radius")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check daily Schedule
+	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayNameFromDateString(data.Date))
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !isExistDailySchedule {
+		err = errors.New("absensi tidak bisa dilakukan pada tanggal tersebut")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	dailySchedule, err := h.dailyScheduleService.RetrieveDailySchedule(dailyScheduleID)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	data.LateIn = calculation.CalculateLateDuration(dailySchedule.StartTime, data.ClockIn, data.TimeZoneIn, schedule.LateDuration)
+	data.EarlyOut = calculation.CalculateEarlyDuration(dailySchedule.EndTime, data.ClockOut, data.TimeZoneOut)
+	data.StatusPresence = data.GenerateStatusPresence()
+	data.Status = data.GenerateStatus()
+
 	result, err := h.attendanceService.CreateAttendance(data)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
+
 	response.New(c).Data(http.StatusCreated, "sukses membuat data", result)
 }
 
@@ -191,25 +236,69 @@ func (h attendanceHandler) Update(c *gin.Context) {
 	data.UpdatedBy = currentUserID
 	data.UpdatedAt = time.Now()
 
-	if err := validation.Validate(data.LatitudeIn, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(data.LatitudeIn, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude_in: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.LongitudeIn, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(data.LongitudeIn, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("longitude_in: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.LatitudeOut, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(data.LatitudeOut, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude_out: %v", err))
 		return
 	}
 
-	if err := validation.Validate(data.LongitudeOut, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(data.LongitudeOut, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("longitude_out: %v", err))
 		return
 	}
+
+	schedule, err := h.scheduleService.RetrieveSchedule(int(data.ScheduleID))
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check In Radius
+	if inRadius := schedule.InRange(data.LatitudeIn, data.LongitudeIn); !inRadius {
+		err = errors.New("data jam masuk berada di luar radius")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check In Radius
+	if inRadius := schedule.InRange(data.LatitudeOut, data.LongitudeOut); !inRadius {
+		err = errors.New("data jam keluar berada di luar radius")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	// Check daily Schedule
+	isExistDailySchedule, dailyScheduleID, err := h.dailyScheduleService.CheckHaveDailySchedule(int(schedule.ID), converter.GetDayNameFromDateString(data.Date))
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !isExistDailySchedule {
+		err = errors.New("absensi tidak bisa dilakukan pada tanggal tersebut")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	dailySchedule, err := h.dailyScheduleService.RetrieveDailySchedule(dailyScheduleID)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	data.LateIn = calculation.CalculateLateDuration(dailySchedule.StartTime, data.ClockIn, data.TimeZoneIn, schedule.LateDuration)
+	data.EarlyOut = calculation.CalculateEarlyDuration(dailySchedule.EndTime, data.ClockOut, data.TimeZoneOut)
+	data.StatusPresence = data.GenerateStatusPresence()
+	data.Status = data.GenerateStatus()
 
 	var result model.Attendance
 	if h.middleware.IsSuperAdmin(c) {
