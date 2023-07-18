@@ -297,6 +297,7 @@ func (c server) v1() {
 			attendance.DELETE("/delete", attendanceHandler.Delete)
 			attendance.GET("/list", attendanceHandler.List)
 			attendance.GET("/drop-down", attendanceHandler.DropDown)
+			attendance.GET("/summary", attendanceHandler.Summary)
 			attendance.POST("/clock-in", attendanceHandler.ClockIn)
 			attendance.POST("/clock-out", attendanceHandler.ClockOut)
 		}
