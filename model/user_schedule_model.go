@@ -24,6 +24,11 @@ type MySchedule struct {
 	Radius       int     `json:"radius" query:"radius"`
 }
 
+type MyScheduleFilter struct {
+	Month string `json:"month" query:"month" form:"month"`
+	Year  string `json:"year" query:"year" form:"year"`
+}
+
 type TodaySchedule struct {
 	ScheduleID     uint   `json:"schedule_id"`
 	ScheduleName   string `json:"schedule_name"`

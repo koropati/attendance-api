@@ -5,6 +5,7 @@ import (
 	"attendance-api/common/http/response"
 	"attendance-api/common/util/converter"
 	"attendance-api/infra"
+	"attendance-api/model"
 	"attendance-api/service"
 	"log"
 	"net/http"
@@ -51,7 +52,13 @@ func (h myScheduleHandler) List(c *gin.Context) {
 		return
 	}
 
-	results, err := h.userScheduleService.ListMySchedule(currentUserID)
+	var filter model.MyScheduleFilter
+	errFilter := c.BindQuery(&filter)
+	if errFilter != nil {
+		response.New(c).Error(http.StatusBadRequest, errFilter)
+	}
+
+	results, err := h.userScheduleService.ListMySchedule(currentUserID, filter)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 	}

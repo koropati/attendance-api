@@ -3,6 +3,7 @@ package repo
 import (
 	"attendance-api/model"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -13,7 +14,7 @@ type UserScheduleRepo interface {
 	CreateUserSchedule(userschedule model.UserSchedule) (model.UserSchedule, error)
 	RetrieveUserSchedule(id int) (model.UserSchedule, error)
 	RetrieveUserScheduleByOwner(id int, ownerID int) (model.UserSchedule, error)
-	ListMySchedule(userID int) ([]model.MySchedule, error)
+	ListMySchedule(userID int, filter model.MyScheduleFilter) ([]model.MySchedule, error)
 	ListTodaySchedule(userID int, dayName string) ([]model.TodaySchedule, error)
 	ListUserInRule(scheduleID int, user model.Student, pagination model.Pagination) ([]model.Student, error)
 	ListUserInRuleMeta(scheduleID int, user model.Student, pagination model.Pagination) (model.Meta, error)
@@ -142,8 +143,25 @@ func (r userScheduleRepo) RemoveUserFromScheduleByOwner(scheduleID int, userID i
 	return nil
 }
 
-func (r userScheduleRepo) ListMySchedule(userID int) (results []model.MySchedule, err error) {
-	today := time.Now().Format("2006-01-02")
+func (r userScheduleRepo) ListMySchedule(userID int, filter model.MyScheduleFilter) (results []model.MySchedule, err error) {
+
+	var month int
+	var year int
+
+	if filter.Month != "" && filter.Year != "" {
+		month, _ = strconv.Atoi(filter.Month)
+		year, _ = strconv.Atoi(filter.Year)
+	} else {
+		month = int(time.Now().Month())
+		year = time.Now().Year()
+	}
+
+	startDate := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+	endDate := startDate.AddDate(0, 1, -1)
+
+	startDateString := startDate.Format("2006-01-02")
+	endDateString := endDate.Format("2006-01-02")
+
 	query := fmt.Sprintf(`
 	SELECT 
 	us.schedule_id as schedule_id, 
@@ -161,7 +179,8 @@ func (r userScheduleRepo) ListMySchedule(userID int) (results []model.MySchedule
 	FROM user_schedules us 
 	LEFT JOIN schedules s ON us.schedule_id = s.id 
 	LEFT JOIN subjects sbj ON s.subject_id = sbj.id 
-	WHERE us.user_id = %d AND '%s' BETWEEN DATE(s.start_date) AND DATE(s.end_date) AND us.deleted_at IS NULL`, userID, today)
+	WHERE us.user_id = %d AND (DATE('%s') BETWEEN DATE(s.start_date) AND DATE(s.end_date)) AND (DATE('%s') BETWEEN DATE(s.start_date) AND DATE(s.end_date)) AND us.deleted_at IS NULL`, userID, startDateString, endDateString)
+
 	if err := r.db.Raw(query).Scan(&results).Error; err != nil {
 		return nil, err
 	}
@@ -183,7 +202,7 @@ func (r userScheduleRepo) ListTodaySchedule(userID int, dayName string) (results
 	LEFT JOIN schedules s ON us.schedule_id = s.id 
 	LEFT JOIN subjects sbj ON s.subject_id = sbj.id 
 	LEFT JOIN daily_schedules ds ON us.schedule_id = ds.schedule_id 
-	WHERE us.user_id = %d AND '%s' AND ds.name = '%s' AND BETWEEN DATE(s.start_date) AND DATE(s.end_date) AND us.deleted_at IS NULL`, userID, today, dayName)
+	WHERE us.user_id = %d AND ds.name = '%s' AND '%s' BETWEEN DATE(s.start_date) AND DATE(s.end_date) AND us.deleted_at IS NULL`, userID, dayName, today)
 	if err := r.db.Raw(query).Scan(&results).Error; err != nil {
 		return nil, err
 	}

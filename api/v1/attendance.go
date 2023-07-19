@@ -118,6 +118,19 @@ func (h attendanceHandler) Create(c *gin.Context) {
 		return
 	}
 
+	//check tanggal dalam range aturan jadwal?
+	isDateInRange, err := presence.IsDateInRange(data.Date, schedule.StartDate, schedule.EndDate)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !isDateInRange {
+		err = errors.New("tidak bisa membuat absensi pada tanggal tersebut")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
 	// Check In Radius
 	if inRadius := schedule.InRange(data.LatitudeIn, data.LongitudeIn); !inRadius {
 		err = errors.New("data jam masuk berada di luar radius")
@@ -258,6 +271,19 @@ func (h attendanceHandler) Update(c *gin.Context) {
 
 	schedule, err := h.scheduleService.RetrieveSchedule(int(data.ScheduleID))
 	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	//check tanggal dalam range aturan jadwal?
+	isDateInRange, err := presence.IsDateInRange(data.Date, schedule.StartDate, schedule.EndDate)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !isDateInRange {
+		err = errors.New("tidak bisa membuat absensi pada tanggal tersebut")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
@@ -474,6 +500,19 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 		return
 	}
 
+	//check tanggal dalam range aturan jadwal?
+	isDateInRange, err := presence.IsDateInRange(toDay, schedule.StartDate, schedule.EndDate)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !isDateInRange {
+		err = errors.New("tidak bisa membuat absensi pada tanggal tersebut")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
 	// Check In Radius
 	if inRadius := schedule.InRange(dataClockIn.Latitude, dataClockIn.Longitude); !inRadius {
 		err = errors.New("maaf anda berada di luar radius")
@@ -636,6 +675,19 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 	// check data schedule dari scan
 	schedule, err := h.scheduleService.RetrieveScheduleByQRcode(dataClockOut.QRCode)
 	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	//check tanggal dalam range aturan jadwal?
+	isDateInRange, err := presence.IsDateInRange(toDay, schedule.StartDate, schedule.EndDate)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if !isDateInRange {
+		err = errors.New("tidak bisa membuat absensi pada tanggal tersebut")
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}

@@ -285,7 +285,7 @@ func (c server) v1() {
 		mySchedule.Use(c.middleware.AUTH())
 		{
 			mySchedule.GET("/list", myScheduleHandler.List)
-			mySchedule.GET("/today", myScheduleHandler.List)
+			mySchedule.GET("/today", myScheduleHandler.Today)
 		}
 
 		attendance := v1.Group("/attendance")
