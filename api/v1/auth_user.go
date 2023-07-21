@@ -255,9 +255,9 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 		response.New(c).Error(http.StatusUnauthorized, err)
 		return
 	}
-	userID := claims["user_id"].(uint)
+	userID := claims["user_id"].(float64)
 
-	user, err := h.authService.GetByID(userID)
+	user, err := h.authService.GetByID(uint(userID))
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
