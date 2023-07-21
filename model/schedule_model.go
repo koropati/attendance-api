@@ -1,6 +1,7 @@
 package model
 
 import (
+	"attendance-api/common/util/converter"
 	"fmt"
 	"math"
 	"time"
@@ -29,12 +30,12 @@ func (data Schedule) IsTodaySchedule() (isTodaySchedule bool) {
 	inRange := false
 	isToday := false
 	today := time.Now().UTC().Truncate(24 * time.Hour)
-	startDate, err := time.Parse("2006-01-02", data.StartDate)
+	startDate, err := time.Parse("2006-01-02", converter.GetOnlyDateString(data.StartDate))
 	if err != nil {
 		fmt.Println("Format tanggal mulai tidak valid")
 		return false
 	}
-	endDate, err := time.Parse("2006-01-02", data.EndDate)
+	endDate, err := time.Parse("2006-01-02", converter.GetOnlyDateString(data.EndDate))
 	if err != nil {
 		fmt.Println("Format tanggal selesai tidak valid")
 		return false

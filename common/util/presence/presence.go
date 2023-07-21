@@ -1,13 +1,16 @@
 package presence
 
-import "time"
+import (
+	"attendance-api/common/util/converter"
+	"time"
+)
 
 func GetCurrentMillis() int64 {
 	return time.Now().UnixNano() / 1000000
 }
 
 func parseDate(dateStr string) (time.Time, error) {
-	return time.Parse("2006-01-02", dateStr)
+	return time.Parse("2006-01-02", converter.GetOnlyDateString(dateStr))
 }
 
 // Fungsi untuk mengecek apakah tanggal dalam range start dan end date
