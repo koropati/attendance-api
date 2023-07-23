@@ -41,3 +41,11 @@ type DashboardAttendance struct {
 	TotalComeHomeEarly    int    `json:"total_come_home_early" query:"total_come_home_early" form:"total_come_home_early"`
 	TotalLateAndHomeEarly int    `json:"total_late_and_home_early" query:"total_late_and_home_early" form:"total_late_and_home_early"`
 }
+
+type AttendanceSeries struct {
+	Name        string   `json:"name" query:"name" form:"name"`
+	Data        []int    `json:"data" query:"data" form:"data"`
+	Date        []string `json:"date" query:"date" form:"date"`
+	MonthPeriod int      `json:"month_period" query:"month_period" form:"month_period"`
+	YearPeriod  int      `json:"year_period" query:"year_period" form:"year_period"`
+}

@@ -115,14 +115,14 @@ func (h dashboardHandler) GetDashboardTeacher(c *gin.Context) {
 // @Tags Dashboard
 // @Accept       json
 // @Produce      json
-// @Success 200 {object} model.DashboardAttendanceResponseData
+// @Success 200 {object} model.AttendanceSeries
 // @Failure 400,500 {object} model.Response
 // @Router /dashboard/attendance [get]
 // @Security BearerTokenAuth
 func (h dashboardHandler) GetDashboardAttendance(c *gin.Context) {
 	month, _ := strconv.Atoi(c.Query("month"))
 	year, _ := strconv.Atoi(c.Query("year"))
-	result, err := h.dashboardService.RetrieveDashboardAttendance(month, year)
+	result, err := h.dashboardService.RetrieveDashboardAttendanceSeries(month, year)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return

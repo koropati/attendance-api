@@ -1,9 +1,11 @@
 package repo
 
 import (
+	"attendance-api/common/util/converter"
 	"attendance-api/model"
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,6 +17,7 @@ type DashboardRepo interface {
 	RetrieveDashboardStudent() (result model.DashboardStudent, err error)
 	RetrieveDashboardTeacher() (result model.DashboardTeacher, err error)
 	RetrieveDashboardAttendance(month, year int) (results []model.DashboardAttendance, err error)
+	RetrieveDashboardAttendanceSeries(month, year int) (results []model.AttendanceSeries, err error)
 }
 
 type dashboardRepo struct {
@@ -119,4 +122,53 @@ func (r dashboardRepo) RetrieveDashboardAttendance(month, year int) (results []m
 		return nil, err
 	}
 	return
+}
+
+func (r dashboardRepo) RetrieveDashboardAttendanceSeries(month, year int) (results []model.AttendanceSeries, err error) {
+	if month <= 0 || year <= 0 {
+		month = int(time.Now().Month())
+		year = time.Now().Year()
+	}
+
+	listDates := converter.GetDatesArray(month, year)
+	statusAttendances := []string{"presence", "not_presence", "sick", "leave_attendance"}
+	nameAttendances := []string{"Hadir", "Tidak Hadir", "Sakit", "Izin"}
+
+	for i, status := range statusAttendances {
+		var dataSeries model.AttendanceSeries
+		// var dates []string
+		// var datas []int
+
+		dates := make([]string, len(listDates))
+		datas := make([]int, len(listDates))
+
+		dataSeries.Name = nameAttendances[i]
+		dataSeries.MonthPeriod = month
+		dataSeries.YearPeriod = year
+
+		wg := sync.WaitGroup{}
+		for j, date := range listDates {
+			wg.Add(1)
+			go func(j int, date string, status string) {
+				count := 0
+
+				query := r.db.Table("attendances").Select("count(*)").Where("status_presence = ? AND DATE(date) = ?", status, date)
+				if errGet := query.Find(&count).Error; errGet != nil {
+					log.Printf("Error Get Data Status %v Pada Tanggal %v\n", status, date)
+					count = 0
+				}
+				dates[j] = date
+				datas[j] = count
+				wg.Done()
+			}(j, date, status)
+		}
+		wg.Wait()
+		dataSeries.Date = dates
+		dataSeries.Data = datas
+
+		results = append(results, dataSeries)
+	}
+
+	return
+
 }

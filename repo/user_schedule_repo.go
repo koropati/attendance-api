@@ -1,8 +1,10 @@
 package repo
 
 import (
+	"attendance-api/common/util/converter"
 	"attendance-api/model"
 	"fmt"
+	"log"
 	"strconv"
 	"sync"
 	"time"
@@ -14,7 +16,7 @@ type UserScheduleRepo interface {
 	CreateUserSchedule(userschedule model.UserSchedule) (model.UserSchedule, error)
 	RetrieveUserSchedule(id int) (model.UserSchedule, error)
 	RetrieveUserScheduleByOwner(id int, ownerID int) (model.UserSchedule, error)
-	ListMySchedule(userID int, filter model.MyScheduleFilter) ([]model.MySchedule, error)
+	ListMySchedule(userID int, filter model.MyScheduleFilter) (results []model.ListMySchedule, err error)
 	ListTodaySchedule(userID int, dayName string) ([]model.TodaySchedule, error)
 	ListUserInRule(scheduleID int, user model.Student, pagination model.Pagination) ([]model.Student, error)
 	ListUserInRuleMeta(scheduleID int, user model.Student, pagination model.Pagination) (model.Meta, error)
@@ -143,7 +145,7 @@ func (r userScheduleRepo) RemoveUserFromScheduleByOwner(scheduleID int, userID i
 	return nil
 }
 
-func (r userScheduleRepo) ListMySchedule(userID int, filter model.MyScheduleFilter) (results []model.MySchedule, err error) {
+func (r userScheduleRepo) ListMySchedule(userID int, filter model.MyScheduleFilter) (results []model.ListMySchedule, err error) {
 
 	var month int
 	var year int
@@ -156,35 +158,78 @@ func (r userScheduleRepo) ListMySchedule(userID int, filter model.MyScheduleFilt
 		year = time.Now().Year()
 	}
 
-	startDate := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
-	endDate := startDate.AddDate(0, 1, -1)
+	listDates := converter.GetDatesArray(month, year)
 
-	startDateString := startDate.Format("2006-01-02")
-	endDateString := endDate.Format("2006-01-02")
+	finalResult := make([]model.ListMySchedule, len(listDates))
 
-	query := fmt.Sprintf(`
-	SELECT 
-	us.schedule_id as schedule_id, 
-	s.name as schedule_name, 
-	s.code as schedule_code, 
-	s.start_date as start_date, 
-	s.end_date as end_date, 
-	s.subject_id as subject_id, 
-	sbj.name as subject_name, 
-	sbj.code as subject_code, 
-	s.late_duration as late_duration, 
-	s.latitude as latitude, 
-	s.longitude as longitude, 
-	s.radius as radius 
-	FROM user_schedules us 
-	LEFT JOIN schedules s ON us.schedule_id = s.id 
-	LEFT JOIN subjects sbj ON s.subject_id = sbj.id 
-	WHERE us.user_id = %d AND (DATE('%s') BETWEEN DATE(s.start_date) AND DATE(s.end_date)) AND (DATE('%s') BETWEEN DATE(s.start_date) AND DATE(s.end_date)) AND us.deleted_at IS NULL`, userID, startDateString, endDateString)
+	wg := sync.WaitGroup{}
 
-	if err := r.db.Raw(query).Scan(&results).Error; err != nil {
-		return nil, err
+	for i, date := range listDates {
+		wg.Add(1)
+		go func(i int, date string, userID int) {
+			dayName, errorDayName := converter.GetEnglishDayName(date)
+			if errorDayName != nil {
+				log.Printf("Error Get Day Name E: %v\n", errorDayName)
+			}
+			indonesianDate, errIndoDate := converter.FormatTanggalIndonesia(date)
+			if errIndoDate != nil {
+				log.Printf("Error Get Indonesian Date E: %v\n", errIndoDate)
+			}
+
+			var listMySchedule model.ListMySchedule
+
+			var mySchedule []model.MySchedule
+
+			rawQuery := fmt.Sprintf(`
+					SELECT 
+					us.schedule_id as schedule_id, 
+					s.name as schedule_name, 
+					s.code as schedule_code, 
+					DATE(s.start_date) as start_date, 
+					DATE(s.end_date) as end_date, 
+					s.subject_id as subject_id, 
+					sbj.name as subject_name, 
+					sbj.code as subject_code, 
+					s.late_duration as late_duration, 
+					s.latitude as latitude, 
+					s.longitude as longitude, 
+					s.radius as radius 
+					FROM user_schedules us 
+					LEFT JOIN schedules s ON us.schedule_id = s.id 
+					LEFT JOIN subjects sbj ON s.subject_id = sbj.id
+					LEFT JOIN daily_schedules ds ON s.id = ds.schedule_id 
+					WHERE us.user_id = %d AND (DATE('%s') BETWEEN DATE(s.start_date) AND DATE(s.end_date)) AND ds.name = '%s' AND us.deleted_at IS NULL`, userID, date, dayName)
+			if err := r.db.Raw(rawQuery).Scan(&mySchedule).Error; err != nil {
+				log.Printf("Error Get Day Name E: %v\n", errorDayName)
+			}
+			if len(mySchedule) > 0 {
+				listMySchedule.IndeonesianDate = indonesianDate
+				listMySchedule.Schedules = mySchedule
+			} else {
+				mySchedule = append(mySchedule, model.MySchedule{
+					ScheduleID:   0,
+					ScheduleName: "Tidak Memiliki Jadwal",
+					ScheduleCode: "-",
+					StartDate:    date,
+					EndDate:      date,
+					SubjectID:    0,
+					SubjectName:  "-",
+					SubjectCode:  "-",
+					LateDuration: 0,
+					Latitude:     0,
+					Longitude:    0,
+					Radius:       0,
+				})
+				listMySchedule.IndeonesianDate = indonesianDate
+				listMySchedule.Schedules = mySchedule
+			}
+			finalResult[i] = listMySchedule
+			wg.Done()
+		}(i, date, userID)
 	}
-	return
+	wg.Wait()
+
+	return finalResult, nil
 }
 
 func (r userScheduleRepo) ListTodaySchedule(userID int, dayName string) (results []model.TodaySchedule, err error) {

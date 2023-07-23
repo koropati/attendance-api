@@ -11,6 +11,7 @@ type DashboardService interface {
 	RetrieveDashboardStudent() (result model.DashboardStudent, err error)
 	RetrieveDashboardTeacher() (result model.DashboardTeacher, err error)
 	RetrieveDashboardAttendance(month, year int) (results []model.DashboardAttendance, err error)
+	RetrieveDashboardAttendanceSeries(month, year int) (results []model.AttendanceSeries, err error)
 }
 
 type dashboardService struct {
@@ -59,4 +60,12 @@ func (s dashboardService) RetrieveDashboardAttendance(month, year int) (results 
 		return nil, err
 	}
 	return data, nil
+}
+
+func (s dashboardService) RetrieveDashboardAttendanceSeries(month, year int) (results []model.AttendanceSeries, err error) {
+	datas, err := s.dashboardRepo.RetrieveDashboardAttendanceSeries(month, year)
+	if err != nil {
+		return nil, err
+	}
+	return datas, nil
 }

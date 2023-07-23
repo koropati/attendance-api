@@ -70,3 +70,63 @@ func GetOnlyDateString(dateTimeString string) (dateString string) {
 		return dateTimeString
 	}
 }
+
+func GetDatesArray(bulan, tahun int) []string {
+	var dates []string
+
+	// Membuat tanggal pertama pada bulan dan tahun yang diberikan
+	tanggalPertama := time.Date(tahun, time.Month(bulan), 1, 0, 0, 0, 0, time.UTC)
+
+	// Membuat tanggal terakhir pada bulan dan tahun yang diberikan
+	// Dapatkan bulan berikutnya dan kurangi 1 hari untuk mendapatkan tanggal terakhir pada bulan yang diberikan
+	tanggalTerakhir := tanggalPertama.AddDate(0, 1, -1)
+
+	// Iterasi dari tanggal pertama hingga tanggal terakhir untuk membuat array tanggal
+	for d := tanggalPertama; d.Before(tanggalTerakhir) || d.Equal(tanggalTerakhir); d = d.AddDate(0, 0, 1) {
+		dates = append(dates, d.Format("2006-01-02"))
+	}
+
+	return dates
+}
+
+func FormatTanggalIndonesia(tanggal string) (string, error) {
+	// Parsing string tanggal menjadi tipe time.Time
+	t, err := time.Parse("2006-01-02", tanggal)
+	if err != nil {
+		return "", err
+	}
+
+	// Array nama-nama hari dalam Bahasa Indonesia
+	hariIndonesia := [...]string{"Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"}
+
+	// Array nama-nama bulan dalam Bahasa Indonesia
+	bulanIndonesia := [...]string{"", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"}
+
+	// Mendapatkan nama hari dan bulan dalam Bahasa Indonesia
+	namaHari := hariIndonesia[t.Weekday()]
+	namaBulan := bulanIndonesia[t.Month()]
+
+	// Mendapatkan tanggal, bulan, dan tahun
+	tanggalIndonesia := fmt.Sprintf("%s, %d %s %d", namaHari, t.Day(), namaBulan, t.Year())
+
+	return tanggalIndonesia, nil
+}
+
+func GetEnglishDayName(tanggal string) (string, error) {
+	// Parsing string tanggal menjadi tipe time.Time
+	t, err := time.Parse("2006-01-02", tanggal)
+	if err != nil {
+		return "", err
+	}
+
+	// Array nama-nama hari dalam Bahasa Inggris lowercase
+	hariInggris := [...]string{"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"}
+
+	// Mendapatkan indeks hari dalam tipe time.Weekday (mulai dari 0 untuk Minggu)
+	indeksHari := int(t.Weekday())
+
+	// Mendapatkan nama hari dalam Bahasa Inggris lowercase
+	namaHari := hariInggris[indeksHari]
+
+	return namaHari, nil
+}
