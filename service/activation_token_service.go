@@ -3,6 +3,7 @@ package service
 import (
 	"attendance-api/model"
 	"attendance-api/repo"
+	"time"
 )
 
 type ActivationTokenService interface {
@@ -14,6 +15,7 @@ type ActivationTokenService interface {
 	ListActivationTokenMeta(activationToken model.ActivationToken, pagination model.Pagination) (model.Meta, error)
 	DropDownActivationToken(activationToken model.ActivationToken) ([]model.ActivationToken, error)
 	IsValid(token string) (isValid bool, userID uint)
+	DeleteExpiredActivationToken(currentTime time.Time) error
 }
 
 type activationTokenService struct {
@@ -83,4 +85,12 @@ func (s activationTokenService) DropDownActivationToken(activationToken model.Ac
 func (s activationTokenService) IsValid(token string) (isValid bool, userID uint) {
 	isValid, userID = s.activationTokenRepo.IsValid(token)
 	return
+}
+
+func (s activationTokenService) DeleteExpiredActivationToken(currentTime time.Time) error {
+	err := s.activationTokenRepo.DeleteExpiredActivationToken(currentTime)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -31,7 +31,31 @@ func (t task) InitTask(task *scheduler.AddTask) {
 		task,
 	)
 
+	authJob := jobs.NewAuthJob(
+		t.service.AuthService(),
+		task,
+	)
+
+	activationTokenJob := jobs.NewActivationTokenJob(
+		t.service.ActivationTokenService(),
+		task,
+	)
+
+	passwordResetTokenJob := jobs.NewPasswordResetTokenJob(
+		t.service.PasswordResetTokenService(),
+		task,
+	)
+
 	if task.Action == "attendance" {
 		attendanceJob.AutoCreate()
+	}
+	if task.Action == "auth" {
+		authJob.AutoDelete()
+	}
+	if task.Action == "activation_token" {
+		activationTokenJob.AutoDelete()
+	}
+	if task.Action == "password_reset_token" {
+		passwordResetTokenJob.AutoDelete()
 	}
 }

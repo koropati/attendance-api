@@ -3,6 +3,7 @@ package service
 import (
 	"attendance-api/model"
 	"attendance-api/repo"
+	"time"
 )
 
 type PasswordResetTokenService interface {
@@ -13,6 +14,7 @@ type PasswordResetTokenService interface {
 	ListPasswordResetToken(subject model.PasswordResetToken, pagination model.Pagination) ([]model.PasswordResetToken, error)
 	ListPasswordResetTokenMeta(subject model.PasswordResetToken, pagination model.Pagination) (model.Meta, error)
 	DropDownPasswordResetToken(subject model.PasswordResetToken) ([]model.PasswordResetToken, error)
+	DeleteExpiredPasswordResetToken(currenTime time.Time) error
 }
 
 type passwordResetTokenService struct {
@@ -77,4 +79,12 @@ func (s passwordResetTokenService) DropDownPasswordResetToken(subject model.Pass
 		return nil, err
 	}
 	return datas, nil
+}
+
+func (s passwordResetTokenService) DeleteExpiredPasswordResetToken(currenTime time.Time) error {
+	err := s.passwordResetTokenRepo.DeleteExpiredPasswordResetToken(currenTime)
+	if err != nil {
+		return err
+	}
+	return nil
 }

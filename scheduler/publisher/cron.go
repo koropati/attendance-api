@@ -14,7 +14,10 @@ import (
 func InitCronJob(amqpChannel *amqp.Channel, queueName string) (cronJob *cron.Cron) {
 	c := cron.New()
 
-	c.AddFunc("0 0 * * *", TaskAttendance(amqpChannel, queueName)) //tiap jam 00:00 dini hari
+	c.AddFunc("0 0 * * *", TaskAttendance(amqpChannel, queueName))         //tiap jam 00:00 dini hari
+	c.AddFunc("@hourly", TaskAuth(amqpChannel, queueName))                 //tiap 1 Jam
+	c.AddFunc("0 3 * * *", TaskActivationToken(amqpChannel, queueName))    //tiap jam 03:00 dini hari
+	c.AddFunc("0 3 * * *", TaskPasswordResetToken(amqpChannel, queueName)) //tiap jam 03:00 dini hari
 
 	return c
 }
@@ -26,6 +29,54 @@ func TaskAttendance(amqpChannel *amqp.Channel, queueName string) func() {
 		addTask := scheduler.AddTask{
 			Action:    "attendance",
 			Body:      "update",
+			Date:      time.Now().Format("2006-01-02"),
+			TimeStamp: time.Now().Format("2006-01-02 15:04:05"),
+		}
+
+		PushMessage(amqpChannel, addTask, queueName)
+
+	}
+}
+
+func TaskAuth(amqpChannel *amqp.Channel, queueName string) func() {
+	return func() {
+		fmt.Println("Task Auth")
+
+		addTask := scheduler.AddTask{
+			Action:    "auth",
+			Body:      "auto_delete",
+			Date:      time.Now().Format("2006-01-02"),
+			TimeStamp: time.Now().Format("2006-01-02 15:04:05"),
+		}
+
+		PushMessage(amqpChannel, addTask, queueName)
+
+	}
+}
+
+func TaskActivationToken(amqpChannel *amqp.Channel, queueName string) func() {
+	return func() {
+		fmt.Println("Task Activation Token")
+
+		addTask := scheduler.AddTask{
+			Action:    "activation_token",
+			Body:      "auto_delete",
+			Date:      time.Now().Format("2006-01-02"),
+			TimeStamp: time.Now().Format("2006-01-02 15:04:05"),
+		}
+
+		PushMessage(amqpChannel, addTask, queueName)
+
+	}
+}
+
+func TaskPasswordResetToken(amqpChannel *amqp.Channel, queueName string) func() {
+	return func() {
+		fmt.Println("Task Password Reset Token")
+
+		addTask := scheduler.AddTask{
+			Action:    "password_reset_token",
+			Body:      "auto_delete",
 			Date:      time.Now().Format("2006-01-02"),
 			TimeStamp: time.Now().Format("2006-01-02 15:04:05"),
 		}

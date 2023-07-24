@@ -7,6 +7,7 @@ import (
 	docs "attendance-api/docs"
 	"attendance-api/infra"
 	"attendance-api/manager"
+	"log"
 	"strings"
 	"text/template"
 
@@ -46,6 +47,8 @@ func (c server) Run() {
 	c.handlers()
 	c.v1()
 	c.gin.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	log.Println("Server Running")
 
 	c.gin.Run(c.infra.Port())
 }

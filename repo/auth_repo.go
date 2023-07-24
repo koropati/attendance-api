@@ -31,6 +31,7 @@ type AuthRepo interface {
 	FetchAuth(userID uint, authUUID string) (model.Auth, error)
 	DeleteAuth(userID uint, authUUID string) error
 	CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error)
+	DeleteExpiredAuth(currentMillis int64) error
 }
 
 type authRepo struct {
@@ -237,6 +238,13 @@ func (r authRepo) FetchAuth(userID uint, authUUID string) (model.Auth, error) {
 
 func (r authRepo) DeleteAuth(userID uint, authUUID string) error {
 	if err := r.db.Table("auths").Unscoped().Where("user_id = ? AND auth_uuid = ?", userID, authUUID).Delete(&model.Auth{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r authRepo) DeleteExpiredAuth(currentMillis int64) error {
+	if err := r.db.Table("auths").Unscoped().Where("expired < ?", currentMillis).Delete(&model.Auth{}).Error; err != nil {
 		return err
 	}
 	return nil

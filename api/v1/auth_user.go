@@ -106,7 +106,7 @@ func (h authUserHandler) Register(c *gin.Context) {
 			return
 		}
 
-		expiredToken, activationToken := activation.New(user).GenerateSHA1(24)
+		expiredToken, activationToken := activation.New(user).GenerateSHA1(h.infra.Config().GetInt("access_token_expired"))
 
 		// Save Activation token to data base
 		activationData, err := h.activationTokenService.CreateActivationToken(model.ActivationToken{
@@ -186,7 +186,7 @@ func (h authUserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	expiredTimeAT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("access_token_expired"))).Unix()
+	expiredTimeAT := time.Now().Add(time.Minute*time.Duration(h.infra.Config().GetInt("access_token_expired"))).UnixNano() / int64(time.Millisecond)
 	authAT, err := h.authService.CreateAuth(userData.ID, expiredTimeAT, "at")
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("error autentikasi: %v", err))
@@ -201,7 +201,7 @@ func (h authUserHandler) Login(c *gin.Context) {
 		},
 	)
 
-	expiredTimeRT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("refresh_token_expired"))).Unix()
+	expiredTimeRT := time.Now().Add(time.Minute*time.Duration(h.infra.Config().GetInt("refresh_token_expired"))).UnixNano() / int64(time.Millisecond)
 	authRT, err := h.authService.CreateAuth(userData.ID, expiredTimeRT, "rt")
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("error autentikasi: %v", err))
@@ -262,7 +262,7 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
 	}
-	expiredTimeAT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("access_token_expired"))).Unix()
+	expiredTimeAT := time.Now().Add(time.Minute*time.Duration(h.infra.Config().GetInt("access_token_expired"))).UnixNano() / int64(time.Millisecond)
 	authAT, err := h.authService.CreateAuth(user.ID, expiredTimeAT, "at")
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("error autentikasi: %v", err))
@@ -277,7 +277,7 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 		},
 	)
 
-	expiredTimeRT := time.Now().Add(time.Minute * time.Duration(h.infra.Config().GetInt("refresh_token_expired"))).Unix()
+	expiredTimeRT := time.Now().Add(time.Minute*time.Duration(h.infra.Config().GetInt("refresh_token_expired"))).UnixNano() / int64(time.Millisecond)
 	authRT, err := h.authService.CreateAuth(user.ID, expiredTimeRT, "rt")
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("error autentikasi: %v", err))

@@ -17,6 +17,7 @@ type ActivationTokenRepo interface {
 	ListActivationTokenMeta(activationToken model.ActivationToken, pagination model.Pagination) (model.Meta, error)
 	DropDownActivationToken(activationToken model.ActivationToken) ([]model.ActivationToken, error)
 	IsValid(token string) (isValid bool, userID uint)
+	DeleteExpiredActivationToken(currentTime time.Time) error
 }
 
 type activationTokenRepo struct {
@@ -157,6 +158,13 @@ func (r activationTokenRepo) IsValid(token string) (isValid bool, userID uint) {
 		}
 	}
 	return
+}
+
+func (r activationTokenRepo) DeleteExpiredActivationToken(currentTime time.Time) error {
+	if err := r.db.Table("activation_tokens").Unscoped().Where("valid < ?", currentTime).Delete(&model.ActivationToken{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func FilterActivationToken(query *gorm.DB, activationToken model.ActivationToken) *gorm.DB {

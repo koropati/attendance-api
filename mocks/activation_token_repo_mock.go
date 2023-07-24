@@ -143,3 +143,10 @@ func (m ActivationTokenRepoMock) IsValid(token string) (isValid bool, userID uin
 
 	return true, 1
 }
+
+func (m ActivationTokenRepoMock) DeleteExpiredActivationToken(currentTime time.Time) error {
+	if err := m.Called(currentTime).Error(0); err != nil {
+		return err
+	}
+	return nil
+}

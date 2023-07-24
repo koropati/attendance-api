@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +15,7 @@ type PasswordResetTokenRepo interface {
 	ListPasswordResetToken(passwordResetToken model.PasswordResetToken, pagination model.Pagination) ([]model.PasswordResetToken, error)
 	ListPasswordResetTokenMeta(passwordResetToken model.PasswordResetToken, pagination model.Pagination) (model.Meta, error)
 	DropDownPasswordResetToken(passwordResetToken model.PasswordResetToken) ([]model.PasswordResetToken, error)
+	DeleteExpiredPasswordResetToken(currenTime time.Time) error
 }
 
 type passwordResetTokenRepo struct {
@@ -136,6 +138,13 @@ func (r passwordResetTokenRepo) DropDownPasswordResetToken(passwordResetToken mo
 		return nil, err
 	}
 	return passwordResetTokens, nil
+}
+
+func (r passwordResetTokenRepo) DeleteExpiredPasswordResetToken(currenTime time.Time) error {
+	if err := r.db.Table("password_reset_tokens").Unscoped().Where("valid < ?", currenTime).Delete(&model.PasswordResetToken{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func FilterPasswordResetToken(query *gorm.DB, passwordResetToken model.PasswordResetToken) *gorm.DB {

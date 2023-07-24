@@ -292,3 +292,10 @@ func (m AuthServiceMock) CreateAuth(userID uint, expired int64, typeAuth string)
 
 	return authData, nil
 }
+
+func (m AuthServiceMock) DeleteExpiredAuth(currentMillis int64) error {
+	if err := m.Called(currentMillis).Error(0); err != nil {
+		return err
+	}
+	return nil
+}

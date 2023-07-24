@@ -28,6 +28,7 @@ type AuthService interface {
 	FetchAuth(userID uint, authUUID string) (model.Auth, error)
 	DeleteAuth(userID uint, authUUID string) error
 	CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error)
+	DeleteExpiredAuth(currentMillis int64) error
 }
 
 type authService struct {
@@ -193,4 +194,12 @@ func (s authService) CreateAuth(userID uint, expired int64, typeAuth string) (mo
 		return model.Auth{}, err
 	}
 	return auth, nil
+}
+
+func (s authService) DeleteExpiredAuth(currentMillis int64) error {
+	err := s.authRepo.DeleteExpiredAuth(currentMillis)
+	if err != nil {
+		return err
+	}
+	return nil
 }
