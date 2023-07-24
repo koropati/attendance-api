@@ -18,6 +18,8 @@ type MySchedule struct {
 	SubjectID    uint    `json:"subject_id" query:"subject_id"`
 	SubjectName  string  `json:"subject_name" query:"subject_name"`
 	SubjectCode  string  `json:"subject_code" query:"subject_code"`
+	StartTime    string  `json:"start_time" query:"start_time"`
+	EndTime      string  `json:"end_time" query:"end_time"`
 	LateDuration int     `json:"late_duration" query:"late_duration"`
 	Latitude     float64 `json:"latitude" query:"latitude"`
 	Longitude    float64 `json:"longitude" query:"longitude"`

@@ -193,7 +193,9 @@ func (r userScheduleRepo) ListMySchedule(userID int, filter model.MyScheduleFilt
 					s.late_duration as late_duration, 
 					s.latitude as latitude, 
 					s.longitude as longitude, 
-					s.radius as radius 
+					s.radius as radius, 
+					ds.start_time as start_time, 
+					ds.end_time as end_time 
 					FROM user_schedules us 
 					LEFT JOIN schedules s ON us.schedule_id = s.id 
 					LEFT JOIN subjects sbj ON s.subject_id = sbj.id
