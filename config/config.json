@@ -61,8 +61,8 @@
         "privacy_policy": "www.github.com/privacy"
     },
     "front_end": {
-        "base_url": "https://google.com/",
+        "base_url": "http://senku-koropati.vercel.app/",
         "activation_path": "active/",
-        "reset_password_path": "reset/"
+        "reset_password_path": "reset-password/"
     }
 }

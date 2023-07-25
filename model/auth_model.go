@@ -13,6 +13,10 @@ type Ability struct {
 	Subject string `json:"subject"`
 }
 
+type ForgotPassword struct {
+	Email string `json:"email" query:"email"`
+}
+
 func GetDefaultAbility() (results []Ability) {
 	results = append(results, Ability{
 		Action:  "auth",

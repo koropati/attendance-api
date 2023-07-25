@@ -30,19 +30,22 @@ type AuthUserHandler interface {
 	Login(c *gin.Context)
 	Activation(c *gin.Context)
 	Logout(c *gin.Context)
+	ForgotPassword(c *gin.Context)
 }
 
 type authUserHandler struct {
-	authService            service.AuthService
-	activationTokenService service.ActivationTokenService
-	infra                  infra.Infra
+	authService               service.AuthService
+	activationTokenService    service.ActivationTokenService
+	passwordResetTokenService service.PasswordResetTokenService
+	infra                     infra.Infra
 }
 
-func NewAuthHandler(authService service.AuthService, activationTokenService service.ActivationTokenService, infra infra.Infra) AuthUserHandler {
+func NewAuthHandler(authService service.AuthService, activationTokenService service.ActivationTokenService, passwordResetTokenService service.PasswordResetTokenService, infra infra.Infra) AuthUserHandler {
 	return &authUserHandler{
-		authService:            authService,
-		activationTokenService: activationTokenService,
-		infra:                  infra,
+		authService:               authService,
+		activationTokenService:    activationTokenService,
+		passwordResetTokenService: passwordResetTokenService,
+		infra:                     infra,
 	}
 }
 
@@ -390,4 +393,59 @@ func (h authUserHandler) Logout(c *gin.Context) {
 	}
 
 	response.New(c).Write(200, "berhasil keluar sistem")
+}
+
+// Forgot Password ... Lupa Password
+// @Summary Lupa Password (input email)
+// @Description Lupa Password
+// @Tags Auth
+// @Accept json
+// @Param user body model.ForgotPassword true "User Data"
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /auth/forgot-password [post]
+func (h authUserHandler) ForgotPassword(c *gin.Context) {
+	var data model.ForgotPassword
+	c.BindJSON(&data)
+
+	//jika true = email tidak ada di sistem
+
+	if !h.authService.CheckEmail(data.Email) {
+
+		frontEndBaseURL := h.infra.Config().Sub("front_end").GetString("base_url")
+		resetPath := h.infra.Config().Sub("front_end").GetString("reset_password_path")
+
+		user, err := h.authService.GetByEmail(data.Email)
+		if err != nil {
+			response.New(c).Error(http.StatusInternalServerError, err)
+			return
+		}
+
+		expiredToken, resetToken := activation.New(user).GenerateSHA1(h.infra.Config().Sub("secret").GetInt("reset_token_expired"))
+
+		dataReset := model.PasswordResetToken{
+			UserID: user.ID,
+			Token:  resetToken,
+			Valid:  expiredToken,
+		}
+
+		resetPasswordToken, err := h.passwordResetTokenService.CreatePasswordResetToken(dataReset)
+		if err != nil {
+			response.New(c).Error(http.StatusInternalServerError, err)
+			return
+		}
+
+		go func(user model.User) {
+			urlFrontEnd := frontEndBaseURL + resetPath + "?token=" + resetPasswordToken.Token
+
+			if err := email.New(h.infra.GoMail(), h.infra.Config()).SendForgotPassword(user.FirstName, user.Email, urlFrontEnd, expiredToken); err != nil {
+				log.Printf("Error Send Email E: %v", err)
+			}
+		}(user)
+
+		response.New(c).Write(http.StatusCreated, "email untuk perubahan kata sandi telah terkirim")
+		return
+	}
+
+	response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna sudah digunakan"))
 }

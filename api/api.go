@@ -61,7 +61,7 @@ func (c server) handlers() {
 }
 
 func (c server) v1() {
-	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.infra)
+	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.service.PasswordResetTokenService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	dashboardHandler := v1.NewDashboardHandler(c.service.DashboardService(), c.infra, c.middleware)
 	profileHandler := v1.NewProfileHandler(
@@ -121,6 +121,7 @@ func (c server) v1() {
 			auth.GET("/logout", authHandler.Logout)
 			auth.POST("/refresh", authHandler.Refresh)
 			auth.GET("/activation", authHandler.Activation)
+			auth.POST("/forgot-password", authHandler.ForgotPassword)
 			// auth.Use(c.middleware.AUTH()).PUT("/update-password", userHandler.UpdatePassword)
 		}
 

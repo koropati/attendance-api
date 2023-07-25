@@ -36,11 +36,12 @@ func TestRegister(t *testing.T) {
 		authServiceMock.On("Register", mock.AnythingOfType("model.User")).Return(nil)
 
 		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
+		passwordResetTokenServiceMoc := new(mocks.PasswordResetTokenServiceMock)
 
 		gin := gin.New()
 		rec := httptest.NewRecorder()
 
-		authHandler := v1.NewAuthHandler(authServiceMock, activationTokenServiceMoc, infra.New("../../config/config.json"))
+		authHandler := v1.NewAuthHandler(authServiceMock, activationTokenServiceMoc, passwordResetTokenServiceMoc, infra.New("../../config/config.json"))
 		gin.POST("/register", authHandler.Register)
 
 		body, err := json.Marshal(mockUser)
@@ -64,11 +65,12 @@ func TestLogin(t *testing.T) {
 		authServiceMock.On("Login", mock.AnythingOfType("string")).Return(nil)
 
 		activationTokenServiceMoc := new(mocks.ActivationTokenServiceMock)
+		passwordResetTokenServiceMoc := new(mocks.PasswordResetTokenServiceMock)
 
 		gin := gin.New()
 		rec := httptest.NewRecorder()
 
-		authHandler := v1.NewAuthHandler(authServiceMock, activationTokenServiceMoc, infra.New("../../config/config.json"))
+		authHandler := v1.NewAuthHandler(authServiceMock, activationTokenServiceMoc, passwordResetTokenServiceMoc, infra.New("../../config/config.json"))
 		gin.POST("/login", authHandler.Login)
 
 		body, err := json.Marshal(mockUser)
