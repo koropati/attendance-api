@@ -413,6 +413,7 @@ func (h scheduleHandler) List(c *gin.Context) {
 	dataLists, err := h.scheduleService.ListSchedule(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
+		return
 	}
 
 	for i, dataList := range dataLists {
@@ -422,6 +423,7 @@ func (h scheduleHandler) List(c *gin.Context) {
 	metaLists, err := h.scheduleService.ListScheduleMeta(data, pagination)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
+		return
 	}
 
 	response.New(c).List(http.StatusOK, "sukses mengambil list data", dataLists, metaLists)

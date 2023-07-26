@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"sync"
 
 	"gorm.io/gorm"
 )
@@ -49,6 +50,7 @@ func (r scheduleRepo) RetrieveSchedule(id int) (model.Schedule, error) {
 	if err := query.Where("id = ?", id).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
+	schedule.Owner = r.GetOwner(schedule.OwnerID)
 	return schedule, nil
 }
 
@@ -59,6 +61,7 @@ func (r scheduleRepo) RetrieveScheduleByOwner(id int, ownerID int) (model.Schedu
 	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
+	schedule.Owner = r.GetOwner(schedule.OwnerID)
 	return schedule, nil
 }
 
@@ -69,6 +72,7 @@ func (r scheduleRepo) RetrieveScheduleByQRcode(QRcode string) (model.Schedule, e
 	if err := query.Where("qr_code = ?", QRcode).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
+	schedule.Owner = r.GetOwner(schedule.OwnerID)
 	return schedule, nil
 }
 
@@ -78,6 +82,7 @@ func (r scheduleRepo) UpdateSchedule(id int, schedule model.Schedule) (model.Sch
 	if err := query.Where("id = ?", id).Updates(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
+	schedule.Owner = r.GetOwner(schedule.OwnerID)
 	return schedule, nil
 }
 
@@ -91,6 +96,7 @@ func (r scheduleRepo) UpdateScheduleByOwner(id int, ownerID int, schedule model.
 	if err := query.Where("id = ?", id).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
+	schedule.Owner = r.GetOwner(schedule.OwnerID)
 	return schedule, nil
 }
 
@@ -98,6 +104,7 @@ func (r scheduleRepo) UpdateQRcode(id int, QRcode string) (schedule model.Schedu
 	if err := r.db.Model(&model.Schedule{}).Where("id = ?", id).Update("qr_code", QRcode).Find(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
+	schedule.Owner = r.GetOwner(schedule.OwnerID)
 	return schedule, nil
 }
 
@@ -105,6 +112,7 @@ func (r scheduleRepo) UpdateQRcodeByOwner(id int, ownerID int, QRcode string) (s
 	if err := r.db.Model(&model.Schedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Update("qr_code", QRcode).Find(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
+	schedule.Owner = r.GetOwner(schedule.OwnerID)
 	return schedule, nil
 }
 
@@ -134,6 +142,16 @@ func (r scheduleRepo) ListSchedule(schedule model.Schedule, pagination model.Pag
 	if err := query.Error; err != nil {
 		return nil, err
 	}
+
+	wg := sync.WaitGroup{}
+	for i, schedule := range schedules {
+		wg.Add(1)
+		go func(i int, schedule model.Schedule) {
+			schedules[i].Owner = r.GetOwner(schedule.OwnerID)
+			wg.Done()
+		}(i, schedule)
+	}
+	wg.Wait()
 
 	return schedules, nil
 }
@@ -183,6 +201,17 @@ func (r scheduleRepo) DropDownSchedule(schedule model.Schedule) ([]model.Schedul
 	if err := query.Error; err != nil {
 		return nil, err
 	}
+
+	wg := sync.WaitGroup{}
+	for i, schedule := range schedules {
+		wg.Add(1)
+		go func(i int, schedule model.Schedule) {
+			schedules[i].Owner = r.GetOwner(schedule.OwnerID)
+			wg.Done()
+		}(i, schedule)
+	}
+	wg.Wait()
+
 	return schedules, nil
 }
 
@@ -204,6 +233,17 @@ func (r scheduleRepo) CheckCodeIsExist(code string, exceptID int) bool {
 	}
 
 	return false
+}
+
+func (r scheduleRepo) GetOwner(ownerID int) (result model.User) {
+	if ownerID > 0 {
+		if err := r.db.Table("users").Where("id = ?", ownerID).First(&result).Error; err != nil {
+			return model.User{}
+		}
+		return
+	} else {
+		return model.User{}
+	}
 }
 
 func FilterSchedule(query *gorm.DB, schedule model.Schedule) *gorm.DB {
@@ -235,6 +275,6 @@ func SearchSchedule(query *gorm.DB, search string) *gorm.DB {
 func PreloadSchedule(query *gorm.DB) *gorm.DB {
 	query = query.Preload("Subject")
 	query = query.Preload("DailySchedule")
-	query = query.Preload("Owner")
+	// query = query.Preload("Owner")
 	return query
 }
