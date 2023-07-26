@@ -12,7 +12,7 @@ func GenerateTemplateForgotPassword(linkActivation string, userName string, user
 
 	headerText := fmt.Sprintf(`Hai %s<%s>, <br>Lagi lupa password ya?`, userName, userEmail)
 	bodyText := fmt.Sprintf(`
-   Tenang anda bisa melakukan perubahan password di %s , jadi jangan panik ya. Setelah klik link di bawah silahkan diisi kata sandi barunya, link akan kadaluarsa pada : %s. Jangan lupa untuk diingat ya!`, dataConfig.GetString("company_name"), validUntil.Format("January 02, 2006 15:04:05"))
+   Tenang anda bisa melakukan perubahan password di %s , jadi jangan panik ya. Setelah klik link di bawah silahkan diisi kata sandi barunya, link akan kadaluarsa pada : %s. Password barunya jangan sampai lupa lagi ya :).`, dataConfig.GetString("company_name"), validUntil.Format("January 02, 2006 15:04:05"))
 
 	html = fmt.Sprintf(`
 	<!-- START HEAD -->

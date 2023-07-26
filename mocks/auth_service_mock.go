@@ -299,3 +299,10 @@ func (m AuthServiceMock) DeleteExpiredAuth(currentMillis int64) error {
 	}
 	return nil
 }
+
+func (m AuthServiceMock) SetNewPassword(userID int, password string) error {
+	if err := m.Called(userID, password).Error(0); err != nil {
+		return err
+	}
+	return nil
+}

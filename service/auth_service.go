@@ -29,6 +29,7 @@ type AuthService interface {
 	DeleteAuth(userID uint, authUUID string) error
 	CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error)
 	DeleteExpiredAuth(currentMillis int64) error
+	SetNewPassword(userID int, password string) error
 }
 
 type authService struct {
@@ -198,6 +199,14 @@ func (s authService) CreateAuth(userID uint, expired int64, typeAuth string) (mo
 
 func (s authService) DeleteExpiredAuth(currentMillis int64) error {
 	err := s.authRepo.DeleteExpiredAuth(currentMillis)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s authService) SetNewPassword(userID int, hashPassword string) error {
+	err := s.authRepo.SetNewPassword(userID, hashPassword)
 	if err != nil {
 		return err
 	}

@@ -174,6 +174,7 @@ type ScheduleForm struct {
 	Radius        int                 `json:"radius"` //in metter
 	UserInRule    int                 `json:"user_in_rule" gorm:"-"`
 	OwnerID       int                 `json:"owner_id" gorm:"not null"`
+	Owner         UserForm            `json:"owner"`
 }
 
 type UserForm struct {

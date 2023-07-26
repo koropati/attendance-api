@@ -17,6 +17,12 @@ type ForgotPassword struct {
 	Email string `json:"email" query:"email"`
 }
 
+type ConfirmForgotPassword struct {
+	Token           string `json:"token" query:"token" form:"token"`
+	Password        string `json:"password" query:"password" form:"password"`
+	ConfirmPassword string `json:"confirm_password" query:"confirm_password" form:"confirm_password"`
+}
+
 func GetDefaultAbility() (results []Ability) {
 	results = append(results, Ability{
 		Action:  "auth",

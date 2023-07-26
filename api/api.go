@@ -122,6 +122,7 @@ func (c server) v1() {
 			auth.POST("/refresh", authHandler.Refresh)
 			auth.GET("/activation", authHandler.Activation)
 			auth.POST("/forgot-password", authHandler.ForgotPassword)
+			auth.POST("/confirm-forgot-password", authHandler.ConfirmForgotPassword)
 			// auth.Use(c.middleware.AUTH()).PUT("/update-password", userHandler.UpdatePassword)
 		}
 

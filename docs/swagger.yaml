@@ -167,6 +167,23 @@ definitions:
       meta:
         $ref: '#/definitions/model.Meta'
     type: object
+  model.AttendanceSeries:
+    properties:
+      data:
+        items:
+          type: integer
+        type: array
+      date:
+        items:
+          type: string
+        type: array
+      month_period:
+        type: integer
+      name:
+        type: string
+      year_period:
+        type: integer
+    type: object
   model.AttendanceSummary:
     properties:
       leave_attendance:
@@ -199,6 +216,15 @@ definitions:
         type: integer
       user_id:
         type: integer
+    type: object
+  model.ConfirmForgotPassword:
+    properties:
+      confirm_password:
+        type: string
+      password:
+        type: string
+      token:
+        type: string
     type: object
   model.DailyScheduleForm:
     properties:
@@ -266,44 +292,6 @@ definitions:
         type: integer
       data:
         $ref: '#/definitions/model.DashboardAcademic'
-      message:
-        type: string
-    type: object
-  model.DashboardAttendance:
-    properties:
-      date:
-        type: string
-      month_period:
-        type: integer
-      total_come_home_early:
-        type: integer
-      total_late:
-        type: integer
-      total_late_and_home_early:
-        type: integer
-      total_leave_attendance:
-        type: integer
-      total_no_clock_in:
-        type: integer
-      total_no_clock_out:
-        type: integer
-      total_not_presence:
-        type: integer
-      total_presence:
-        type: integer
-      total_sick:
-        type: integer
-      year_period:
-        type: integer
-    type: object
-  model.DashboardAttendanceResponseData:
-    properties:
-      code:
-        type: integer
-      data:
-        items:
-          $ref: '#/definitions/model.DashboardAttendance'
-        type: array
       message:
         type: string
     type: object
@@ -408,6 +396,11 @@ definitions:
       meta:
         $ref: '#/definitions/model.Meta'
     type: object
+  model.ForgotPassword:
+    properties:
+      email:
+        type: string
+    type: object
   model.Login:
     properties:
       password:
@@ -479,6 +472,8 @@ definitions:
     properties:
       end_date:
         type: string
+      end_time:
+        type: string
       late_duration:
         type: integer
       latitude:
@@ -494,6 +489,8 @@ definitions:
       schedule_name:
         type: string
       start_date:
+        type: string
+      start_time:
         type: string
       subject_code:
         type: string
@@ -595,6 +592,8 @@ definitions:
         type: number
       name:
         type: string
+      owner:
+        $ref: '#/definitions/model.UserForm'
       owner_id:
         type: integer
       qr_code:
@@ -1663,6 +1662,62 @@ paths:
       summary: Set Active By Click This URL
       tags:
       - Auth
+  /auth/confirm-forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Konfirmasi Lupa Password
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.ConfirmForgotPassword'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: Konfirmasi Lupa Password (input password baru dengan token unik)
+      tags:
+      - Auth
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Lupa Password
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.ForgotPassword'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: Lupa Password (input email)
+      tags:
+      - Auth
   /auth/login:
     post:
       consumes:
@@ -1987,7 +2042,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.DashboardAttendanceResponseData'
+            $ref: '#/definitions/model.AttendanceSeries'
         "400":
           description: Bad Request
           schema:

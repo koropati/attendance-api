@@ -298,3 +298,10 @@ func (m AuthRepoMock) DeleteExpiredAuth(currentMillis int64) error {
 	}
 	return nil
 }
+
+func (m AuthRepoMock) SetNewPassword(userID int, password string) error {
+	if err := m.Called(userID, password).Error(0); err != nil {
+		return err
+	}
+	return nil
+}

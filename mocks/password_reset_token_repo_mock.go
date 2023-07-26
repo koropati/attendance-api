@@ -150,3 +150,24 @@ func (m PasswordResetTokenRepoMock) DeleteExpiredPasswordResetToken(currentTime 
 	}
 	return nil
 }
+
+func (m PasswordResetTokenRepoMock) GetByToken(token string) (model.PasswordResetToken, error) {
+	if err := m.Called(token).Error(0); err != nil {
+		return model.PasswordResetToken{}, err
+	}
+	dateTimeData, _ := time.Parse("2006-01-02T15:04:05-0700", "2006-01-02T15:04:05-0700")
+	gormData := model.GormCustom{
+		ID:        1,
+		CreatedAt: dateTimeData,
+		UpdatedAt: dateTimeData,
+	}
+
+	tokenData := model.PasswordResetToken{
+		GormCustom: gormData,
+		UserID:     1,
+		Token:      "v34234234g2564624457",
+		Valid:      dateTimeData,
+	}
+
+	return tokenData, nil
+}

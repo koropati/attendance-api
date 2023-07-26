@@ -16,6 +16,7 @@ type PasswordResetTokenRepo interface {
 	ListPasswordResetTokenMeta(passwordResetToken model.PasswordResetToken, pagination model.Pagination) (model.Meta, error)
 	DropDownPasswordResetToken(passwordResetToken model.PasswordResetToken) ([]model.PasswordResetToken, error)
 	DeleteExpiredPasswordResetToken(currenTime time.Time) error
+	GetByToken(token string) (model.PasswordResetToken, error)
 }
 
 type passwordResetTokenRepo struct {
@@ -145,6 +146,19 @@ func (r passwordResetTokenRepo) DeleteExpiredPasswordResetToken(currenTime time.
 		return err
 	}
 	return nil
+}
+
+func (r passwordResetTokenRepo) GetByToken(token string) (result model.PasswordResetToken, err error) {
+	var passwordResetToken model.PasswordResetToken
+
+	query := r.db.Table("password_reset_tokens").Where("token = ?", token)
+	query = PreloadPasswordResetToken(query)
+
+	if err := query.First(&passwordResetToken).Error; err != nil {
+		return model.PasswordResetToken{}, err
+	}
+
+	return passwordResetToken, nil
 }
 
 func FilterPasswordResetToken(query *gorm.DB, passwordResetToken model.PasswordResetToken) *gorm.DB {

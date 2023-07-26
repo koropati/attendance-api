@@ -85,6 +85,12 @@ func (r scheduleRepo) UpdateScheduleByOwner(id int, ownerID int, schedule model.
 	if err := r.db.Model(&model.Schedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Updates(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
+
+	query := r.db.Model(&model.Schedule{})
+	query = PreloadSchedule(query)
+	if err := query.Where("id = ?", id).First(&schedule).Error; err != nil {
+		return model.Schedule{}, err
+	}
 	return schedule, nil
 }
 
@@ -229,5 +235,6 @@ func SearchSchedule(query *gorm.DB, search string) *gorm.DB {
 func PreloadSchedule(query *gorm.DB) *gorm.DB {
 	query = query.Preload("Subject")
 	query = query.Preload("DailySchedule")
+	query = query.Preload("Owner")
 	return query
 }

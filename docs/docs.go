@@ -1038,6 +1038,92 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/confirm-forgot-password": {
+            "post": {
+                "description": "Konfirmasi Lupa Password",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Konfirmasi Lupa Password (input password baru dengan token unik)",
+                "parameters": [
+                    {
+                        "description": "User Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ConfirmForgotPassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/forgot-password": {
+            "post": {
+                "description": "Lupa Password",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Lupa Password (input email)",
+                "parameters": [
+                    {
+                        "description": "User Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ForgotPassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Login User",
@@ -1553,7 +1639,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.DashboardAttendanceResponseData"
+                            "$ref": "#/definitions/model.AttendanceSeries"
                         }
                     },
                     "400": {
@@ -5503,6 +5589,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AttendanceSeries": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "date": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "month_period": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "year_period": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.AttendanceSummary": {
             "type": "object",
             "properties": {
@@ -5551,6 +5663,20 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.ConfirmForgotPassword": {
+            "type": "object",
+            "properties": {
+                "confirm_password": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
                 }
             }
         },
@@ -5654,64 +5780,6 @@ const docTemplate = `{
                 },
                 "data": {
                     "$ref": "#/definitions/model.DashboardAcademic"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.DashboardAttendance": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "month_period": {
-                    "type": "integer"
-                },
-                "total_come_home_early": {
-                    "type": "integer"
-                },
-                "total_late": {
-                    "type": "integer"
-                },
-                "total_late_and_home_early": {
-                    "type": "integer"
-                },
-                "total_leave_attendance": {
-                    "type": "integer"
-                },
-                "total_no_clock_in": {
-                    "type": "integer"
-                },
-                "total_no_clock_out": {
-                    "type": "integer"
-                },
-                "total_not_presence": {
-                    "type": "integer"
-                },
-                "total_presence": {
-                    "type": "integer"
-                },
-                "total_sick": {
-                    "type": "integer"
-                },
-                "year_period": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.DashboardAttendanceResponseData": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.DashboardAttendance"
-                    }
                 },
                 "message": {
                     "type": "string"
@@ -5874,6 +5942,14 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ForgotPassword": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Login": {
             "type": "object",
             "properties": {
@@ -5983,6 +6059,9 @@ const docTemplate = `{
                 "end_date": {
                     "type": "string"
                 },
+                "end_time": {
+                    "type": "string"
+                },
                 "late_duration": {
                     "type": "integer"
                 },
@@ -6005,6 +6084,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "start_date": {
+                    "type": "string"
+                },
+                "start_time": {
                     "type": "string"
                 },
                 "subject_code": {
@@ -6159,6 +6241,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "owner": {
+                    "$ref": "#/definitions/model.UserForm"
                 },
                 "owner_id": {
                     "type": "integer"

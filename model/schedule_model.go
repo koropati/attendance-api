@@ -24,6 +24,7 @@ type Schedule struct {
 	Radius        int             `json:"radius" query:"radius" form:"radius"` //in metter
 	UserInRule    int             `json:"user_in_rule" gorm:"-" query:"user_in_rule" form:"user_in_rule"`
 	OwnerID       int             `json:"owner_id" gorm:"not null" query:"owner_id" form:"owner_id"`
+	Owner         User            `json:"owner" gorm:"foreignKey:OwnerID" query:"owner" form:"owner"`
 }
 
 func (data Schedule) IsTodaySchedule() (isTodaySchedule bool) {

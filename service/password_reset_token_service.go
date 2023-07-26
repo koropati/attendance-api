@@ -15,6 +15,7 @@ type PasswordResetTokenService interface {
 	ListPasswordResetTokenMeta(subject model.PasswordResetToken, pagination model.Pagination) (model.Meta, error)
 	DropDownPasswordResetToken(subject model.PasswordResetToken) ([]model.PasswordResetToken, error)
 	DeleteExpiredPasswordResetToken(currenTime time.Time) error
+	GetByToken(token string) (model.PasswordResetToken, error)
 }
 
 type passwordResetTokenService struct {
@@ -87,4 +88,12 @@ func (s passwordResetTokenService) DeleteExpiredPasswordResetToken(currenTime ti
 		return err
 	}
 	return nil
+}
+
+func (s passwordResetTokenService) GetByToken(token string) (model.PasswordResetToken, error) {
+	result, err := s.passwordResetTokenRepo.GetByToken(token)
+	if err != nil {
+		return model.PasswordResetToken{}, err
+	}
+	return result, nil
 }

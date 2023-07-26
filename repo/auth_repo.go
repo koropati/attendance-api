@@ -32,6 +32,7 @@ type AuthRepo interface {
 	DeleteAuth(userID uint, authUUID string) error
 	CreateAuth(userID uint, expired int64, typeAuth string) (model.Auth, error)
 	DeleteExpiredAuth(currentMillis int64) error
+	SetNewPassword(userID int, password string) error
 }
 
 type authRepo struct {
@@ -261,4 +262,11 @@ func (r authRepo) CreateAuth(userID uint, expired int64, typeAuth string) (model
 		return model.Auth{}, err
 	}
 	return auth, nil
+}
+
+func (r authRepo) SetNewPassword(userID int, password string) error {
+	if err := r.db.Table("users").Where("id = ?", userID).Update("password", password).Error; err != nil {
+		return err
+	}
+	return nil
 }

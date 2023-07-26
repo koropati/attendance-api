@@ -31,6 +31,7 @@ type AuthUserHandler interface {
 	Activation(c *gin.Context)
 	Logout(c *gin.Context)
 	ForgotPassword(c *gin.Context)
+	ConfirmForgotPassword(c *gin.Context)
 }
 
 type authUserHandler struct {
@@ -447,5 +448,58 @@ func (h authUserHandler) ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	response.New(c).Error(http.StatusBadRequest, errors.New("nama pengguna sudah digunakan"))
+	response.New(c).Error(http.StatusBadRequest, errors.New("data tidak ditemukan"))
+}
+
+// Confirm Forgot Password ... Konfirmasi Lupa Password
+// @Summary Konfirmasi Lupa Password (input password baru dengan token unik)
+// @Description Konfirmasi Lupa Password
+// @Tags Auth
+// @Accept json
+// @Param user body model.ConfirmForgotPassword true "User Data"
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /auth/confirm-forgot-password [post]
+func (h authUserHandler) ConfirmForgotPassword(c *gin.Context) {
+	var data model.ConfirmForgotPassword
+	c.BindJSON(&data)
+
+	if data.ConfirmPassword != data.Password {
+		err := errors.New("konfirmasi kata sandi tidak sesuai")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	if data.Token == "" {
+		err := errors.New("data token tidak terisi dengan baik")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	forgotPassword, err := h.passwordResetTokenService.GetByToken(data.Token)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	today := time.Now()
+	if today.After(forgotPassword.Valid) {
+		err := errors.New("link dan token sudah kadaluarsa")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	password, err := bcrypt.GenerateFromPassword([]byte(data.Password), 10)
+	if err != nil {
+		response.New(c).Error(http.StatusInternalServerError, fmt.Errorf("kata sandi: %v", err))
+		return
+	}
+
+	if err := h.authService.SetNewPassword(int(forgotPassword.User.ID), string(password)); err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	} else {
+		response.New(c).Write(http.StatusOK, "password berhasil diubah, silahkan login dengan password baru anda")
+		return
+	}
 }
