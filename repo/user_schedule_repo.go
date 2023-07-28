@@ -194,6 +194,8 @@ func (r userScheduleRepo) ListMySchedule(userID int, filter model.MyScheduleFilt
 					s.latitude as latitude, 
 					s.longitude as longitude, 
 					s.radius as radius, 
+					s.qr_code as qr_code, 
+					s.owner_id as owner_id, 
 					ds.start_time as start_time, 
 					ds.end_time as end_time 
 					FROM user_schedules us 
@@ -204,9 +206,14 @@ func (r userScheduleRepo) ListMySchedule(userID int, filter model.MyScheduleFilt
 			if err := r.db.Raw(rawQuery).Scan(&mySchedule).Error; err != nil {
 				log.Printf("Error Get Day Name E: %v\n", errorDayName)
 			}
+
+			for j, schedule := range mySchedule {
+				mySchedule[j].Teacher = r.GetTeacher(schedule.OwnerID)
+			}
 			if len(mySchedule) > 0 {
 				listMySchedule.IndeonesianDate = indonesianDate
 				listMySchedule.Schedules = mySchedule
+
 			} else {
 				mySchedule = append(mySchedule, model.MySchedule{
 					ScheduleID:   0,
@@ -241,6 +248,8 @@ func (r userScheduleRepo) ListTodaySchedule(userID int, dayName string) (results
 	s.id as schedule_id, 
 	s.name as schedule_name, 
 	s.code as schedule_code, 
+	s.qr_code as qr_code, 
+	s.owner_id as owner_id, 
 	sbj.id as subject_id, 
 	sbj.name as subject_name, 
 	ds.start_time as start_time, 
@@ -253,6 +262,15 @@ func (r userScheduleRepo) ListTodaySchedule(userID int, dayName string) (results
 	if err := r.db.Raw(query).Scan(&results).Error; err != nil {
 		return nil, err
 	}
+	wg := sync.WaitGroup{}
+	for i, todaySchedule := range results {
+		wg.Add(1)
+		go func(i int, todaySchedule model.TodaySchedule) {
+			results[i].Teacher = r.GetTeacher(todaySchedule.OwnerID)
+			wg.Done()
+		}(i, todaySchedule)
+	}
+	wg.Wait()
 	return
 }
 
@@ -616,6 +634,20 @@ func (r userScheduleRepo) CountByScheduleID(scheduleID int) (total int) {
 		total = 0
 	}
 	return
+}
+
+func (r userScheduleRepo) GetTeacher(ownerID int) (result string) {
+	var userData model.User
+	if ownerID > 0 {
+		if err := r.db.Table("users").Where("id = ?", ownerID).First(&userData).Error; err != nil {
+			result = userData.FirstName + " " + userData.LastName
+			return
+		}
+		result = userData.FirstName + " " + userData.LastName
+		return
+	} else {
+		return "-"
+	}
 }
 
 func FilterUserSchedule(query *gorm.DB, userschedule model.UserSchedule) *gorm.DB {

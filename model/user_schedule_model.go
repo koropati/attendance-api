@@ -13,6 +13,9 @@ type MySchedule struct {
 	ScheduleID   uint    `json:"schedule_id" query:"schedule_id"`
 	ScheduleName string  `json:"schedule_name" query:"schedule_name"`
 	ScheduleCode string  `json:"schedule_code" query:"schedule_code"`
+	QRCode       string  `json:"qr_code" query:"qr_code"`
+	OwnerID      int     `json:"owner_id" query:"owner_id"`
+	Teacher      string  `json:"teacher" query:"teacher"`
 	StartDate    string  `json:"start_date" query:"start_date"`
 	EndDate      string  `json:"end_date" query:"end_date"`
 	SubjectID    uint    `json:"subject_id" query:"subject_id"`
@@ -40,6 +43,9 @@ type TodaySchedule struct {
 	ScheduleID     uint   `json:"schedule_id"`
 	ScheduleName   string `json:"schedule_name"`
 	ScheduleCode   string `json:"schedule_code"`
+	QRCode         string `json:"qr_code" query:"qr_code"`
+	OwnerID        int    `json:"owner_id" query:"owner_id"`
+	Teacher        string `json:"teacher" query:"teacher"`
 	SubjectID      uint   `json:"subject_id"`
 	SubjectName    string `json:"subject_name"`
 	StartTime      string `json:"start_time"`
