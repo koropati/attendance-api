@@ -92,9 +92,31 @@ func (h myScheduleHandler) Today(c *gin.Context) {
 	}
 
 	for i, result := range results {
-		attendance, err := h.attendanceService.RetrieveAttendanceByDate(currentUserID, int(result.ScheduleID), todayDate)
-		if err != nil {
-			log.Printf("[Err] RetrieveAttendanceByDate E: %v\n", err)
+		if isExistAttendance := h.attendanceService.CheckIsExistByDate(currentUserID, int(result.ScheduleID), todayDate); isExistAttendance {
+			attendance, err := h.attendanceService.RetrieveAttendanceByDate(currentUserID, int(result.ScheduleID), todayDate)
+			if err != nil {
+				log.Printf("[Err] RetrieveAttendanceByDate E: %v\n", err)
+				results[i].AttendanceID = 0
+				results[i].ClockInMillis = 0
+				results[i].ClockOutMillis = 0
+				results[i].ClockIn = "--:--"
+				results[i].ClockOut = "--:--"
+				results[i].TimeZoneIn = 0
+				results[i].TimeZoneOut = 0
+				results[i].LocationIn = "-"
+				results[i].LocationOut = "-"
+			} else {
+				results[i].AttendanceID = attendance.ID
+				results[i].ClockInMillis = attendance.ClockIn
+				results[i].ClockOutMillis = attendance.ClockOut
+				results[i].ClockIn = converter.MillisToTimeString(attendance.ClockIn, attendance.TimeZoneIn)
+				results[i].ClockOut = converter.MillisToTimeString(attendance.ClockOut, attendance.TimeZoneOut)
+				results[i].TimeZoneIn = attendance.TimeZoneIn
+				results[i].TimeZoneOut = attendance.TimeZoneOut
+				results[i].LocationIn = attendance.LocationIn
+				results[i].LocationOut = attendance.LocationOut
+			}
+		} else {
 			results[i].AttendanceID = 0
 			results[i].ClockInMillis = 0
 			results[i].ClockOutMillis = 0
@@ -104,16 +126,6 @@ func (h myScheduleHandler) Today(c *gin.Context) {
 			results[i].TimeZoneOut = 0
 			results[i].LocationIn = "-"
 			results[i].LocationOut = "-"
-		} else {
-			results[i].AttendanceID = attendance.ID
-			results[i].ClockInMillis = attendance.ClockIn
-			results[i].ClockOutMillis = attendance.ClockOut
-			results[i].ClockIn = converter.MillisToTimeString(attendance.ClockIn, attendance.TimeZoneIn)
-			results[i].ClockOut = converter.MillisToTimeString(attendance.ClockOut, attendance.TimeZoneOut)
-			results[i].TimeZoneIn = attendance.TimeZoneIn
-			results[i].TimeZoneOut = attendance.TimeZoneOut
-			results[i].LocationIn = attendance.LocationIn
-			results[i].LocationOut = attendance.LocationOut
 		}
 
 	}
