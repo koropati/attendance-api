@@ -480,6 +480,10 @@ definitions:
         type: number
       longitude:
         type: number
+      owner_id:
+        type: integer
+      qr_code:
+        type: string
       radius:
         type: integer
       schedule_code:
@@ -497,6 +501,8 @@ definitions:
       subject_id:
         type: integer
       subject_name:
+        type: string
+      teacher:
         type: string
     type: object
   model.MyScheduleResponseList:
@@ -846,6 +852,10 @@ definitions:
         type: string
       location_out:
         type: string
+      owner_id:
+        type: integer
+      qr_code:
+        type: string
       schedule_code:
         type: string
       schedule_id:
@@ -857,6 +867,8 @@ definitions:
       subject_id:
         type: integer
       subject_name:
+        type: string
+      teacher:
         type: string
       time_zone_in:
         type: integer

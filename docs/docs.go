@@ -6071,6 +6071,12 @@ const docTemplate = `{
                 "longitude": {
                     "type": "number"
                 },
+                "owner_id": {
+                    "type": "integer"
+                },
+                "qr_code": {
+                    "type": "string"
+                },
                 "radius": {
                     "type": "integer"
                 },
@@ -6096,6 +6102,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "subject_name": {
+                    "type": "string"
+                },
+                "teacher": {
                     "type": "string"
                 }
             }
@@ -6630,6 +6639,12 @@ const docTemplate = `{
                 "location_out": {
                     "type": "string"
                 },
+                "owner_id": {
+                    "type": "integer"
+                },
+                "qr_code": {
+                    "type": "string"
+                },
                 "schedule_code": {
                     "type": "string"
                 },
@@ -6646,6 +6661,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "subject_name": {
+                    "type": "string"
+                },
+                "teacher": {
                     "type": "string"
                 },
                 "time_zone_in": {

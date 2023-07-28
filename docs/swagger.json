@@ -6062,6 +6062,12 @@
                 "longitude": {
                     "type": "number"
                 },
+                "owner_id": {
+                    "type": "integer"
+                },
+                "qr_code": {
+                    "type": "string"
+                },
                 "radius": {
                     "type": "integer"
                 },
@@ -6087,6 +6093,9 @@
                     "type": "integer"
                 },
                 "subject_name": {
+                    "type": "string"
+                },
+                "teacher": {
                     "type": "string"
                 }
             }
@@ -6621,6 +6630,12 @@
                 "location_out": {
                     "type": "string"
                 },
+                "owner_id": {
+                    "type": "integer"
+                },
+                "qr_code": {
+                    "type": "string"
+                },
                 "schedule_code": {
                     "type": "string"
                 },
@@ -6637,6 +6652,9 @@
                     "type": "integer"
                 },
                 "subject_name": {
+                    "type": "string"
+                },
+                "teacher": {
                     "type": "string"
                 },
                 "time_zone_in": {
