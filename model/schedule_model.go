@@ -30,7 +30,7 @@ type Schedule struct {
 func (data Schedule) IsTodaySchedule() (isTodaySchedule bool) {
 	inRange := false
 	isToday := false
-	today := time.Now().UTC().Truncate(24 * time.Hour)
+	today := time.Now()
 	startDate, err := time.Parse("2006-01-02", converter.GetOnlyDateString(data.StartDate))
 	if err != nil {
 		fmt.Println("Format tanggal mulai tidak valid")

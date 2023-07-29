@@ -130,3 +130,26 @@ func GetEnglishDayName(tanggal string) (string, error) {
 
 	return namaHari, nil
 }
+
+func GetDatesArrayFromStartEndDate(startDate, endDate string) ([]string, error) {
+	// Parse input strings to time.Time format
+	startTime, err := time.Parse("2006-01-02", startDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse start date: %v", err)
+	}
+
+	endTime, err := time.Parse("2006-01-02", endDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse end date: %v", err)
+	}
+
+	// Create an empty slice to store the dates as strings
+	var dates []string
+
+	// Loop through the range of dates and add them to the slice
+	for date := startTime; date.Before(endTime) || date.Equal(endTime); date = date.AddDate(0, 0, 1) {
+		dates = append(dates, date.Format("2006-01-02"))
+	}
+
+	return dates, nil
+}

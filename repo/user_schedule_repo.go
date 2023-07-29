@@ -569,13 +569,15 @@ func (r userScheduleRepo) GetAll() (results []model.UserSchedule, err error) {
 }
 
 func (r userScheduleRepo) GetAllByTodayRange() (resutls []model.UserSchedule, err error) {
-	today := time.Now().UTC().Truncate(24 * time.Hour)
+	today := time.Now()
 
 	var idSchedule []int
 
-	queryID := r.db.Model(&[]model.Schedule{}).Select("id")
-	queryID = queryID.Where("start_date <= ? AND end_date >= ?", today, today)
-	if err := queryID.Find(&idSchedule).Error; err != nil {
+	rawQuery := fmt.Sprintf(`SELECT s.id FROM schedules s 
+	LEFT JOIN daily_schedules ds ON s.id = ds.schedule_id 
+	WHERE ds.name = '%s' AND '%s' BETWEEN DATE(s.start_date) AND DATE(s.end_date) AND s.deleted_at IS NULL`, converter.GetDayName(today), today.Format("2006-01-02"))
+
+	if err := r.db.Raw(rawQuery).Scan(&idSchedule).Error; err != nil {
 		return nil, err
 	}
 
@@ -673,5 +675,6 @@ func SearchUserSchedule(query *gorm.DB, search string) *gorm.DB {
 func PreloadUserSchedule(query *gorm.DB) *gorm.DB {
 	query = query.Preload("User")
 	query = query.Preload("Schedule")
+	query = query.Preload("Schedule.DailySchedule")
 	return query
 }

@@ -52,6 +52,7 @@ func (j attendanceJob) AutoCreate() {
 		wg.Add(1)
 		go func(userSchedule model.UserSchedule) {
 			// Cek apakah jadwal user memang di hari ini
+			log.Printf("IS Today schedule: %v\n", userSchedule.Schedule.IsTodaySchedule())
 			if userSchedule.Schedule.IsTodaySchedule() {
 				// Buat Data Presensi kosong / tidak hadir secara default terlebih dahulu
 				dataAttendance := model.Attendance{

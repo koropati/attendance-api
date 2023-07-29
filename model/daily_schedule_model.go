@@ -1,7 +1,7 @@
 package model
 
 import (
-	"strings"
+	"attendance-api/common/util/converter"
 	"time"
 )
 
@@ -17,10 +17,8 @@ type DailySchedule struct {
 
 func (dailySchedule DailySchedule) IsToday() (isToday bool) {
 	now := time.Now()
-	day := now.Weekday()
 
-	dayName := strings.ToLower(day.String())
-	if dailySchedule.Name == dayName {
+	if dailySchedule.Name == converter.GetDayName(now) {
 		return true
 	} else {
 		return false

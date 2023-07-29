@@ -305,6 +305,7 @@ func (c server) v1() {
 			attendance.GET("/summary", attendanceHandler.Summary)
 			attendance.POST("/clock-in", attendanceHandler.ClockIn)
 			attendance.POST("/clock-out", attendanceHandler.ClockOut)
+			attendance.GET("/auto-generate", attendanceHandler.AutoGenerate)
 		}
 	}
 

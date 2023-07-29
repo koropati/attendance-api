@@ -15,6 +15,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,7 @@ type AttendanceHandler interface {
 	ClockIn(c *gin.Context)
 	ClockOut(c *gin.Context)
 	Summary(s *gin.Context)
+	AutoGenerate(s *gin.Context)
 }
 
 type attendanceHandler struct {
@@ -842,4 +844,68 @@ func (h attendanceHandler) Summary(c *gin.Context) {
 	}
 
 	response.New(c).Data(http.StatusOK, "sukses mendapatkan rangkuman data", data)
+}
+
+// AutoGenerate ... Auto Generate Attendance
+// @Summary Auto Generate Attendance
+// @Description Auto Generate Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.Response
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/auto-generate [get]
+// @Security BearerTokenAuth
+func (h attendanceHandler) AutoGenerate(c *gin.Context) {
+
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("maaf hanya super user yang bisa melakukan tindakan ini")
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	userSchedules, err := h.userScheduleService.GetAll()
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	wg := sync.WaitGroup{}
+	for _, userSchedule := range userSchedules {
+		startDate := converter.GetOnlyDateString(userSchedule.Schedule.StartDate)
+		endDate := converter.GetOnlyDateString(userSchedule.Schedule.EndDate)
+
+		listDates, err := converter.GetDatesArrayFromStartEndDate(startDate, endDate)
+		if err != nil {
+			log.Printf("Error Get List Date E: %v\n", err)
+			break
+		}
+		for j, date := range listDates {
+			wg.Add(1)
+			go func(j int, date string, userSchedule model.UserSchedule) {
+				if !h.attendanceService.CheckIsExistByDate(userSchedule.UserID, int(userSchedule.ScheduleID), date) {
+					// Create Attendance with default (alpa)
+					// Buat Data Presensi kosong / tidak hadir secara default terlebih dahulu
+					dataAttendance := model.Attendance{
+						UserID:         userSchedule.UserID,
+						ScheduleID:     userSchedule.ScheduleID,
+						Date:           date,
+						ClockIn:        0,
+						ClockOut:       0,
+						Status:         "-",
+						StatusPresence: "not_presence",
+					}
+					_, err := h.attendanceService.CreateAttendance(dataAttendance)
+					if err != nil {
+						log.Printf("[Error] [Attendance-CreateAttendance] E: %v\n", err)
+					}
+				}
+				wg.Done()
+			}(j, date, userSchedule)
+
+		}
+	}
+	wg.Wait()
+
+	response.New(c).Write(http.StatusOK, "sukses melakukan generate data presensi")
 }

@@ -1397,6 +1397,31 @@ paths:
       summary: Update Single Attendance Log
       tags:
       - Attendance Log
+  /attendance/auto-generate:
+    get:
+      consumes:
+      - application/json
+      description: Auto Generate Attendance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Auto Generate Attendance
+      tags:
+      - Attendance
   /attendance/clock-in:
     post:
       consumes:
