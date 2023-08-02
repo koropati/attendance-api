@@ -20,7 +20,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 type AttendanceHandler interface {
@@ -469,12 +468,12 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 	currentCheckIn := presence.GetCurrentMillis()
 	toDay := time.Now().Format("2006-01-02")
 
-	if err := validation.Validate(dataClockIn.Latitude, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(dataClockIn.Latitude, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude: %v", err))
 		return
 	}
 
-	if err := validation.Validate(dataClockIn.Longitude, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(dataClockIn.Longitude, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("longitude: %v", err))
 		return
 	}
@@ -559,12 +558,40 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 		}
 
 		attendanceNew := attendance
+
+		if attendance.GormCustom.CreatedBy == 0 {
+			attendanceNew.GormCustom = model.GormCustom{
+				CreatedBy: currentUserID,
+				UpdatedBy: currentUserID,
+				UpdatedAt: time.Now(),
+			}
+		} else {
+			attendanceNew.GormCustom = model.GormCustom{
+				UpdatedBy: currentUserID,
+				UpdatedAt: time.Now(),
+			}
+		}
+
 		attendanceNew.ClockIn = currentCheckIn
 		attendanceNew.LateIn = calculation.CalculateLateDuration(dailySchedule.StartTime, currentCheckIn, dataClockIn.TimeZone, schedule.LateDuration)
+
+		if attendance.LatitudeIn == 0 {
+			attendanceNew.LatitudeIn = dataClockIn.Latitude
+		}
+		if attendance.LongitudeIn == 0 {
+			attendanceNew.LongitudeIn = dataClockIn.Longitude
+		}
+		if attendance.TimeZoneIn == 0 {
+			attendanceNew.TimeZoneIn = dataClockIn.TimeZone
+		}
+		if attendance.LocationIn == "" {
+			attendanceNew.LocationIn = dataClockIn.Location
+		}
+
 		attendanceNew.StatusPresence = attendanceNew.GenerateStatusPresence()
 		attendanceNew.Status = attendanceNew.GenerateStatus()
 
-		if attendance.ClockIn <= 0 {
+		if attendance.ClockIn != 0 {
 			// Update attendance
 			attendance, err = h.attendanceService.UpdateAttendance(int(attendance.ID), attendanceNew)
 			if err != nil {
@@ -575,6 +602,12 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 
 		// Add Log
 		h.attendanceLogService.CreateAttendanceLog(model.AttendanceLog{
+			GormCustom: model.GormCustom{
+				CreatedBy: currentUserID,
+				UpdatedBy: currentUserID,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
 			AttendanceID: attendance.ID,
 			LogType:      "clock_in",
 			CheckIn:      currentCheckIn,
@@ -592,6 +625,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 		newAttendance := model.Attendance{
 			GormCustom: model.GormCustom{
 				CreatedBy: currentUserID,
+				UpdatedBy: currentUserID,
 				CreatedAt: time.Now(),
 			},
 			UserID:      currentUserID,
@@ -615,6 +649,12 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 
 		// Add Log
 		h.attendanceLogService.CreateAttendanceLog(model.AttendanceLog{
+			GormCustom: model.GormCustom{
+				CreatedBy: currentUserID,
+				UpdatedBy: currentUserID,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
 			AttendanceID: attendance.ID,
 			LogType:      "clock_in",
 			CheckIn:      attendance.ClockIn,
@@ -648,12 +688,12 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 	currentCheckIn := presence.GetCurrentMillis()
 	toDay := time.Now().Format("2006-01-02")
 
-	if err := validation.Validate(dataClockOut.Latitude, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(dataClockOut.Latitude, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("latitude: %v", err))
 		return
 	}
 
-	if err := validation.Validate(dataClockOut.Longitude, validation.Required, is.Float); err != nil {
+	if err := validation.Validate(dataClockOut.Longitude, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("longitude: %v", err))
 		return
 	}
@@ -738,6 +778,18 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 		}
 
 		attendanceNew := attendance
+		if attendance.GormCustom.CreatedBy == 0 {
+			attendanceNew.GormCustom = model.GormCustom{
+				CreatedBy: currentUserID,
+				UpdatedBy: currentUserID,
+				UpdatedAt: time.Now(),
+			}
+		} else {
+			attendanceNew.GormCustom = model.GormCustom{
+				UpdatedBy: currentUserID,
+				UpdatedAt: time.Now(),
+			}
+		}
 		attendanceNew.ClockOut = currentCheckIn
 		attendanceNew.EarlyOut = calculation.CalculateEarlyDuration(dailySchedule.EndTime, currentCheckIn, dataClockOut.TimeZone)
 		attendanceNew.StatusPresence = attendanceNew.GenerateStatusPresence()
@@ -756,6 +808,12 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 
 		// Add Log
 		h.attendanceLogService.CreateAttendanceLog(model.AttendanceLog{
+			GormCustom: model.GormCustom{
+				CreatedBy: currentUserID,
+				UpdatedBy: currentUserID,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
 			AttendanceID: attendance.ID,
 			LogType:      "clock_out",
 			CheckIn:      currentCheckIn,
@@ -773,6 +831,7 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 		newAttendance := model.Attendance{
 			GormCustom: model.GormCustom{
 				CreatedBy: currentUserID,
+				UpdatedBy: currentUserID,
 				CreatedAt: time.Now(),
 			},
 			UserID:       currentUserID,
@@ -796,6 +855,12 @@ func (h attendanceHandler) ClockOut(c *gin.Context) {
 
 		// Add Log
 		h.attendanceLogService.CreateAttendanceLog(model.AttendanceLog{
+			GormCustom: model.GormCustom{
+				CreatedBy: currentUserID,
+				UpdatedBy: currentUserID,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
 			AttendanceID: attendance.ID,
 			LogType:      "clock_out",
 			CheckIn:      attendance.ClockOut,
@@ -873,7 +938,8 @@ func (h attendanceHandler) AutoGenerate(c *gin.Context) {
 	wg := sync.WaitGroup{}
 	for _, userSchedule := range userSchedules {
 		startDate := converter.GetOnlyDateString(userSchedule.Schedule.StartDate)
-		endDate := converter.GetOnlyDateString(userSchedule.Schedule.EndDate)
+		// endDate := converter.GetOnlyDateString(userSchedule.Schedule.EndDate)
+		endDate := time.Now().Format("2006-01-02")
 
 		listDates, err := converter.GetDatesArrayFromStartEndDate(startDate, endDate)
 		if err != nil {

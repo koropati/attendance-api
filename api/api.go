@@ -111,6 +111,11 @@ func (c server) v1() {
 		c.infra,
 		c.middleware,
 	)
+	attendanceLogHandler := v1.NewAttendanceLogHandler(
+		c.service.AttendanceLogService(),
+		c.infra,
+		c.middleware,
+	)
 
 	v1 := c.gin.Group("v1")
 	{
@@ -306,6 +311,18 @@ func (c server) v1() {
 			attendance.POST("/clock-in", attendanceHandler.ClockIn)
 			attendance.POST("/clock-out", attendanceHandler.ClockOut)
 			attendance.GET("/auto-generate", attendanceHandler.AutoGenerate)
+		}
+
+		attendanceLog := v1.Group("/attendance-log")
+		attendanceLog.Use(c.middleware.AUTH())
+		{
+			attendanceLog.POST("/create", attendanceLogHandler.Create)
+			attendanceLog.GET("/retrieve", attendanceLogHandler.Retrieve)
+			attendanceLog.PUT("/update", attendanceLogHandler.Update)
+			attendanceLog.DELETE("/delete", attendanceLogHandler.Delete)
+			attendanceLog.GET("/list", attendanceLogHandler.List)
+			attendanceLog.GET("/list-all", attendanceLogHandler.ListAll)
+			attendanceLog.GET("/drop-down", attendanceLogHandler.DropDown)
 		}
 	}
 

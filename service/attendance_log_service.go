@@ -12,6 +12,7 @@ type AttendanceLogService interface {
 	DeleteAttendanceLog(id int) error
 	ListAttendanceLog(attendancelog model.AttendanceLog, pagination model.Pagination) ([]model.AttendanceLog, error)
 	ListAttendanceLogMeta(attendancelog model.AttendanceLog, pagination model.Pagination) (model.Meta, error)
+	ListAllAttendanceLogByAttendanceID(attendanceID int) ([]model.AttendanceLog, error)
 	DropDownAttendanceLog(attendancelog model.AttendanceLog) ([]model.AttendanceLog, error)
 }
 
@@ -57,6 +58,14 @@ func (s attendanceLogService) DeleteAttendanceLog(id int) error {
 
 func (s attendanceLogService) ListAttendanceLog(attendancelog model.AttendanceLog, pagination model.Pagination) ([]model.AttendanceLog, error) {
 	datas, err := s.attendanceLogRepo.ListAttendanceLog(attendancelog, pagination)
+	if err != nil {
+		return nil, err
+	}
+	return datas, nil
+}
+
+func (s attendanceLogService) ListAllAttendanceLogByAttendanceID(attendanceID int) ([]model.AttendanceLog, error) {
+	datas, err := s.attendanceLogRepo.ListAllAttendanceLogByAttendanceID(attendanceID)
 	if err != nil {
 		return nil, err
 	}

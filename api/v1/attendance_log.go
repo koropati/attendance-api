@@ -21,6 +21,7 @@ type AttendanceLogHandler interface {
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
 	List(c *gin.Context)
+	ListAll(c *gin.Context)
 	DropDown(c *gin.Context)
 }
 
@@ -180,6 +181,32 @@ func (h attendancelogHandler) List(c *gin.Context) {
 	}
 
 	response.New(c).List(http.StatusOK, "sukses mengambil list data", dataList, metaList)
+}
+
+// List All ... List All Attendance Log By Attendance ID
+// @Summary List All Attendance Log By Attendance ID
+// @Description List All Attendance Log
+// @Tags Attendance Log
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceLogResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance-log/list-all [get]
+// @param attendance_id query string true "id attendance"
+// @Security BearerTokenAuth
+func (h attendancelogHandler) ListAll(c *gin.Context) {
+	attendanceID, err := strconv.Atoi(c.Query("attendance_id"))
+	if attendanceID < 1 || err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("id presensi harus diisi dengan nomor yang valid"))
+		return
+	}
+
+	dataList, err := h.attendancelogService.ListAllAttendanceLogByAttendanceID(attendanceID)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+	}
+
+	response.New(c).List(http.StatusOK, "sukses mengambil list data", dataList, nil)
 }
 
 // Dropdown ... Dropdown All Attendance Log

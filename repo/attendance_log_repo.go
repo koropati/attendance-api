@@ -14,6 +14,7 @@ type AttendanceLogRepo interface {
 	DeleteAttendanceLog(id int) error
 	ListAttendanceLog(attendancelog model.AttendanceLog, pagination model.Pagination) ([]model.AttendanceLog, error)
 	ListAttendanceLogMeta(attendancelog model.AttendanceLog, pagination model.Pagination) (model.Meta, error)
+	ListAllAttendanceLogByAttendanceID(attendanceID int) ([]model.AttendanceLog, error)
 	DropDownAttendanceLog(attendancelog model.AttendanceLog) ([]model.AttendanceLog, error)
 }
 
@@ -66,6 +67,15 @@ func (r attendanceLogRepo) ListAttendanceLog(attendancelog model.AttendanceLog, 
 		return nil, err
 	}
 
+	return attendanceLogs, nil
+}
+
+func (r attendanceLogRepo) ListAllAttendanceLogByAttendanceID(attendanceID int) ([]model.AttendanceLog, error) {
+	var attendanceLogs []model.AttendanceLog
+
+	if err := r.db.Table("attendance_logs").Where("attendance_id = ?", attendanceID).Order("created_at DESC").Find(&attendanceLogs).Error; err != nil {
+		return nil, err
+	}
 	return attendanceLogs, nil
 }
 

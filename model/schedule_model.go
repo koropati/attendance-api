@@ -62,7 +62,7 @@ func (data Schedule) IsTodaySchedule() (isTodaySchedule bool) {
 }
 
 func (data Schedule) InRange(latitudeCheck float64, longitudeCheck float64) (isPassed bool) {
-	if data.Radius > 0 && data.Latitude > 0 && data.Longitude > 0 {
+	if data.Radius != 0 && data.Latitude != 0 && data.Longitude != 0 {
 		radlat1 := float64(math.Pi * data.Latitude / 180)
 		radlat2 := float64(math.Pi * latitudeCheck / 180)
 
