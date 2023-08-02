@@ -492,6 +492,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/attendance-log/list-all": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "List All Attendance Log",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attendance Log"
+                ],
+                "summary": "List All Attendance Log By Attendance ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id attendance",
+                        "name": "attendance_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AttendanceLogResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/attendance-log/retrieve": {
             "get": {
                 "security": [

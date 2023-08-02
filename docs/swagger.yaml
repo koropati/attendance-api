@@ -1329,6 +1329,37 @@ paths:
       summary: List All Attendance Log
       tags:
       - Attendance Log
+  /attendance-log/list-all:
+    get:
+      consumes:
+      - application/json
+      description: List All Attendance Log
+      parameters:
+      - description: id attendance
+        in: query
+        name: attendance_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AttendanceLogResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: List All Attendance Log By Attendance ID
+      tags:
+      - Attendance Log
   /attendance-log/retrieve:
     get:
       consumes:
