@@ -591,7 +591,7 @@ func (h attendanceHandler) ClockIn(c *gin.Context) {
 		attendanceNew.StatusPresence = attendanceNew.GenerateStatusPresence()
 		attendanceNew.Status = attendanceNew.GenerateStatus()
 
-		if attendance.ClockIn != 0 {
+		if attendance.ClockIn == 0 {
 			// Update attendance
 			attendance, err = h.attendanceService.UpdateAttendance(int(attendance.ID), attendanceNew)
 			if err != nil {

@@ -19,7 +19,7 @@ func CalculateLateDuration(scheduleIn string, clockIn int64, timeZoneIn int, lat
 		return "00:00:00"
 	}
 	if lateTolerance > 0 {
-		timeSchedule.Add(-time.Minute * time.Duration(lateTolerance))
+		timeSchedule = timeSchedule.Add(time.Minute * time.Duration(lateTolerance))
 	}
 	diff := timeIn.Sub(timeSchedule)
 

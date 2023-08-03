@@ -9,7 +9,7 @@ type GormCustom struct {
 	ID        uint         `json:"id" gorm:"primary_key" query:"id" form:"id"`
 	CreatedAt time.Time    `json:"created_at" query:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at" query:"updated_at" form:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at" sql:"index" query:"deleted_at" form:"deleted_at"`
+	DeletedAt sql.NullTime `json:"deleted_at" sql:"index" query:"deleted_at" form:"deleted_at" gorm:"index"`
 	CreatedBy int          `json:"created_by" query:"created_by" form:"created_by"`
 	UpdatedBy int          `json:"updated_by" query:"updated_by" form:"updated_by"`
 	DeletedBy int          `json:"deleted_by" query:"deleted_by" form:"deleted_by"`

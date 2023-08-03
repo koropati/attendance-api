@@ -25,6 +25,7 @@ type UserScheduleRepo interface {
 	UpdateUserSchedule(id int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	DeleteUserSchedule(id int) error
+	DeleteUserScheduleByScheduleID(scheduleID int) error
 	DeleteUserScheduleByOwner(id int, ownerID int) error
 	RemoveUserFromSchedule(scheduleID int, userID int) error
 	RemoveUserFromScheduleByOwner(scheduleID int, userID int, ownerID int) error
@@ -107,6 +108,15 @@ func (r userScheduleRepo) UpdateUserScheduleByOwner(id int, ownerID int, usersch
 
 func (r userScheduleRepo) DeleteUserSchedule(id int) error {
 	if err := r.db.Delete(&model.UserSchedule{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r userScheduleRepo) DeleteUserScheduleByScheduleID(scheduleID int) error {
+	condition := "schedule_id = ?"
+	args := []interface{}{scheduleID}
+	if err := r.db.Delete(&model.UserSchedule{}, condition, args).Error; err != nil {
 		return err
 	}
 	return nil

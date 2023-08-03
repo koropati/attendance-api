@@ -15,6 +15,7 @@ type DailyScheduleRepo interface {
 	UpdateDailySchedule(id int, dailyschedule model.DailySchedule) (model.DailySchedule, error)
 	UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule model.DailySchedule) (model.DailySchedule, error)
 	DeleteDailySchedule(id int) error
+	DeleteDailyScheduleByScheduleID(scheduleID int) error
 	DeleteDailyScheduleByOwner(id int, ownerID int) error
 	ListDailySchedule(dailyschedule model.DailySchedule, pagination model.Pagination) ([]model.DailySchedule, error)
 	ListDailyScheduleMeta(dailyschedule model.DailySchedule, pagination model.Pagination) (model.Meta, error)
@@ -77,6 +78,15 @@ func (r dailyScheduleRepo) UpdateDailyScheduleByOwner(id int, ownerID int, daily
 
 func (r dailyScheduleRepo) DeleteDailySchedule(id int) error {
 	if err := r.db.Delete(&model.DailySchedule{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r dailyScheduleRepo) DeleteDailyScheduleByScheduleID(scheduleID int) error {
+	condition := "schedule_id = ?"
+	args := []interface{}{scheduleID}
+	if err := r.db.Delete(&model.DailySchedule{}, condition, args).Error; err != nil {
 		return err
 	}
 	return nil

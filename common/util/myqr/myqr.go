@@ -22,3 +22,8 @@ func Generate(code string, length int) (qrcode string) {
 	qrcode = strings.ToLower(code) + ":" + StringWithCharset(length, charset)
 	return
 }
+
+func GenerateQR(length int) (qrcode string) {
+	qrcode = StringWithCharset(length, charset)
+	return
+}

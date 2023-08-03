@@ -110,7 +110,7 @@ func (h scheduleHandler) Create(c *gin.Context) {
 		return
 	}
 
-	data.QRCode = myqr.Generate(data.Code, 8)
+	data.QRCode = myqr.GenerateQR(8)
 
 	result, err := h.scheduleService.CreateSchedule(data)
 	if err != nil {
@@ -380,6 +380,15 @@ func (h scheduleHandler) Delete(c *gin.Context) {
 			response.New(c).Error(http.StatusBadRequest, err)
 			return
 		}
+	}
+
+	if err := h.userScheduleService.DeleteUserScheduleByScheduleID(id); err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	if err := h.dailyScheduleService.DeleteDailyScheduleByScheduleID(id); err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
 	}
 
 	response.New(c).Write(http.StatusOK, "sukses menghapus data")

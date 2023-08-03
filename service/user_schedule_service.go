@@ -13,6 +13,7 @@ type UserScheduleService interface {
 	UpdateUserSchedule(id int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	UpdateUserScheduleByOwner(id int, ownerID int, userschedule model.UserSchedule) (model.UserSchedule, error)
 	DeleteUserSchedule(id int) error
+	DeleteUserScheduleByScheduleID(scheduleID int) error
 	DeleteUserScheduleByOwner(id int, ownerID int) error
 	RemoveUserFromSchedule(scheduleID int, userID int) error
 	RemoveUserFromScheduleByOwner(scheduleID int, userID int, ownerID int) error
@@ -82,6 +83,14 @@ func (s userScheduleService) UpdateUserScheduleByOwner(id int, ownerID int, user
 
 func (s userScheduleService) DeleteUserSchedule(id int) error {
 	if err := s.userScheduleRepo.DeleteUserSchedule(id); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func (s userScheduleService) DeleteUserScheduleByScheduleID(scheduleID int) error {
+	if err := s.userScheduleRepo.DeleteUserScheduleByScheduleID(scheduleID); err != nil {
 		return err
 	} else {
 		return nil
