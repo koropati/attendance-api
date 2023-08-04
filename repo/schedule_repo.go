@@ -50,7 +50,7 @@ func (r scheduleRepo) RetrieveSchedule(id int) (model.Schedule, error) {
 	if err := query.Where("id = ?", id).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
-	schedule.Owner = r.GetOwner(schedule.OwnerID)
+	schedule.Owner = r.GetOwner(int(schedule.OwnerID))
 	return schedule, nil
 }
 
@@ -61,7 +61,7 @@ func (r scheduleRepo) RetrieveScheduleByOwner(id int, ownerID int) (model.Schedu
 	if err := query.Where("id = ? AND owner_id = ?", id, ownerID).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
-	schedule.Owner = r.GetOwner(schedule.OwnerID)
+	schedule.Owner = r.GetOwner(int(schedule.OwnerID))
 	return schedule, nil
 }
 
@@ -72,7 +72,7 @@ func (r scheduleRepo) RetrieveScheduleByQRcode(QRcode string) (model.Schedule, e
 	if err := query.Where("qr_code = ?", QRcode).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
-	schedule.Owner = r.GetOwner(schedule.OwnerID)
+	schedule.Owner = r.GetOwner(int(schedule.OwnerID))
 	return schedule, nil
 }
 
@@ -82,7 +82,7 @@ func (r scheduleRepo) UpdateSchedule(id int, schedule model.Schedule) (model.Sch
 	if err := query.Where("id = ?", id).Updates(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
-	schedule.Owner = r.GetOwner(schedule.OwnerID)
+	schedule.Owner = r.GetOwner(int(schedule.OwnerID))
 	return schedule, nil
 }
 
@@ -96,7 +96,7 @@ func (r scheduleRepo) UpdateScheduleByOwner(id int, ownerID int, schedule model.
 	if err := query.Where("id = ?", id).First(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
-	schedule.Owner = r.GetOwner(schedule.OwnerID)
+	schedule.Owner = r.GetOwner(int(schedule.OwnerID))
 	return schedule, nil
 }
 
@@ -104,7 +104,7 @@ func (r scheduleRepo) UpdateQRcode(id int, QRcode string) (schedule model.Schedu
 	if err := r.db.Model(&model.Schedule{}).Where("id = ?", id).Update("qr_code", QRcode).Find(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
-	schedule.Owner = r.GetOwner(schedule.OwnerID)
+	schedule.Owner = r.GetOwner(int(schedule.OwnerID))
 	return schedule, nil
 }
 
@@ -112,7 +112,7 @@ func (r scheduleRepo) UpdateQRcodeByOwner(id int, ownerID int, QRcode string) (s
 	if err := r.db.Model(&model.Schedule{}).Where("id = ? AND owner_id = ?", id, ownerID).Update("qr_code", QRcode).Find(&schedule).Error; err != nil {
 		return model.Schedule{}, err
 	}
-	schedule.Owner = r.GetOwner(schedule.OwnerID)
+	schedule.Owner = r.GetOwner(int(schedule.OwnerID))
 	return schedule, nil
 }
 
@@ -147,7 +147,7 @@ func (r scheduleRepo) ListSchedule(schedule model.Schedule, pagination model.Pag
 	for i, schedule := range schedules {
 		wg.Add(1)
 		go func(i int, schedule model.Schedule) {
-			schedules[i].Owner = r.GetOwner(schedule.OwnerID)
+			schedules[i].Owner = r.GetOwner(int(schedule.OwnerID))
 			wg.Done()
 		}(i, schedule)
 	}
@@ -206,7 +206,7 @@ func (r scheduleRepo) DropDownSchedule(schedule model.Schedule) ([]model.Schedul
 	for i, schedule := range schedules {
 		wg.Add(1)
 		go func(i int, schedule model.Schedule) {
-			schedules[i].Owner = r.GetOwner(schedule.OwnerID)
+			schedules[i].Owner = r.GetOwner(int(schedule.OwnerID))
 			wg.Done()
 		}(i, schedule)
 	}

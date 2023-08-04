@@ -65,6 +65,7 @@ func handleCommand() {
 				&model.UserSchedule{},
 				&model.Attendance{},
 				&model.AttendanceLog{},
+				&model.RoleAbility{},
 			)
 			log.Printf("Berhasil Melakukan Migrasi Database!\n")
 			os.Exit(0)

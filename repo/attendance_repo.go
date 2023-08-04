@@ -43,7 +43,7 @@ func (r attendanceRepo) CreateAttendance(attendance model.Attendance) (result mo
 
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -54,7 +54,7 @@ func (r attendanceRepo) RetrieveAttendance(id int) (result model.Attendance, err
 
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -65,7 +65,7 @@ func (r attendanceRepo) RetrieveAttendanceByUserID(id int, userID int) (result m
 
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -75,7 +75,7 @@ func (r attendanceRepo) RetrieveAttendanceByDate(userID int, scheduleID int, dat
 	}
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -89,7 +89,7 @@ func (r attendanceRepo) UpdateAttendance(id int, attendance model.Attendance) (r
 
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -104,7 +104,7 @@ func (r attendanceRepo) UpdateAttendanceByUserID(id int, userID int, attendance 
 
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -140,7 +140,7 @@ func (r attendanceRepo) ListAttendance(attendance model.Attendance, pagination m
 		go func(i int, data model.Attendance) {
 			attendances[i].User.Role = data.User.GetRole()
 			attendances[i].User.Avatar = data.User.GetAvatar()
-			attendances[i].User.UserAbilities = data.User.GetAbility()
+			attendances[i].User.UserAbilities = data.User.GetAbility(r.db)
 			wg.Done()
 		}(i, data)
 	}
@@ -199,7 +199,7 @@ func (r attendanceRepo) DropDownAttendance(attendance model.Attendance) ([]model
 		go func(i int, data model.Attendance) {
 			attendances[i].User.Role = data.User.GetRole()
 			attendances[i].User.Avatar = data.User.GetAvatar()
-			attendances[i].User.UserAbilities = data.User.GetAbility()
+			attendances[i].User.UserAbilities = data.User.GetAbility(r.db)
 			wg.Done()
 		}(i, data)
 	}

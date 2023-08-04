@@ -56,7 +56,7 @@ func (r userScheduleRepo) CreateUserSchedule(userschedule model.UserSchedule) (r
 	}
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -66,7 +66,7 @@ func (r userScheduleRepo) RetrieveUserSchedule(id int) (result model.UserSchedul
 	}
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -76,7 +76,7 @@ func (r userScheduleRepo) RetrieveUserScheduleByOwner(id int, ownerID int) (resu
 	}
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -89,7 +89,7 @@ func (r userScheduleRepo) UpdateUserSchedule(id int, userschedule model.UserSche
 	}
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -102,7 +102,7 @@ func (r userScheduleRepo) UpdateUserScheduleByOwner(id int, ownerID int, usersch
 	}
 	result.User.Role = result.User.GetRole()
 	result.User.Avatar = result.User.GetAvatar()
-	result.User.UserAbilities = result.User.GetAbility()
+	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
 }
 
@@ -300,7 +300,7 @@ func (r userScheduleRepo) ListUserSchedule(userschedule model.UserSchedule, pagi
 		go func(i int, data model.UserSchedule) {
 			userschedules[i].User.Role = data.User.GetRole()
 			userschedules[i].User.Avatar = data.User.GetAvatar()
-			userschedules[i].User.UserAbilities = data.User.GetAbility()
+			userschedules[i].User.UserAbilities = data.User.GetAbility(r.db)
 			wg.Done()
 		}(i, data)
 	}
@@ -340,7 +340,7 @@ func (r userScheduleRepo) ListUserInRule(scheduleID int, student model.Student, 
 			students[i].Avatar = student.GetAvatar()
 			students[i].User.Avatar = student.User.GetAvatar()
 			students[i].User.Role = student.User.GetRole()
-			students[i].User.UserAbilities = student.User.GetAbility()
+			students[i].User.UserAbilities = student.User.GetAbility(r.db)
 			wg.Done()
 		}(i, student)
 	}
@@ -385,7 +385,7 @@ func (r userScheduleRepo) ListUserNotInRule(scheduleID int, student model.Studen
 			students[i].Avatar = student.GetAvatar()
 			students[i].User.Avatar = student.User.GetAvatar()
 			students[i].User.Role = student.User.GetRole()
-			students[i].User.UserAbilities = student.User.GetAbility()
+			students[i].User.UserAbilities = student.User.GetAbility(r.db)
 			wg.Done()
 		}(i, student)
 	}
@@ -549,7 +549,7 @@ func (r userScheduleRepo) DropDownUserSchedule(userschedule model.UserSchedule) 
 		go func(i int, data model.UserSchedule) {
 			userschedules[i].User.Role = data.User.GetRole()
 			userschedules[i].User.Avatar = data.User.GetAvatar()
-			userschedules[i].User.UserAbilities = data.User.GetAbility()
+			userschedules[i].User.UserAbilities = data.User.GetAbility(r.db)
 			wg.Done()
 		}(i, data)
 	}
@@ -570,7 +570,7 @@ func (r userScheduleRepo) GetAll() (results []model.UserSchedule, err error) {
 		go func(i int, data model.UserSchedule) {
 			userschedules[i].User.Role = data.User.GetRole()
 			userschedules[i].User.Avatar = data.User.GetAvatar()
-			userschedules[i].User.UserAbilities = data.User.GetAbility()
+			userschedules[i].User.UserAbilities = data.User.GetAbility(r.db)
 			wg.Done()
 		}(i, data)
 	}
@@ -608,7 +608,7 @@ func (r userScheduleRepo) GetAllByTodayRange() (resutls []model.UserSchedule, er
 		go func(i int, data model.UserSchedule) {
 			userschedules[i].User.Role = data.User.GetRole()
 			userschedules[i].User.Avatar = data.User.GetAvatar()
-			userschedules[i].User.UserAbilities = data.User.GetAbility()
+			userschedules[i].User.UserAbilities = data.User.GetAbility(r.db)
 			wg.Done()
 		}(i, data)
 	}

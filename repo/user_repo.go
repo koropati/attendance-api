@@ -31,6 +31,7 @@ type UserRepo interface {
 	GetPassword(id int) (hashPassword string, err error)
 	UpdateProfile(id int, user model.User) (model.User, error)
 	UpdatePassword(updatePasswordData model.UserUpdatePasswordForm) error
+	GetAbility(user model.User) []model.Ability
 }
 
 type userRepo struct {
@@ -158,7 +159,7 @@ func (r userRepo) ListUser(user model.User, pagination model.Pagination) ([]mode
 		go func(i int, user model.User) {
 			users[i].Role = user.GetRole()
 			users[i].Avatar = user.GetAvatar()
-			users[i].UserAbilities = user.GetAbility()
+			users[i].UserAbilities = r.GetAbility(user)
 			wg.Done()
 		}(i, user)
 	}
@@ -212,7 +213,7 @@ func (r userRepo) CreateUser(user model.User) (model.User, error) {
 	}
 	user.Role = user.GetRole()
 	user.Avatar = user.GetAvatar()
-	user.UserAbilities = user.GetAbility()
+	user.UserAbilities = r.GetAbility(user)
 
 	return user, nil
 }
@@ -225,7 +226,7 @@ func (r userRepo) RetrieveUser(id int) (user model.User, err error) {
 	}
 	user.Role = user.GetRole()
 	user.Avatar = user.GetAvatar()
-	user.UserAbilities = user.GetAbility()
+	user.UserAbilities = r.GetAbility(user)
 
 	return user, nil
 }
@@ -238,7 +239,7 @@ func (r userRepo) RetrieveUserByUsername(username string) (user model.User, err 
 	}
 	user.Role = user.GetRole()
 	user.Avatar = user.GetAvatar()
-	user.UserAbilities = user.GetAbility()
+	user.UserAbilities = r.GetAbility(user)
 
 	return user, nil
 }
@@ -251,7 +252,7 @@ func (r userRepo) RetrieveUserByEmail(email string) (user model.User, err error)
 	}
 	user.Role = user.GetRole()
 	user.Avatar = user.GetAvatar()
-	user.UserAbilities = user.GetAbility()
+	user.UserAbilities = r.GetAbility(user)
 
 	return user, nil
 }
@@ -278,7 +279,7 @@ func (r userRepo) UpdateUser(id int, user model.User) (model.User, error) {
 
 	user.Role = user.GetRole()
 	user.Avatar = user.GetAvatar()
-	user.UserAbilities = user.GetAbility()
+	user.UserAbilities = r.GetAbility(user)
 	return user, nil
 }
 
@@ -303,7 +304,7 @@ func (r userRepo) UpdateProfile(id int, user model.User) (result model.User, err
 	}
 	result.Role = result.GetRole()
 	result.Avatar = result.GetAvatar()
-	result.UserAbilities = result.GetAbility()
+	result.UserAbilities = r.GetAbility(result)
 	return result, nil
 }
 
@@ -363,6 +364,28 @@ func (r userRepo) UpdatePassword(userPasswordData model.UserUpdatePasswordForm) 
 		return err
 	}
 	return
+}
+
+func (r userRepo) GetAbility(user model.User) []model.Ability {
+	var results []model.Ability
+
+	if user.IsSuperAdmin {
+		if err := r.db.Select("action, subject").Table("role_abilities").Where("is_super_admin = ?", user.IsSuperAdmin).Find(&results).Error; err != nil {
+			return nil
+		}
+	} else if user.IsAdmin {
+		if err := r.db.Select("action, subject").Table("role_abilities").Where("is_admin = ?", user.IsAdmin).Find(&results).Error; err != nil {
+			return nil
+		}
+	} else if user.IsUser {
+		if err := r.db.Select("action, subject").Table("role_abilities").Where("is_user = ?", user.IsUser).Find(&results).Error; err != nil {
+			return nil
+		}
+	} else {
+		return nil
+	}
+
+	return results
 }
 
 func FilterUser(query *gorm.DB, user model.User) *gorm.DB {

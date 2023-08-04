@@ -24,6 +24,7 @@ type ServiceManager interface {
 	AttendanceLogService() service.AttendanceLogService
 	AttendanceService() service.AttendanceService
 	DashboardService() service.DashboardService
+	RoleAbilityService() service.RoleAbilityService
 }
 
 type serviceManager struct {
@@ -55,6 +56,7 @@ var (
 	attendanceLogServiceOnce      sync.Once
 	attendanceServiceOnce         sync.Once
 	dashboardServiceOnce          sync.Once
+	roleAbilityServiceOnce        sync.Once
 	facultyService                service.FacultyService
 	majorService                  service.MajorService
 	studyProgramService           service.StudyProgramService
@@ -71,6 +73,7 @@ var (
 	attendanceLogService          service.AttendanceLogService
 	attendanceService             service.AttendanceService
 	dashboardService              service.DashboardService
+	roleAbilityService            service.RoleAbilityService
 )
 
 func (sm *serviceManager) FacultyService() service.FacultyService {
@@ -187,4 +190,11 @@ func (sm *serviceManager) DashboardService() service.DashboardService {
 		dashboardService = sm.repo.DashboardRepo()
 	})
 	return dashboardService
+}
+
+func (sm *serviceManager) RoleAbilityService() service.RoleAbilityService {
+	roleAbilityServiceOnce.Do(func() {
+		roleAbilityService = sm.repo.RoleAbilityRepo()
+	})
+	return roleAbilityService
 }

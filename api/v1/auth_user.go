@@ -36,14 +36,16 @@ type AuthUserHandler interface {
 
 type authUserHandler struct {
 	authService               service.AuthService
+	userService               service.UserService
 	activationTokenService    service.ActivationTokenService
 	passwordResetTokenService service.PasswordResetTokenService
 	infra                     infra.Infra
 }
 
-func NewAuthHandler(authService service.AuthService, activationTokenService service.ActivationTokenService, passwordResetTokenService service.PasswordResetTokenService, infra infra.Infra) AuthUserHandler {
+func NewAuthHandler(authService service.AuthService, userService service.UserService, activationTokenService service.ActivationTokenService, passwordResetTokenService service.PasswordResetTokenService, infra infra.Infra) AuthUserHandler {
 	return &authUserHandler{
 		authService:               authService,
+		userService:               userService,
 		activationTokenService:    activationTokenService,
 		passwordResetTokenService: passwordResetTokenService,
 		infra:                     infra,
@@ -221,7 +223,7 @@ func (h authUserHandler) Login(c *gin.Context) {
 	)
 
 	userData.Role = userData.GetRole()
-	userData.UserAbilities = userData.GetAbility()
+	userData.UserAbilities = h.userService.GetAbility(userData)
 	userData.Avatar = userData.GetAvatar()
 
 	tokenData := model.TokenData{
@@ -297,7 +299,7 @@ func (h authUserHandler) Refresh(c *gin.Context) {
 	)
 
 	user.Role = user.GetRole()
-	user.UserAbilities = user.GetAbility()
+	user.UserAbilities = h.userService.GetAbility(user)
 	user.Avatar = user.GetAvatar()
 
 	tokenData := model.TokenData{

@@ -406,3 +406,19 @@ func (m UserServiceMock) GetPassword(id int) (hashPassword string, err error) {
 
 	return "hashPasswordNya", nil
 }
+
+func (m UserServiceMock) GetAbility(user model.User) []model.Ability {
+	if err := m.Called(user).Error(0); err != nil {
+		return nil
+	}
+
+	var ability []model.Ability
+	for i := 1; i <= 1; i++ {
+
+		ability = append(ability, model.Ability{
+			Action:  "read",
+			Subject: "Auth",
+		})
+	}
+	return ability
+}

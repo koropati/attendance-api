@@ -28,6 +28,7 @@ type UserService interface {
 	GetPassword(id int) (hashPassword string, err error)
 	UpdateProfile(id int, user model.User) (model.User, error)
 	UpdatePassword(userPasswordData model.UserUpdatePasswordForm) error
+	GetAbility(user model.User) []model.Ability
 }
 
 type userService struct {
@@ -180,4 +181,8 @@ func (s userService) UpdatePassword(userPasswordData model.UserUpdatePasswordFor
 		return err
 	}
 	return nil
+}
+
+func (s userService) GetAbility(user model.User) []model.Ability {
+	return s.userRepo.GetAbility(user)
 }

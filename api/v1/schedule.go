@@ -80,7 +80,7 @@ func (h scheduleHandler) Create(c *gin.Context) {
 
 	data.GormCustom.CreatedBy = currentUserID
 	if !h.middleware.IsSuperAdmin(c) {
-		data.OwnerID = currentUserID
+		data.OwnerID = uint(currentUserID)
 	}
 
 	data.Code = strings.ToUpper(data.Code)
@@ -416,7 +416,7 @@ func (h scheduleHandler) List(c *gin.Context) {
 	}
 
 	if !h.middleware.IsSuperAdmin(c) {
-		data.OwnerID = currentUserID
+		data.OwnerID = uint(currentUserID)
 	}
 
 	dataLists, err := h.scheduleService.ListSchedule(data, pagination)
@@ -459,7 +459,7 @@ func (h scheduleHandler) DropDown(c *gin.Context) {
 	}
 
 	if !h.middleware.IsSuperAdmin(c) {
-		data.OwnerID = currentUserID
+		data.OwnerID = uint(currentUserID)
 	}
 
 	dataList, err := h.scheduleService.DropDownSchedule(data)

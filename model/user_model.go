@@ -3,6 +3,8 @@ package model
 import (
 	"database/sql"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type GormCustom struct {
@@ -33,8 +35,6 @@ type User struct {
 	Role          string    `json:"role" gorm:"-" query:"role" form:"role"`
 	UserAbilities []Ability `json:"user_abilities" gorm:"-" query:"user_abilities" form:"user_abilities"`
 	Avatar        string    `json:"avatar" gorm:"-" query:"avatar" form:"avatar"`
-	ScheduleID    int       `json:"schedule_id" gorm:"-" query:"schedule_id" form:"schedule_id"`
-	OwnerID       int       `json:"owner_id" gorm:"-" query:"owner_id" form:"owner_id"`
 }
 
 func (data User) GetRole() (role string) {
@@ -50,16 +50,26 @@ func (data User) GetRole() (role string) {
 	return
 }
 
-func (data User) GetAbility() (abilities []Ability) {
+func (data User) GetAbility(db *gorm.DB) (abilities []Ability) {
+	var results []Ability
+
 	if data.IsSuperAdmin {
-		return GetSuperAdminAbility()
+		if err := db.Select("action, subject").Table("role_abilities").Where("is_super_admin = ?", data.IsSuperAdmin).Find(&results).Error; err != nil {
+			return nil
+		}
 	} else if data.IsAdmin {
-		return GetAdminAbility()
+		if err := db.Select("action, subject").Table("role_abilities").Where("is_admin = ?", data.IsAdmin).Find(&results).Error; err != nil {
+			return nil
+		}
 	} else if data.IsUser {
-		return GetUserAbility()
+		if err := db.Select("action, subject").Table("role_abilities").Where("is_user = ?", data.IsUser).Find(&results).Error; err != nil {
+			return nil
+		}
 	} else {
-		return GetDefaultAbility()
+		return nil
 	}
+
+	return results
 }
 
 func (data User) GetAvatar() (url string) {

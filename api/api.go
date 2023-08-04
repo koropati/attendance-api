@@ -61,7 +61,7 @@ func (c server) handlers() {
 }
 
 func (c server) v1() {
-	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.ActivationTokenService(), c.service.PasswordResetTokenService(), c.infra)
+	authHandler := v1.NewAuthHandler(c.service.AuthService(), c.service.UserService(), c.service.ActivationTokenService(), c.service.PasswordResetTokenService(), c.infra)
 	userHandler := v1.NewUserHandler(c.service.UserService(), c.service.ActivationTokenService(), c.infra, c.middleware)
 	dashboardHandler := v1.NewDashboardHandler(c.service.DashboardService(), c.infra, c.middleware)
 	profileHandler := v1.NewProfileHandler(
@@ -113,6 +113,12 @@ func (c server) v1() {
 	)
 	attendanceLogHandler := v1.NewAttendanceLogHandler(
 		c.service.AttendanceLogService(),
+		c.infra,
+		c.middleware,
+	)
+
+	roleAbilityHandler := v1.NewRoleAbilityHandler(
+		c.service.RoleAbilityService(),
 		c.infra,
 		c.middleware,
 	)
@@ -324,6 +330,19 @@ func (c server) v1() {
 			attendanceLog.GET("/list-all", attendanceLogHandler.ListAll)
 			attendanceLog.GET("/drop-down", attendanceLogHandler.DropDown)
 		}
+
+		roleAbility := v1.Group("/role-ability")
+		roleAbility.Use(c.middleware.AUTH())
+		{
+			roleAbility.POST("/create", roleAbilityHandler.Create)
+			roleAbility.GET("/retrieve", roleAbilityHandler.Retrieve)
+			roleAbility.GET("/generate", roleAbilityHandler.Generate)
+			roleAbility.PUT("/update", roleAbilityHandler.Update)
+			roleAbility.DELETE("/delete", roleAbilityHandler.Delete)
+			roleAbility.GET("/list", roleAbilityHandler.List)
+			roleAbility.GET("/drop-down", roleAbilityHandler.DropDown)
+		}
+
 	}
 
 }

@@ -24,6 +24,7 @@ type RepoManager interface {
 	MajorRepo() repo.MajorRepo
 	StudyProgramRepo() repo.StudyProgramRepo
 	DashboardRepo() repo.DashboardRepo
+	RoleAbilityRepo() repo.RoleAbilityRepo
 }
 
 type repoManager struct {
@@ -51,6 +52,7 @@ var (
 	attendanceLogRepoOnce      sync.Once
 	attendanceRepoOnce         sync.Once
 	dashboardRepoOnce          sync.Once
+	roleAbilityRepoOnce        sync.Once
 	facultyRepo                repo.FacultyRepo
 	majorRepo                  repo.MajorRepo
 	studyProgramRepo           repo.StudyProgramRepo
@@ -67,6 +69,7 @@ var (
 	attendanceLogRepo          repo.AttendanceLogRepo
 	attendanceRepo             repo.AttendanceRepo
 	dashboardRepo              repo.DashboardRepo
+	roleAbilityRepo            repo.RoleAbilityRepo
 )
 
 func (rm *repoManager) FacultyRepo() repo.FacultyRepo {
@@ -179,4 +182,11 @@ func (rm *repoManager) DashboardRepo() repo.DashboardRepo {
 		dashboardRepo = repo.NewDashboardRepo(rm.infra.GormDB())
 	})
 	return dashboardRepo
+}
+
+func (rm *repoManager) RoleAbilityRepo() repo.RoleAbilityRepo {
+	roleAbilityRepoOnce.Do(func() {
+		roleAbilityRepo = repo.NewRoleAbilityRepo(rm.infra.GormDB())
+	})
+	return roleAbilityRepo
 }
