@@ -24,6 +24,10 @@ type Attendance struct {
 	AttendanceLog  []AttendanceLog `json:"attendance_log" gorm:"foreignKey:AttendanceID" query:"attendance_log" form:"attendance_log"`
 }
 
+type QuickUpdateAttendance struct {
+	StatusPresence string `json:"status_presence" query:"status_presence" form:"status_presence"`
+}
+
 type CheckInData struct {
 	UserID    int     `json:"user_id" query:"user_id" form:"user_id"`
 	QRCode    string  `json:"qr_code" query:"qr_code" form:"qr_code"`

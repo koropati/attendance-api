@@ -26,6 +26,7 @@ type AttendanceHandler interface {
 	Create(c *gin.Context)
 	Retrieve(c *gin.Context)
 	Update(c *gin.Context)
+	UpdateStatusPresence(c *gin.Context)
 	Delete(c *gin.Context)
 	List(c *gin.Context)
 	DropDown(c *gin.Context)
@@ -339,6 +340,47 @@ func (h attendanceHandler) Update(c *gin.Context) {
 		return
 	}
 	response.New(c).Data(http.StatusOK, "sukses memperbaharui data", result)
+}
+
+// UpdateStatusPresence ... Update Status Attendance
+// @Summary Quick Update Status Attendance
+// @Description Quick Update Status Attendance
+// @Tags Attendance
+// @Accept       json
+// @Produce      json
+// @Success 200 {object} model.AttendanceResponseData
+// @Failure 400,500 {object} model.Response
+// @Router /attendance/update-status [put]
+// @Security BearerTokenAuth
+// @param id query string true "id attendance"
+func (h attendanceHandler) UpdateStatusPresence(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if id < 1 || err != nil {
+		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
+		return
+	}
+
+	currentUserID, err := h.middleware.GetUserID(c)
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+
+	var data model.QuickUpdateAttendance
+	c.BindJSON(&data)
+
+	var result model.Attendance
+	if h.middleware.IsSuperAdmin(c) {
+		result, err = h.attendanceService.UpdateStatusAttendance(id, data.StatusPresence, 0)
+	} else {
+		result, err = h.attendanceService.UpdateStatusAttendance(id, data.StatusPresence, currentUserID)
+	}
+
+	if err != nil {
+		response.New(c).Error(http.StatusBadRequest, err)
+		return
+	}
+	response.New(c).Data(http.StatusOK, "sukses memperbaharui status presensi", result)
 }
 
 // Delete ... Delete Attendance

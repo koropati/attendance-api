@@ -310,6 +310,7 @@ func (c server) v1() {
 			attendance.POST("/create", attendanceHandler.Create)
 			attendance.GET("/retrieve", attendanceHandler.Retrieve)
 			attendance.PUT("/update", attendanceHandler.Update)
+			attendance.PUT("/update-status-presence", attendanceHandler.UpdateStatusPresence)
 			attendance.DELETE("/delete", attendanceHandler.Delete)
 			attendance.GET("/list", attendanceHandler.List)
 			attendance.GET("/drop-down", attendanceHandler.DropDown)

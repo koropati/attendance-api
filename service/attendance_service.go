@@ -12,6 +12,7 @@ type AttendanceService interface {
 	RetrieveAttendanceByDate(userID int, scheduleID int, date string) (model.Attendance, error)
 	UpdateAttendance(id int, attendance model.Attendance) (model.Attendance, error)
 	UpdateAttendanceByUserID(id int, userID int, attendance model.Attendance) (model.Attendance, error)
+	UpdateStatusAttendance(id int, statusPresence string, userID int) (model.Attendance, error)
 	DeleteAttendance(id int) error
 	DeleteAttendanceByUserID(id int, userID int) error
 	ListAttendance(attendance model.Attendance, pagination model.Pagination) ([]model.Attendance, error)
@@ -64,6 +65,14 @@ func (s attendanceService) RetrieveAttendanceByDate(userID int, scheduleID int, 
 
 func (s attendanceService) UpdateAttendance(id int, attendance model.Attendance) (model.Attendance, error) {
 	data, err := s.attendanceRepo.UpdateAttendance(id, attendance)
+	if err != nil {
+		return model.Attendance{}, err
+	}
+	return data, nil
+}
+
+func (s attendanceService) UpdateStatusAttendance(id int, statusPresence string, userID int) (model.Attendance, error) {
+	data, err := s.attendanceRepo.UpdateStatusAttendance(id, statusPresence, userID)
 	if err != nil {
 		return model.Attendance{}, err
 	}

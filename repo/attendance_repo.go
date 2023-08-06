@@ -2,6 +2,7 @@ package repo
 
 import (
 	"attendance-api/model"
+	"errors"
 	"sync"
 
 	"gorm.io/gorm"
@@ -14,6 +15,7 @@ type AttendanceRepo interface {
 	RetrieveAttendanceByDate(userID int, scheduleID int, date string) (model.Attendance, error)
 	UpdateAttendance(id int, attendance model.Attendance) (model.Attendance, error)
 	UpdateAttendanceByUserID(id int, userID int, attendance model.Attendance) (model.Attendance, error)
+	UpdateStatusAttendance(id int, statusPresence string, userID int) (model.Attendance, error)
 	DeleteAttendance(id int) error
 	DeleteAttendanceByUserID(id int, userID int) error
 	ListAttendance(attendance model.Attendance, pagination model.Pagination) ([]model.Attendance, error)
@@ -91,6 +93,30 @@ func (r attendanceRepo) UpdateAttendance(id int, attendance model.Attendance) (r
 	result.User.Avatar = result.User.GetAvatar()
 	result.User.UserAbilities = result.User.GetAbility(r.db)
 	return
+}
+
+func (r attendanceRepo) UpdateStatusAttendance(id int, statusPresence string, userID int) (result model.Attendance, err error) {
+	if statusPresence != "" {
+		if err := r.db.Table("attendances").Where("id = ?", id).Updates(map[string]interface{}{
+			"status_presence": statusPresence,
+			"status":          "-",
+			"updated_by":      userID,
+		}).Error; err != nil {
+			return model.Attendance{}, err
+		}
+		if err := PreloadAttendance(r.db.Table("attendances")).Where("id = ?", id).First(&result).Error; err != nil {
+			return model.Attendance{}, err
+		}
+
+		result.User.Role = result.User.GetRole()
+		result.User.Avatar = result.User.GetAvatar()
+		result.User.UserAbilities = result.User.GetAbility(r.db)
+		return
+	} else {
+		err = errors.New("status presensi tidak boleh kosong")
+		return
+	}
+
 }
 
 func (r attendanceRepo) UpdateAttendanceByUserID(id int, userID int, attendance model.Attendance) (result model.Attendance, err error) {
