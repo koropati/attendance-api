@@ -310,15 +310,15 @@ func (h userScheduleHandler) ListUserInRule(c *gin.Context) {
 		return
 	}
 
-	currentUserID, err := h.middleware.GetUserID(c)
-	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, err)
-		return
-	}
+	// currentUserID, err := h.middleware.GetUserID(c)
+	// if err != nil {
+	// 	response.New(c).Error(http.StatusBadRequest, err)
+	// 	return
+	// }
 
-	if !h.middleware.IsSuperAdmin(c) {
-		data.OwnerID = currentUserID
-	}
+	// if !h.middleware.IsSuperAdmin(c) {
+	// 	data.OwnerID = currentUserID
+	// }
 
 	dataList, err := h.userScheduleService.ListUserInRule(scheduleID, data, pagination)
 	if err != nil {
@@ -359,15 +359,15 @@ func (h userScheduleHandler) ListUserNotInRule(c *gin.Context) {
 		return
 	}
 
-	currentUserID, err := h.middleware.GetUserID(c)
-	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, err)
-		return
-	}
+	// currentUserID, err := h.middleware.GetUserID(c)
+	// if err != nil {
+	// 	response.New(c).Error(http.StatusBadRequest, err)
+	// 	return
+	// }
 
-	if !h.middleware.IsSuperAdmin(c) {
-		data.OwnerID = currentUserID
-	}
+	// if !h.middleware.IsSuperAdmin(c) {
+	// 	data.OwnerID = currentUserID
+	// }
 
 	dataList, err := h.userScheduleService.ListUserNotInRule(scheduleID, data, pagination)
 	if err != nil {

@@ -14,6 +14,7 @@ type DailyScheduleService interface {
 	UpdateDailyScheduleByOwner(id int, ownerID int, dailyschedule model.DailySchedule) (model.DailySchedule, error)
 	DeleteDailySchedule(id int) error
 	DeleteDailyScheduleByScheduleID(scheduleID int) error
+	DeleteDailyScheduleByScheduleIDAndExceptListID(scheduleID int, exceptID []int) error
 	DeleteDailyScheduleByOwner(id int, ownerID int) error
 	ListDailySchedule(dailyschedule model.DailySchedule, pagination model.Pagination) ([]model.DailySchedule, error)
 	ListDailyScheduleMeta(dailyschedule model.DailySchedule, pagination model.Pagination) (model.Meta, error)
@@ -87,6 +88,14 @@ func (s dailyScheduleService) DeleteDailySchedule(id int) error {
 
 func (s dailyScheduleService) DeleteDailyScheduleByScheduleID(scheduleID int) error {
 	if err := s.dailyScheduleRepo.DeleteDailyScheduleByScheduleID(scheduleID); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func (s dailyScheduleService) DeleteDailyScheduleByScheduleIDAndExceptListID(scheduleID int, exceptID []int) error {
+	if err := s.dailyScheduleRepo.DeleteDailyScheduleByScheduleIDAndExceptListID(scheduleID, exceptID); err != nil {
 		return err
 	} else {
 		return nil

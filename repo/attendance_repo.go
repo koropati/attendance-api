@@ -61,7 +61,7 @@ func (r attendanceRepo) RetrieveAttendance(id int) (result model.Attendance, err
 }
 
 func (r attendanceRepo) RetrieveAttendanceByUserID(id int, userID int) (result model.Attendance, err error) {
-	if err := PreloadAttendance(r.db.Table("attendances")).Where("id = ? AND user_id = ?", id, userID).First(&result).Error; err != nil {
+	if err := PreloadAttendance(r.db.Table("attendances")).Joins("JOIN schedules ON attendances.schedule_id = schedules.id").Where("attendances.id = ? AND schedules.owner_id = ?", id, userID).First(&result).Error; err != nil {
 		return model.Attendance{}, err
 	}
 
@@ -267,12 +267,16 @@ func FilterAttendance(query *gorm.DB, attendance model.Attendance) *gorm.DB {
 	if attendance.Status != "" {
 		query = query.Where("status = ?", attendance.Status)
 	}
+	if attendance.Schedule.OwnerID > 0 {
+		query = query.Joins("JOIN schedules ON attendances.schedule_id = schedules.id").Where("schedules.owner_id = ?", attendance.Schedule.OwnerID)
+	}
 	return query
 }
 
 func SearchAttendance(query *gorm.DB, search string) *gorm.DB {
 	if search != "" {
-		query = query.Where("user_id LIKE ? OR schedule_id LIKE ? OR date LIKE ? OR status_presence LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%", "%"+search+"%")
+		searchQuery := "%" + search + "%"
+		query = query.Joins("JOIN users ON attendances.user_id = users.id").Where("users.first_name LIKE ? OR users.last_name LIKE ? OR users.email LIKE ? OR attendances.date LIKE ? OR attendances.status_presence LIKE ?", searchQuery, searchQuery, searchQuery, searchQuery, searchQuery)
 	}
 	return query
 }

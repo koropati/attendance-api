@@ -55,6 +55,12 @@ func (h subjectHandler) Create(c *gin.Context) {
 	var data model.Subject
 	c.BindJSON(&data)
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -95,25 +101,31 @@ func (h subjectHandler) Retrieve(c *gin.Context) {
 		return
 	}
 
-	currentUserID, err := h.middleware.GetUserID(c)
+	// currentUserID, err := h.middleware.GetUserID(c)
+	// if err != nil {
+	// 	response.New(c).Error(http.StatusBadRequest, err)
+	// 	return
+	// }
+
+	var result model.Subject
+	// if h.middleware.IsSuperAdmin(c) {
+	// 	result, err = h.subjectService.RetrieveSubject(id)
+	// 	if err != nil {
+	// 		response.New(c).Error(http.StatusBadRequest, err)
+	// 		return
+	// 	}
+	// } else {
+	// 	result, err = h.subjectService.RetrieveSubjectByOwner(id, currentUserID)
+	// 	if err != nil {
+	// 		response.New(c).Error(http.StatusBadRequest, err)
+	// 		return
+	// 	}
+	// }
+
+	result, err = h.subjectService.RetrieveSubject(id)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
-	}
-
-	var result model.Subject
-	if h.middleware.IsSuperAdmin(c) {
-		result, err = h.subjectService.RetrieveSubject(id)
-		if err != nil {
-			response.New(c).Error(http.StatusBadRequest, err)
-			return
-		}
-	} else {
-		result, err = h.subjectService.RetrieveSubjectByOwner(id, currentUserID)
-		if err != nil {
-			response.New(c).Error(http.StatusBadRequest, err)
-			return
-		}
 	}
 	response.New(c).Data(http.StatusCreated, "sukses mengambil data", result)
 }
@@ -134,6 +146,12 @@ func (h subjectHandler) Update(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
+		return
+	}
+
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
 		return
 	}
 
@@ -186,6 +204,12 @@ func (h subjectHandler) Delete(c *gin.Context) {
 		return
 	}
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -222,15 +246,15 @@ func (h subjectHandler) List(c *gin.Context) {
 	var data model.Subject
 	c.BindQuery(&data)
 
-	currentUserID, err := h.middleware.GetUserID(c)
-	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, err)
-		return
-	}
+	// currentUserID, err := h.middleware.GetUserID(c)
+	// if err != nil {
+	// 	response.New(c).Error(http.StatusBadRequest, err)
+	// 	return
+	// }
 
-	if !h.middleware.IsSuperAdmin(c) {
-		data.OwnerID = currentUserID
-	}
+	// if !h.middleware.IsSuperAdmin(c) {
+	// 	data.OwnerID = currentUserID
+	// }
 
 	dataList, err := h.subjectService.ListSubject(data, pagination)
 	if err != nil {
@@ -259,15 +283,15 @@ func (h subjectHandler) DropDown(c *gin.Context) {
 	var data model.Subject
 	c.BindQuery(&data)
 
-	currentUserID, err := h.middleware.GetUserID(c)
-	if err != nil {
-		response.New(c).Error(http.StatusBadRequest, err)
-		return
-	}
+	// currentUserID, err := h.middleware.GetUserID(c)
+	// if err != nil {
+	// 	response.New(c).Error(http.StatusBadRequest, err)
+	// 	return
+	// }
 
-	if !h.middleware.IsSuperAdmin(c) {
-		data.OwnerID = currentUserID
-	}
+	// if !h.middleware.IsSuperAdmin(c) {
+	// 	data.OwnerID = currentUserID
+	// }
 
 	dataList, err := h.subjectService.DropDownSubject(data)
 	if err != nil {

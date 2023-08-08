@@ -66,7 +66,13 @@ func (r roleAbilityRepo) RetrieveRoleAbilityByRole(isSuperAdmin bool, isAdmin bo
 }
 
 func (r roleAbilityRepo) UpdateRoleAbility(id int, roleAbility model.RoleAbility) (model.RoleAbility, error) {
-	if err := r.db.Model(&model.RoleAbility{}).Where("id = ?", id).Updates(&roleAbility).Error; err != nil {
+	if err := r.db.Model(&model.RoleAbility{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"is_super_admin": roleAbility.IsSuperAdmin,
+		"is_admin":       roleAbility.IsAdmin,
+		"is_user":        roleAbility.IsUser,
+		"action":         roleAbility.Action,
+		"subject":        roleAbility.Subject,
+	}).Error; err != nil {
 		return model.RoleAbility{}, err
 	}
 	return roleAbility, nil

@@ -10,6 +10,7 @@ import (
 	"attendance-api/service"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -230,6 +231,9 @@ func (h scheduleHandler) Update(c *gin.Context) {
 
 	var result model.Schedule
 	if h.middleware.IsSuperAdmin(c) {
+		if errDeleteDaily := h.dailyScheduleService.DeleteDailyScheduleByScheduleIDAndExceptListID(id, data.GetListDailyScheduleID()); errDeleteDaily != nil {
+			log.Printf("[Error Delete Daily Schedule] E: %v\n", errDeleteDaily)
+		}
 		result, err = h.scheduleService.UpdateSchedule(id, data)
 		result.UserInRule = h.userScheduleService.CountByScheduleID(int(result.ID))
 		if err != nil {
@@ -243,6 +247,9 @@ func (h scheduleHandler) Update(c *gin.Context) {
 			return
 		}
 	} else {
+		if errDeleteDaily := h.dailyScheduleService.DeleteDailyScheduleByScheduleIDAndExceptListID(id, data.GetListDailyScheduleID()); errDeleteDaily != nil {
+			log.Printf("[Error Delete Daily Schedule] E: %v\n", errDeleteDaily)
+		}
 		result, err = h.scheduleService.UpdateScheduleByOwner(id, currentUserID, data)
 		result.UserInRule = h.userScheduleService.CountByScheduleID(int(result.ID))
 		if err != nil {

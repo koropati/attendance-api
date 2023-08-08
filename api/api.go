@@ -138,7 +138,7 @@ func (c server) v1() {
 		}
 
 		user := v1.Group("/user")
-		user.Use(c.middleware.SUPERADMIN())
+		user.Use(c.middleware.ADMIN())
 		{
 			user.POST("/create", userHandler.Create)
 			user.GET("/retrieve", userHandler.Retrieve)
@@ -161,7 +161,7 @@ func (c server) v1() {
 		}
 
 		student := v1.Group("/student")
-		student.Use(c.middleware.SUPERADMIN())
+		student.Use(c.middleware.ADMIN())
 		{
 			student.POST("/create", studentHandler.Create)
 			student.GET("/retrieve", studentHandler.Retrieve)
@@ -172,7 +172,7 @@ func (c server) v1() {
 		}
 
 		teacher := v1.Group("/teacher")
-		teacher.Use(c.middleware.SUPERADMIN())
+		teacher.Use(c.middleware.ADMIN())
 		{
 			teacher.POST("/create", teacherHandler.Create)
 			teacher.GET("/retrieve", teacherHandler.Retrieve)
@@ -226,7 +226,7 @@ func (c server) v1() {
 		}
 
 		faculty := v1.Group("/faculty")
-		faculty.Use(c.middleware.SUPERADMIN())
+		faculty.Use(c.middleware.ADMIN())
 		{
 			faculty.POST("/create", facultyHandler.Create)
 			faculty.GET("/retrieve", facultyHandler.Retrieve)
@@ -237,7 +237,7 @@ func (c server) v1() {
 		}
 
 		major := v1.Group("/major")
-		major.Use(c.middleware.SUPERADMIN())
+		major.Use(c.middleware.ADMIN())
 		{
 			major.POST("/create", majorHandler.Create)
 			major.GET("/retrieve", majorHandler.Retrieve)
@@ -249,7 +249,7 @@ func (c server) v1() {
 		}
 
 		studyProgram := v1.Group("/study-program")
-		studyProgram.Use(c.middleware.SUPERADMIN())
+		studyProgram.Use(c.middleware.ADMIN())
 		{
 			studyProgram.POST("/create", studyProgramHandler.Create)
 			studyProgram.GET("/retrieve", studyProgramHandler.Retrieve)

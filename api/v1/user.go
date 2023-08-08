@@ -67,6 +67,12 @@ func (h userHandler) Create(c *gin.Context) {
 	var data model.User
 	c.BindJSON(&data)
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -194,6 +200,12 @@ func (h userHandler) Update(c *gin.Context) {
 		return
 	}
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	// Get User / valid exist data
 	_, err = h.userService.RetrieveUser(id)
 	if err != nil {
@@ -276,6 +288,12 @@ func (h userHandler) Delete(c *gin.Context) {
 		return
 	}
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	if err := h.userService.DeleteUser(id); err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
 		return
@@ -352,6 +370,12 @@ func (h userHandler) SetActive(c *gin.Context) {
 		return
 	}
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	result, err := h.userService.SetActiveUser(id)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -377,6 +401,12 @@ func (h userHandler) SetDeactive(c *gin.Context) {
 		return
 	}
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	result, err := h.userService.SetDeactiveUser(id)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -387,6 +417,13 @@ func (h userHandler) SetDeactive(c *gin.Context) {
 func (h userHandler) UpdatePassword(c *gin.Context) {
 	var data model.UserUpdatePasswordForm
 	c.BindJSON(&data)
+
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	if err := validation.Validate(data.CurrentPassword, validation.Required); err != nil {
 		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("kata sandi saat ini: %v", err))
 		return

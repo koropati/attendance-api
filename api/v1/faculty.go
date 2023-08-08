@@ -55,6 +55,12 @@ func (h facultyHandler) Create(c *gin.Context) {
 	var data model.Faculty
 	c.BindJSON(&data)
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -150,6 +156,12 @@ func (h facultyHandler) Update(c *gin.Context) {
 		return
 	}
 
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
+		return
+	}
+
 	currentUserID, err := h.middleware.GetUserID(c)
 	if err != nil {
 		response.New(c).Error(http.StatusBadRequest, err)
@@ -208,6 +220,12 @@ func (h facultyHandler) Delete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if id < 1 || err != nil {
 		response.New(c).Error(http.StatusBadRequest, errors.New("id harus diisi dengan nomor yang valid"))
+		return
+	}
+
+	if !h.middleware.IsSuperAdmin(c) {
+		err := errors.New("anda tidak memiliki akses untuk melakukan proses ini")
+		response.New(c).Error(http.StatusBadRequest, fmt.Errorf("%v", err))
 		return
 	}
 

@@ -444,7 +444,7 @@ func (h attendanceHandler) List(c *gin.Context) {
 	}
 
 	if !h.middleware.IsSuperAdmin(c) {
-		data.UserID = currentUserID
+		data.Schedule.OwnerID = uint(currentUserID)
 	}
 
 	dataList, err := h.attendanceService.ListAttendance(data, pagination)

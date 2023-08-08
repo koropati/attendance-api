@@ -4,6 +4,7 @@ import (
 	"attendance-api/common/util/converter"
 	"fmt"
 	"math"
+	"sync"
 	"time"
 )
 
@@ -90,4 +91,19 @@ func (data Schedule) InRange(latitudeCheck float64, longitudeCheck float64) (isP
 		return true
 	}
 
+}
+
+func (data Schedule) GetListDailyScheduleID() (dailyScheduleID []int) {
+	if len(data.DailySchedule) > 0 {
+		wg := sync.WaitGroup{}
+		for _, daily := range data.DailySchedule {
+			wg.Add(1)
+			go func(daily DailySchedule) {
+				dailyScheduleID = append(dailyScheduleID, int(daily.ID))
+				wg.Done()
+			}(daily)
+		}
+		wg.Wait()
+	}
+	return
 }
