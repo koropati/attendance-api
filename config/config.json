@@ -23,23 +23,23 @@
         "encryption": "tls"
     },
     "amqp": {
-        "host": "armadillo.rmq.cloudamqp.com",
-        "user": "ofulvwfd",
-        "pass": "XgU2H6LKj0WdJ-_liCgk3uw5JI4dgyEK",
+        "host": "xxxxxx.cloudamqp.com",
+        "user": "xxxxxx",
+        "pass": "xxxxxxxxxxxx",
         "port": 5671,
-        "queue_name": "attd_apps"
+        "queue_name": "xxxxxx"
     },
     "amqp_backup": {
-        "host": "armadillo.rmq.cloudamqp.com",
-        "user": "ofulvwfd",
-        "pass": "XgU2H6LKj0WdJ-_liCgk3uw5JI4dgyEK",
+        "host": "xxxx.cloudamqp.com",
+        "user": "xxxxx",
+        "pass": "xxxxx",
         "port": 5671,
-        "queue_name": "senku_apps"
+        "queue_name": "xxxxx"
     },
     "secret": {
-        "key": "v3ry53cr3tk3yk3yNieh!",
-        "crypto": "4YaM60r3ng3n4KL0",
-        "crypto32": "passphrasewhichneedstobe32bytes!",
+        "key": "anehluuusump4h",
+        "crypto": "sokgaulhehehel0l",
+        "crypto32": "pass32lenght!",
         "activation_token_expired": 240,
         "reset_token_expired": 240
     },
