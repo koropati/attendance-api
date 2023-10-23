@@ -18,8 +18,8 @@
     "smtp": {
         "host": "smtp-relay.sendinblue.com",
         "port": 587,
-        "user": "dewa.ketut.satriawan@gmail.com",
-        "pass": "DhKWOBVjStUn492g",
+        "user": "xxxxxxxxxxx@gmail.com",
+        "pass": "xxxxxxxxxxxxxxxxx",
         "encryption": "tls"
     },
     "amqp": {
